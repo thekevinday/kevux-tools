@@ -1,0 +1,68 @@
+# fss-0001
+
+build_name remove
+
+version_major 0
+version_minor 5
+version_micro 0
+version_file micro
+version_target minor
+
+modes individual level monolithic clang test threaded threadless
+modes_default monolithic threaded
+
+build_compiler gcc
+build_compiler-clang clang
+build_indexer ar
+build_indexer_arguments rcs
+build_language c
+
+build_libraries -lc
+build_libraries-individual -lfll_error -lfll_print -lfll_program -lfl_conversion -lfl_print -lfl_string -lf_account -lf_color -lf_console -lf_conversion -lf_file -lf_memory -lf_pipe -lf_print -lf_signal -lf_string -lf_type_array -lf_utf
+build_libraries-level -lfll_2 -lfll_1 -lfll_0
+build_libraries-monolithic -lfll
+
+build_sources_library common.c common-print.c convert.c operate.c print.c remove.c signal.c simulate.c thread.c
+
+build_sources_program main.c
+
+build_sources_headers common.h common-print.h convert.h operate.h print.h remove.h signal.h simulate.h thread.h
+
+build_script yes
+build_shared yes
+build_static no
+
+path_headers program/kevux/tools/remove
+path_library_script script
+path_library_shared shared
+path_library_static static
+path_object_script script
+path_object_shared shared
+path_object_static static
+path_program_script script
+path_program_shared shared
+path_program_static static
+path_sources sources/c/remove/main
+
+has_path_standard no
+preserve_path_headers yes
+
+search_exclusive yes
+search_shared yes
+search_static yes
+
+environment PATH LD_LIBRARY_PATH
+
+#defines -D_di_libcap_
+defines -D_libcap_legacy_only_
+defines-threaded -D_pthread_attr_unsupported_ -D_pthread_sigqueue_unsupported_
+defines-threadless -D_di_thread_support_
+
+flags -O2 -z now -g -fdiagnostics-color=always -Wno-logical-not-parentheses -Wno-parentheses -Wno-missing-braces
+flags-clang -Wno-logical-op-parentheses
+flags-test -O0 -fstack-protector -Wall
+flags-coverage -O0 --coverage -fprofile-abs-path -fprofile-dir=build/coverage/
+
+flags_library -fPIC
+flags_object -fPIC
+flags_program -fPIE

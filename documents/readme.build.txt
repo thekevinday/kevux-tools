@@ -3,10 +3,10 @@
 # license: cc-by-sa-4.0
 #
 # This file (assumed to be named readme.build.txt) can be more easily read using the following iki_read commands:
-#   iki_read readme.build.txt +Q -w -rr abbreviation-FLL FLL abbreviation-FSS FSS -WW character "'" "'" code '"' '"'
+#   iki_read readme.build.txt +Q -w -rr FLL FLL FSS FSS -WW character "'" "'" code '"' '"'
 #
 # To read the "Build Readme Documentation" section of this file, use this command sequence:
-#   fss_basic_list_read readme.build.txt +Q -cn "Build Readme Documentation" | iki_read +Q -w -rr abbreviation-FLL FLL abbreviation-FSS FSS -WW character "'" "'" code '"' '"'
+#   fss_basic_list_read readme.build.txt +Q -cn "Build Readme Documentation" | iki_read +Q -w -rr FLL FLL FSS FSS -WW character "'" "'" code '"' '"'
 #
 
 Build Readme Documentation:
@@ -28,5 +28,5 @@ Build Readme Documentation:
   Build Example, using "make"\:
     code:"fake"
 
-  See: The abbreviation-FLL:"Featureless Linux Library" bold:"Featureless Make" project documents for further details on how to use the bold:"Featureless Make" system.
-  See: The abbreviation-FLL:"Featureless Linux Library" bold:"Featureless Make" project specifications for how to configure the write abbreviation-FSS:"Featureless Settings Specification" files.
+  See: The FLL:"Featureless Linux Library" bold:"Featureless Make" project documents for further details on how to use the bold:"Featureless Make" system.
+  See: The FLL:"Featureless Linux Library" bold:"Featureless Make" project specifications for how to configure the write FSS:"Featureless Settings Specification" files.
