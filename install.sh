@@ -42,8 +42,6 @@ install_main() {
   local c_subtle="\\033[1;30m"
   local c_prefix="\\"
 
-  local -A variables=()
-  local settings_file=data/build/settings
   local operation=
   local operation_failure=
   local verbosity=normal
@@ -122,8 +120,6 @@ install_main() {
           return
         elif [[ $p == "-b" || $p == "--build" ]] ; then
           grab_next=path_build
-        elif [[ $p == "-s" || $p == "--settings" ]] ; then
-          grab_next=settings_file
         elif [[ $p == "-P" || $p == "--prefix" ]] ; then
           grab_next=prefix
         elif [[ $p == "-B" || $p == "--bindir" ]] ; then
@@ -169,8 +165,6 @@ install_main() {
       else
         if [[ $grab_next == "path_build" ]] ; then
           path_build=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
-        elif [[ $grab_next == "settings_file" ]] ; then
-          settings_file=$(echo $p | sed -e 's|^//*|/|' -e 's|^//*|/|')
         elif [[ $grab_next == "prefix" ]] ; then
           destination_prefix=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "bindir" ]] ; then
@@ -353,8 +347,6 @@ install_main() {
     return 1
   fi
 
-  install_load_settings
-
   install_perform_install
 
   install_cleanup
@@ -405,7 +397,6 @@ install_help() {
   echo
   echo -e "${c_highlight}Install Options:${c_reset}"
   echo -e " -${c_important}b${c_reset}, --${c_important}build${c_reset}       Custom build directory."
-  echo -e " -${c_important}s${c_reset}, --${c_important}settings${c_reset}    Custom build settings file."
   echo -e " -${c_important}P${c_reset}, --${c_important}prefix${c_reset}      Custom destination prefix."
   echo -e " -${c_important}B${c_reset}, --${c_important}bindir${c_reset}      Custom destination bin/ directory."
   echo -e " -${c_important}I${c_reset}, --${c_important}includedir${c_reset}  Custom destination include/ directory."
@@ -430,172 +421,38 @@ install_help() {
   echo
 }
 
-install_id() {
-  local name=$1
-
-  case $name in
-    "build_sources_library") let key=1;;
-    "build_sources_program") let key=2;;
-    "build_sources_headers") let key=3;;
-    "build_sources_setting") let key=4;;
-    "build_shared") let key=5;;
-    "build_static") let key=6;;
-  esac
-}
-
-install_load_settings() {
-  local failure=
-  local i=
-  local key=
-
-  if [[ $settings_file == "" ]] ; then
-    if [[ $verbosity != "quiet" ]] ; then
-      echo -e "${c_error}ERROR: No settings file has been defined.${c_reset}"
-    fi
-
-    failure=1
-  elif [[ ! -f $settings_file ]] ; then
-    if [[ $verbosity != "quiet" ]] ; then
-      echo -e "${c_error}ERROR: No settings file ${c_notice}${settings_file}${c_error} could not be found or is not a valid file.${c_reset}"
-    fi
-
-    failure=1
-  fi
-
-  if [[ $failure != "" ]] ; then
-    install_cleanup
-    exit $failure
-  fi
-
-  for i in build_sources_library build_sources_program build_sources_headers build_sources_setting build_shared build_static ; do
-
-    install_id "$i"
-
-    variables[$key]=$(grep -s -o "^[[:space:]]*${i}\>.*$" $settings_file | sed -e "s|^[[:space:]]*${i}\>||" -e 's|^[[:space:]]*||')
-  done
-}
-
 install_perform_install() {
   local key=
-
-  install_id "build_sources_library"
-  local build_sources_library=${variables[$key]}
-
-  install_id "build_sources_program"
-  local build_sources_program=${variables[$key]}
-
-  install_id "build_sources_headers"
-  local build_sources_headers=${variables[$key]}
-
-  install_id "build_sources_setting"
-  local build_sources_setting=${variables[$key]}
-
-  install_id "build_shared"
-  local build_shared=${variables[$key]}
-
-  install_id "build_static"
-  local build_static=${variables[$key]}
-
+  local i=
+  local path=
   local failure=
 
-  if [[ $build_shared == "yes" ]] ; then
-    if [[ $enable_shared == "" ]] ; then
-      enable_shared="yes"
-    fi
-
-    if [[ $enable_shared == "no" ]] ; then
-      enable_shared_programs="no"
-      enable_shared_libraries="no"
-    else
-      if [[ $enable_shared_programs == "" ]] ; then
-        enable_shared_programs="yes"
-      fi
-
-      if [[ $enable_shared_libraries == "" ]] ; then
-        enable_shared_libraries="yes"
-      fi
-    fi
-  elif [[ $build_shared == "no" ]] ; then
-    if [[ $enable_shared == "" ]] ; then
-      enable_shared="no"
-    fi
-
-    if [[ $enable_shared == "no" ]] ; then
-      enable_shared_programs="no"
-      enable_shared_libraries="no"
-    else
-      if [[ $enable_shared_programs == "" ]] ; then
-        enable_shared_programs="yes"
-      fi
-
-      if [[ $enable_shared_libraries == "" ]] ; then
-        enable_shared_libraries="yes"
-      fi
-    fi
-  else
-    if [[ $enable_shared == "" ]] ; then
-      enable_shared="yes"
-    fi
-
-    if [[ $enable_shared_programs == "" ]] ; then
-      enable_shared_programs="yes"
-    fi
-
-    if [[ $enable_shared_libraries == "" ]] ; then
-      enable_shared_libraries="yes"
-    fi
+  if [[ $enable_shared == "" ]] ; then
+    enable_shared="yes"
   fi
 
-  if [[ $build_static == "yes" ]] ; then
-    if [[ $enable_static == "" ]] ; then
-      enable_static="yes"
-    fi
+  if [[ $enable_shared_programs == "" ]] ; then
+    enable_shared_programs="yes"
+  fi
 
-    if [[ $enable_static == "no" ]] ; then
-      enable_static_programs="no"
-      enable_static_libraries="no"
-    else
-      if [[ $enable_static_programs == "" ]] ; then
-        enable_static_programs="yes"
-      fi
+  if [[ $enable_shared_libraries == "" ]] ; then
+    enable_shared_libraries="yes"
+  fi
 
-      if [[ $enable_static_libraries == "" ]] ; then
-        enable_static_libraries="yes"
-      fi
-    fi
-  elif [[ $build_static == "no" ]] ; then
-    if [[ $enable_static == "" ]] ; then
-      enable_static="no"
-    fi
+  if [[ $enable_static == "" ]] ; then
+    enable_static="yes"
+  fi
 
-    if [[ $enable_static == "no" ]] ; then
-      enable_static_programs="no"
-      enable_static_libraries="no"
-    else
-      if [[ $enable_static_programs == "" ]] ; then
-        enable_static_programs="yes"
-      fi
+  if [[ $enable_static_programs == "" ]] ; then
+    enable_static_programs="yes"
+  fi
 
-      if [[ $enable_static_libraries == "" ]] ; then
-        enable_static_libraries="yes"
-      fi
-    fi
-  else
-    if [[ $enable_static == "" ]] ; then
-      enable_static="yes"
-    fi
-
-    if [[ $enable_static_programs == "" ]] ; then
-      enable_static_programs="yes"
-    fi
-
-    if [[ $enable_static_libraries == "" ]] ; then
-      enable_static_libraries="yes"
-    fi
+  if [[ $enable_static_libraries == "" ]] ; then
+    enable_static_libraries="yes"
   fi
 
   if [[ $work != "" ]] ; then
-    if [[ $build_sources_program != "" && ( $enable_shared_programs == "yes" || $enable_static_programs == "yes" ) ]] ; then
+    if [[ $enable_shared_programs == "yes" || $enable_static_programs == "yes" ]] ; then
       if [[ ! -d ${work}programs ]] ; then
         mkdir $verbose_common ${work}programs
 
@@ -608,7 +465,7 @@ install_perform_install() {
         fi
       fi
 
-      if [[ $enable_shared_programs == "yes" && ! -d ${work}programs/shared ]] ; then
+      if [[ $enable_shared_programs == "yes" && -d ${path_build}${path_programs}${path_shared} && ! -d ${work}programs/shared ]] ; then
         mkdir $verbose_common ${work}programs/shared
 
         if [[ $? -ne 0 ]] ; then
@@ -620,7 +477,7 @@ install_perform_install() {
         fi
       fi
 
-      if [[ $build_sources_program != "" && $enable_static_programs == "yes" && ! -d ${work}programs/static ]] ; then
+      if [[ $enable_static_programs == "yes" && -d ${path_build}${path_programs}${path_static} && ! -d ${work}programs/static ]] ; then
         mkdir $verbose_common ${work}programs/static
 
         if [[ $? -ne 0 ]] ; then
@@ -633,7 +490,7 @@ install_perform_install() {
       fi
     fi
 
-    if [[ $build_sources_library != "" && ( $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ) ]] ; then
+    if [[ $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ]] ; then
       if [[ ! -d ${work}libraries ]] ; then
         mkdir $verbose_common ${work}libraries
 
@@ -646,7 +503,7 @@ install_perform_install() {
         fi
       fi
 
-      if [[ $build_sources_library != "" && $enable_shared_libraries == "yes" && ! -d ${work}libraries/shared ]] ; then
+      if [[ $enable_shared_libraries == "yes" && -d ${path_build}${path_libraries}${path_shared} && ! -d ${work}libraries/shared ]] ; then
         mkdir $verbose_common ${work}libraries/shared
 
         if [[ $? -ne 0 ]] ; then
@@ -658,7 +515,7 @@ install_perform_install() {
         fi
       fi
 
-      if [[ $build_sources_library != "" && $enable_static_libraries == "yes" && ! -d ${work}libraries/static ]] ; then
+      if [[ $enable_static_libraries == "yes" && -d ${path_build}${path_libraries}${path_static} && ! -d ${work}libraries/static ]] ; then
         mkdir $verbose_common ${work}libraries/static
 
         if [[ $? -ne 0 ]] ; then
@@ -671,7 +528,7 @@ install_perform_install() {
       fi
     fi
 
-    if [[ $build_sources_headers != "" && $enable_includes == "yes" ]] ; then
+    if [[ $enable_includes == "yes" ]] ; then
       if [[ ! -d ${work}includes ]] ; then
         mkdir $verbose_common ${work}includes
 
@@ -697,102 +554,183 @@ install_perform_install() {
     fi
   fi
 
-  if [[ $failure == "" && $build_sources_headers != "" && $enable_includes == "yes" ]] ; then
-    if [[ $verbosity != "quiet" ]] ; then
+  if [[ $failure == "" && -d ${path_build}${path_includes} && $enable_includes == "yes" ]] ; then
+    for i in ${path_build}${path_includes}* ; do
+
+      file=$(echo $i | sed -e "s|^${path_build}${path_includes}||")
+
+      break
+    done
+
+    if [[ $file == "*" && ! -f "${path_build}${path_includes}*" ]] ; then
+      file=
+    fi
+
+    if [[ $file != "" ]] ; then
+      if [[ $verbosity != "quiet" ]] ; then
+        echo
+        echo -e "${c_highlight}Installing Includes to: ${c_reset}${c_notice}${destination_includes}${c_reset}${c_highlight}.${c_reset}"
+      fi
+
+      cp $verbose_common -R ${path_build}${path_includes}* $destination_includes
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to copy include files from ${c_notice}${path_build}${path_includes}${c_error} to ${c_notice}${destination_includes}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
+    fi
+  fi
+
+  if [[ $failure == "" && -d ${path_build}${path_libraries} && ( $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ) ]] ; then
+    if [[ -d ${path_build}${path_libraries}${path_static} && $enable_static_libraries == "yes" ]] ; then
+      for i in ${path_build}${path_libraries}${path_static}* ; do
+
+        file=$(echo $i | sed -e "s|^${path_build}${path_libraries}${path_static}||")
+
+        break
+      done
+
+      if [[ $file == "*" && ! -f "${path_build}${path_libraries}${path_static}*" ]] ; then
+        file=
+      fi
+
+      if [[ $file != "" ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo
+          echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_static}${c_reset}${c_highlight}.${c_reset}"
+        fi
+
+        cp $verbose_common -R ${path_build}${path_libraries}${path_static}* $destination_libraries_static
+
+        if [[ $? -ne 0 ]] ; then
+          if [[ $verbosity != "quiet" ]] ; then
+            echo -e "${c_error}ERROR: Failed to copy (${c_notice}static${c_error}) library files from ${c_notice}${path_build}${path_libraries}${path_static}${c_error} to ${c_notice}${destination_libraries_static}${c_error}.${c_reset}"
+          fi
+
+          failure=1
+        fi
+      fi
+    fi
+
+    if [[ $failure == "" && -d ${path_build}${path_libraries}${path_shared} && $enable_shared_libraries == "yes" ]] ; then
+      for i in ${path_build}${path_libraries}${path_shared}* ; do
+
+        file=$(echo $i | sed -e "s|^${path_build}${path_libraries}${path_shared}||")
+
+        break
+      done
+
+      if [[ $file == "*" && ! -f "${path_build}${path_libraries}${path_shared}*" ]] ; then
+        file=
+      fi
+
+      if [[ $file != "" ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo
+          echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_shared}${c_reset}${c_highlight}.${c_reset}"
+        fi
+
+        cp $verbose_common -R ${path_build}${path_libraries}${path_shared}* $destination_libraries_shared
+
+        if [[ $? -ne 0 ]] ; then
+          if [[ $verbosity != "quiet" ]] ; then
+            echo -e "${c_error}ERROR: Failed to copy (${c_notice}shared${c_error}) library files from ${c_notice}${path_build}${path_libraries}${path_shared}${c_error} to ${c_notice}${destination_libraries_shared}${c_error}.${c_reset}"
+          fi
+
+          failure=1
+        fi
+      fi
+    fi
+  fi
+
+  if [[ $failure == "" && -d ${path_build}${path_programs} && ( $enable_shared_programs == "yes" || $enable_static_programs == "yes" ) ]] ; then
+    if [[ -d ${path_build}${path_programs}${path_static} && $enable_static_programs == "yes" ]] ; then
+      for i in ${path_build}${path_programs}${path_static}* ; do
+
+        file=$(echo $i | sed -e "s|^${path_build}${path_programs}${path_static}||")
+
+        break
+      done
+
+      if [[ $file == "*" && ! -f "${path_build}${path_programs}${path_static}*" ]] ; then
+        file=
+      fi
+
+      if [[ $file != "" ]] ; then
+        if [[ $enable_static_programs == "yes" ]] ; then
+          if [[ $verbosity != "quiet" ]] ; then
+            echo
+            echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_static}${c_reset}${c_highlight}.${c_reset}"
+          fi
+        fi
+
+        cp $verbose_common -R ${path_build}${path_programs}${path_static}* $destination_programs_static
+
+        if [[ $? -ne 0 ]] ; then
+          if [[ $verbosity != "quiet" ]] ; then
+            echo -e "${c_error}ERROR: failed to copy (${c_notice}static${c_error}) program files from ${c_notice}${path_build}${path_programs}${path_static}${c_error} to ${c_notice}${destination_programs_static}${c_error}.${c_reset}"
+          fi
+
+          failure=1
+        fi
+      fi
+    fi
+
+    if [[ $failure == "" && -d ${path_build}${path_programs}${path_shared} && $enable_shared_programs == "yes" ]] ; then
+      for i in ${path_build}${path_programs}${path_shared}* ; do
+
+        file=$(echo $i | sed -e "s|^${path_build}${path_programs}${path_shared}||")
+
+        break
+      done
+
+      if [[ $file == "*" && ! -f "${path_build}${path_programs}${path_shared}*" ]] ; then
+        file=
+      fi
+
+      if [[ $file != "" ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo
+          echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_shared}${c_reset}${c_highlight}.${c_reset}"
+        fi
+
+        cp $verbose_common -R ${path_build}${path_programs}${path_shared}* $destination_programs_shared
+
+        if [[ $? -ne 0 ]] ; then
+          if [[ $verbosity != "quiet" ]] ; then
+            echo -e "${c_error}ERROR: failed to copy (${c_notice}shared${c_error}) program files from ${c_notice}${path_build}${path_programs}${path_shared}${c_error} to ${c_notice}${destination_programs_shared}${c_error}.${c_reset}"
+          fi
+
+          failure=1
+        fi
+      fi
+    fi
+  fi
+
+  if [[ $failure == "" && -d ${path_build}${path_settings} && $verbosity != "quiet" ]] ; then
+    for i in ${path_build}${path_settings}* ; do
+
+      file=$(echo $i | sed -e "s|^${path_build}${path_settings}||")
+
+      break
+    done
+
+    if [[ $file == "*" && ! -f "${path_build}${path_settings}*" ]] ; then
+      file=
+    fi
+
+    if [[ $file != "" ]] ; then
       echo
-      echo -e "${c_highlight}Installing Includes to: ${c_reset}${c_notice}${destination_includes}${c_reset}${c_highlight}.${c_reset}"
+      echo -e "${c_warning}Settings Files Detected, see: ${c_reset}${c_notice}${path_build}${path_settings}${c_reset}${c_warning}.${c_reset}"
     fi
-
-    cp $verbose_common -R $path_build${path_includes}* $destination_includes
-
-    if [[ $? -ne 0 ]] ; then
-      if [[ $verbosity != "quiet" ]] ; then
-        echo -e "${c_error}ERROR: Failed to copy include files from ${c_notice}${path_build}${path_includes}${c_error} to ${c_notice}${destination_includes}${c_error}.${c_reset}"
-      fi
-
-      failure=1
-    fi
-  fi
-
-  if [[ $failure == "" && $build_sources_library != "" && ( $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ) ]] ; then
-    if [[ $enable_static_libraries == "yes" ]] ; then
-      if [[ $verbosity != "quiet" ]] ; then
-        echo
-        echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_static}${c_reset}${c_highlight}.${c_reset}"
-      fi
-
-      cp $verbose_common -R ${path_build}${path_libraries}${path_static}* $destination_libraries_static
-
-      if [[ $? -ne 0 ]] ; then
-        if [[ $verbosity != "quiet" ]] ; then
-          echo -e "${c_error}ERROR: Failed to copy (${c_notice}static${c_error}) library files from ${c_notice}${path_build}${path_libraries}${path_static}${c_error} to ${c_notice}${destination_libraries_static}${c_error}.${c_reset}"
-        fi
-
-        failure=1
-      fi
-    fi
-
-    if [[ $failure == "" && $build_sources_library != "" && $enable_shared_libraries == "yes" ]] ; then
-      if [[ $verbosity != "quiet" ]] ; then
-        echo
-        echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_shared}${c_reset}${c_highlight}.${c_reset}"
-      fi
-
-      cp $verbose_common -R ${path_build}${path_libraries}${path_shared}* $destination_libraries_shared
-
-      if [[ $? -ne 0 ]] ; then
-        if [[ $verbosity != "quiet" ]] ; then
-          echo -e "${c_error}ERROR: Failed to copy (${c_notice}shared${c_error}) library files from ${c_notice}${path_build}${path_libraries}${path_shared}${c_error} to ${c_notice}${destination_libraries_shared}${c_error}.${c_reset}"
-        fi
-
-        failure=1
-      fi
-    fi
-  fi
-
-  if [[ $failure == "" && $build_sources_program != "" && ( $enable_shared_programs == "yes" || $enable_static_programs == "yes" ) ]] ; then
-    if [[ $enable_static_programs == "yes" ]] ; then
-      if [[ $verbosity != "quiet" ]] ; then
-        echo
-        echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_static}${c_reset}${c_highlight}.${c_reset}"
-      fi
-
-      cp $verbose_common -R ${path_build}${path_programs}${path_static}* $destination_programs_static
-
-      if [[ $? -ne 0 ]] ; then
-        if [[ $verbosity != "quiet" ]] ; then
-          echo -e "${c_error}ERROR: failed to copy (${c_notice}static${c_error}) program files from ${c_notice}${path_build}${path_programs}${path_static}${c_error} to ${c_notice}${destination_programs_static}${c_error}.${c_reset}"
-        fi
-
-        failure=1
-      fi
-    fi
-
-    if [[ $failure == "" && $build_sources_program != "" && $enable_shared_programs == "yes" ]] ; then
-      if [[ $verbosity != "quiet" ]] ; then
-        echo
-        echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_shared}${c_reset}${c_highlight}.${c_reset}"
-      fi
-
-      cp $verbose_common -R ${path_build}${path_programs}${path_shared}* $destination_programs_shared
-
-      if [[ $? -ne 0 ]] ; then
-        if [[ $verbosity != "quiet" ]] ; then
-          echo -e "${c_error}ERROR: failed to copy (${c_notice}shared${c_error}) program files from ${c_notice}${path_build}${path_programs}${path_shared}${c_error} to ${c_notice}${destination_programs_shared}${c_error}.${c_reset}"
-        fi
-
-        failure=1
-      fi
-    fi
-  fi
-
-  if [[ $failure == "" && $build_sources_setting != "" && $verbosity != "quiet" ]] ; then
-    echo
-    echo -e "${c_warning}Settings Files Detected, see: ${c_reset}${c_notice}${path_build}${path_settings}${c_reset}${c_warning}.${c_reset}"
   fi
 
   if [[ $failure != "" ]] ; then
     install_cleanup
+
     exit $failure
   fi
 }
@@ -802,8 +740,6 @@ install_cleanup() {
   unset install_main
   unset install_handle_colors
   unset install_help
-  unset install_id
-  unset install_load_settings
   unset install_perform_install
 
   unset install_cleanup
