@@ -49,6 +49,7 @@ install_main() {
   local verbose_common=
 
   local path_build=build/
+  local path_documentation=documentation/
   local path_programs=programs/
   local path_includes=includes/
   local path_libraries=libraries/
@@ -56,6 +57,7 @@ install_main() {
   local path_static=static/
   local path_shared=shared/
 
+  local destination_documentation=share/
   local destination_prefix=/usr/local/
   local destination_programs=bin/
   local destination_includes=include/
@@ -67,6 +69,7 @@ install_main() {
 
   local work=
 
+  local enable_documentation=
   local enable_shared=
   local enable_shared_programs=
   local enable_shared_libraries=
@@ -130,6 +133,10 @@ install_main() {
           grab_next=libdir
         elif [[ $p == "-w" || $p == "--work" ]] ; then
           grab_next=work
+        elif [[ $p == "--enable-doc" ]] ; then
+          enable_documentation="yes"
+        elif [[ $p == "--disable-doc" ]] ; then
+          enable_documentation="no"
         elif [[ $p == "--enable-shared" ]] ; then
           enable_shared="yes"
         elif [[ $p == "--disable-shared" ]] ; then
@@ -150,6 +157,8 @@ install_main() {
           enable_includes="yes"
         elif [[ $p == "--disable-includes" ]] ; then
           enable_includes="no"
+        elif [[ $p == "--documentation" ]] ; then
+          grab_next="destination_documentation"
         elif [[ $p == "--libraries-static" ]] ; then
           grab_next="destination_libraries_static"
         elif [[ $p == "--libraries-shared" ]] ; then
@@ -175,6 +184,8 @@ install_main() {
           destination_libraries=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "work" ]] ; then
           work=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
+        elif [[ $grab_next == "destination_documentation" ]] ; then
+          destination_documentation=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "destination_libraries_static" ]] ; then
           destination_libraries_static=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "destination_libraries_shared" ]] ; then
@@ -232,6 +243,10 @@ install_main() {
   fi
 
   if [[ $destination_prefix != "" ]] ; then
+    if [[ $(echo $destination_documentation | grep -o '^/') == "" ]] ; then
+      destination_documentation="$destination_prefix$destination_documentation"
+    fi
+
     if [[ $(echo $destination_programs | grep -o '^/') == "" ]] ; then
       destination_programs="$destination_prefix$destination_programs"
     fi
@@ -404,6 +419,8 @@ install_help() {
   echo -e " -${c_important}w${c_reset}, --${c_important}work${c_reset}        Install to this directory instead of system."
   echo
   echo -e "${c_highlight}Special Options:${c_reset}"
+  echo -e " --${c_important}enable-doc${c_reset}                Forcibly do install documentation files."
+  echo -e " --${c_important}disable-doc${c_reset}               Forcibly do not install documentation files."
   echo -e " --${c_important}enable-shared${c_reset}             Forcibly do install shared files."
   echo -e " --${c_important}disable-shared${c_reset}            Forcibly do not install shared files."
   echo -e " --${c_important}disable-shared-programs${c_reset}   Forcibly do not install shared programs."
@@ -414,6 +431,7 @@ install_help() {
   echo -e " --${c_important}disable-static-libraries${c_reset}  Forcibly do not install shared libraries."
   echo -e " --${c_important}enable-includes${c_reset}           Forcibly do not install include files."
   echo -e " --${c_important}disable-includes${c_reset}          Forcibly do not install include files."
+  echo -e " --${c_important}documentation${c_reset}             Custom destination for documentation files."
   echo -e " --${c_important}libraries-static${c_reset}          Custom destination for static libraries."
   echo -e " --${c_important}libraries-shared${c_reset}          Custom destination for shared libraries."
   echo -e " --${c_important}programs-static${c_reset}           Custom destination for static programs."
@@ -426,6 +444,10 @@ install_perform_install() {
   local i=
   local path=
   local failure=
+
+  if [[ $enable_documentation == "" ]] ; then
+    enable_documentation="yes"
+  fi
 
   if [[ $enable_shared == "" ]] ; then
     enable_shared="yes"
@@ -543,7 +565,8 @@ install_perform_install() {
     fi
 
     if [[ $failure == "" ]] ; then
-      destination_prefix=$work
+      destination_prefix=${work}
+      destination_documentation=${work}documentation/
       destination_programs=${work}programs/
       destination_programs_static=${destination_programs}static/
       destination_programs_shared=${destination_programs}shared/
@@ -572,7 +595,7 @@ install_perform_install() {
         echo -e "${c_highlight}Installing Includes to: ${c_reset}${c_notice}${destination_includes}${c_reset}${c_highlight}.${c_reset}"
       fi
 
-      cp $verbose_common -R ${path_build}${path_includes}* $destination_includes
+      cp $verbose_common -R ${path_build}${path_includes}* ${destination_includes}
 
       if [[ $? -ne 0 ]] ; then
         if [[ $verbosity != "quiet" ]] ; then
@@ -603,7 +626,7 @@ install_perform_install() {
           echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_static}${c_reset}${c_highlight}.${c_reset}"
         fi
 
-        cp $verbose_common -R ${path_build}${path_libraries}${path_static}* $destination_libraries_static
+        cp $verbose_common -R ${path_build}${path_libraries}${path_static}* ${destination_libraries_static}
 
         if [[ $? -ne 0 ]] ; then
           if [[ $verbosity != "quiet" ]] ; then
@@ -633,7 +656,7 @@ install_perform_install() {
           echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Libraries to: ${c_reset}${c_notice}${destination_libraries_shared}${c_reset}${c_highlight}.${c_reset}"
         fi
 
-        cp $verbose_common -R ${path_build}${path_libraries}${path_shared}* $destination_libraries_shared
+        cp $verbose_common -R ${path_build}${path_libraries}${path_shared}* ${destination_libraries_shared}
 
         if [[ $? -ne 0 ]] ; then
           if [[ $verbosity != "quiet" ]] ; then
@@ -659,15 +682,13 @@ install_perform_install() {
         file=
       fi
 
-      if [[ $file != "" ]] ; then
-        if [[ $enable_static_programs == "yes" ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo
-            echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_static}${c_reset}${c_highlight}.${c_reset}"
-          fi
+      if [[ $file != "" && $enable_static_programs == "yes" ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo
+          echo -e "${c_highlight}Installing (${c_notice}static${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_static}${c_reset}${c_highlight}.${c_reset}"
         fi
 
-        cp $verbose_common -R ${path_build}${path_programs}${path_static}* $destination_programs_static
+        cp $verbose_common -R ${path_build}${path_programs}${path_static}* ${destination_programs_static}
 
         if [[ $? -ne 0 ]] ; then
           if [[ $verbosity != "quiet" ]] ; then
@@ -697,7 +718,7 @@ install_perform_install() {
           echo -e "${c_highlight}Installing (${c_notice}shared${c_highlight}) Programs to: ${c_reset}${c_notice}${destination_programs_shared}${c_reset}${c_highlight}.${c_reset}"
         fi
 
-        cp $verbose_common -R ${path_build}${path_programs}${path_shared}* $destination_programs_shared
+        cp $verbose_common -R ${path_build}${path_programs}${path_shared}* ${destination_programs_shared}
 
         if [[ $? -ne 0 ]] ; then
           if [[ $verbosity != "quiet" ]] ; then
@@ -725,6 +746,36 @@ install_perform_install() {
     if [[ $file != "" ]] ; then
       echo
       echo -e "${c_warning}Settings Files Detected, see: ${c_reset}${c_notice}${path_build}${path_settings}${c_reset}${c_warning}.${c_reset}"
+    fi
+  fi
+
+  if [[ $failure == "" && -d ${path_build}${path_documentation} && $enable_documentation == "yes" ]] ; then
+    for i in ${path_build}${path_documentation}* ; do
+
+      file=$(echo $i | sed -e "s|^${path_build}${path_documentation}||")
+
+      break
+    done
+
+    if [[ $file == "*" && ! -f "${path_build}${path_documentation}*" ]] ; then
+      file=
+    fi
+
+    if [[ $file != "" ]] ; then
+      if [[ $verbosity != "quiet" ]] ; then
+        echo
+        echo -e "${c_highlight}Installing Documentation to: ${c_reset}${c_notice}${destination_documentation}${c_reset}${c_highlight}.${c_reset}"
+      fi
+
+      cp $verbose_common -R ${path_build}${path_documentation}* ${destination_documentation}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: failed to copy documentation files from ${c_notice}${path_build}${path_programs}${path_static}${c_error} to ${c_notice}${destination_documentation}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
     fi
   fi
 
