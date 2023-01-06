@@ -19,10 +19,10 @@ install_main() {
     emulate ksh
   fi
 
-  local public_name="Simple FLL Project Install Script"
+  local public_name="Simple Kevux Tools Install Script"
   local system_name=install
   local called_name=$(basename $0)
-  local version=0.7.0
+  local version=0.5.0
 
   local grab_next=
   local do_color=dark
