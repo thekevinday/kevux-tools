@@ -41,38 +41,36 @@ extern "C" {
     if (!(setting->flag & kt_remove_flag_simulate_e)) return;
 
     if (F_status_is_error(setting->status)) {
-      fl_print_format("  file_access_failure %un%r", main->output.to.stream, (f_number_unsigned_t) F_status_set_fine(setting->status), f_string_eol_s);
+      fl_print_format("  file_access_failure %ui%r", main->output.to.stream, F_status_set_fine(setting->status), f_string_eol_s);
 
       return;
     }
 
-    if (setting->status == F_true) {
-      f_status_t status = f_file_is(path, F_file_type_link_d, F_false);
+    f_status_t status = f_file_is(path, F_file_type_link_d, F_false);
+
+    if (F_status_is_error(status)) {
+      fl_print_format("  file_read_failure %ui%r", main->output.to.stream, F_status_set_fine(status), f_string_eol_s);
+
+      return;
+    }
+
+    if (status == F_true) {
+      setting->buffer.used = 0;
+
+      status = f_file_link_read(path, F_false, &setting->buffer);
 
       if (F_status_is_error(status)) {
-        fl_print_format("  file_read_failure %un%r", main->output.to.stream, (f_number_unsigned_t) F_status_set_fine(status), f_string_eol_s);
+        fl_print_format("  link_read_failure %ui%r", main->output.to.stream, F_status_set_fine(status), f_string_eol_s);
 
         return;
       }
 
-      if (status == F_true) {
-        setting->buffer.used = 0;
+      flockfile(main->output.to.stream);
 
-        status = f_file_link_read(path, F_false, &setting->buffer);
+      fl_print_format("  follow %Q%r", main->output.to.stream, (setting->flag & kt_remove_flag_follow_e) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+      fl_print_format("  to '%Q'%r", main->output.to.stream, setting->buffer, f_string_eol_s);
 
-        if (F_status_is_error(status)) {
-          fl_print_format("  link_read_failure %un%r", main->output.to.stream, (f_number_unsigned_t) F_status_set_fine(status), f_string_eol_s);
-
-          return;
-        }
-
-        flockfile(main->output.to.stream);
-
-        fl_print_format("  follow %Q%r", main->output.to.stream, (setting->flag & kt_remove_flag_follow_e) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
-        fl_print_format("  to '%Q'%r", main->output.to.stream, setting->buffer, f_string_eol_s);
-
-        funlockfile(main->output.to.stream);
-      }
+      funlockfile(main->output.to.stream);
     }
 
     fll_print_format("  exists %Q%r", main->output.to.stream, setting->status == F_true ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
@@ -152,7 +150,7 @@ extern "C" {
     if (setting->flag & kt_remove_flag_mode_e) {
       const mode_t mode = statistics.st_mode & F_file_mode_all_d;
 
-      fll_print_format("  mode %@un%r", main->output.to.stream, (f_number_unsigned_t) mode, f_string_eol_s);
+      fll_print_format("  mode %@03un%r", main->output.to.stream, (f_number_unsigned_t) mode, f_string_eol_s);
 
       for (i = 0; i < setting->modes.used; ++i) {
 
@@ -188,7 +186,7 @@ extern "C" {
         for (uint8_t j = 0; j < 4; ++j) {
 
           if (setting->modes.array[i].type == types[j]) {
-            fll_print_format("  mode_matched %Q %@un%r", main->output.to.stream, strings[j], (f_number_unsigned_t) setting->modes.array[i].mode, f_string_eol_s);
+            fll_print_format("  mode_matched %Q %@03un%r", main->output.to.stream, strings[j], (f_number_unsigned_t) setting->modes.array[i].mode, f_string_eol_s);
 
             break;
           }
