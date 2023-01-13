@@ -38,6 +38,12 @@ extern "C" {
  *     F_none on success.
  *     F_data_not on success, but buffer is empty and there is no data to process.
  *
+ *     F_buffer (with error bit) if the buffer is invalid.
+ *     F_parameter (with error bit) if a parameter is invalid.
+ *     F_prohibited (with error bit) if the system does not permit accessing the system clock.
+ *     F_failure (with error bit) for any other failure.
+ *
+ *     @todo review codes below.
  *     F_number_too_large (with error bit) if the given ID is too large.
  *     F_number_too_small (with error bit) if the given ID is too small.
  *     F_known_not (with error bit) if the given string is not of a known format
@@ -48,23 +54,17 @@ extern "C" {
  *     Errors (with error bit) from: kt_remove_get_date_relative().
  * @param buffer
  *   A string containing group name or ID.
- * @param type
- *   (optional) The type of date that is detected from the buffer.
- *   This is generally only altered on success.
- *
- *   Set to NULL to disable.
- *
- * @return
- *   The timestamp structure.
+ * @param date
+ *   The converted date.
  *
  * @see fl_conversion_dynamic_partial_to_unsigned_detect()
  * @see fl_string_dynamic_partial_rip_nulless()
  *
  * @see kt_remove_get_date_relative()
  */
-#ifndef _di_kt_remove_get_date_
-  extern struct timespec kt_remove_get_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, uint8_t * const type);
-#endif // _di_kt_remove_get_date_
+#ifndef _di_kt_remove_convert_date_
+  extern void kt_remove_convert_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, kt_remove_date_t * const date);
+#endif // _di_kt_remove_convert_date_
 
 /**
  * Convert the string from a string representation of date into the numeric representation of that date in seconds since epoch.
@@ -83,15 +83,18 @@ extern "C" {
  * @param setting
  *   The main program settings.
  *
- *   This does not alter setting.status.
- * @param type
- *   The code representing the relative string.
- *   Use appropriate enumeration type code, such as kt_remove_flag_date_now_e.
+ *   This alters setting.status:
+ *     F_none on success.
+ *     F_data_not on success, but buffer is empty or there is no data to process.
  *
- * @return
- *   The timestamp structure.
+ *     F_buffer (with error bit) if the buffer is invalid.
+ *     F_parameter (with error bit) if a parameter is invalid.
+ *     F_prohibited (with error bit) if the system does not permit accessing the system clock.
+ *     F_failure (with error bit) for any other failure.
+ * @param date
+ *   The converted date.
  *
- * @see time()
+ * @see clock_gettime()
  *
  * @see f_utf_is_digit()
  * @see f_utf_is_whitespace()
@@ -99,10 +102,9 @@ extern "C" {
  *
  * @see kt_remove_get_date_relative()
  */
-#ifndef _di_kt_remove_get_date_relative_
-  extern struct timespec kt_remove_get_date_relative(kt_remove_setting_t * const setting, const uint8_t type);
-#endif // _di_kt_remove_get_date_relative_
-
+#ifndef _di_kt_remove_convert_date_relative_
+  extern void kt_remove_convert_date_relative(kt_remove_setting_t * const setting, kt_remove_date_t * const date);
+#endif // _di_kt_remove_convert_date_relative_
 
 /**
  * Convert the string from a string representation of an ID or a group name into the numeric representation of that ID or group name.
@@ -174,6 +176,33 @@ extern "C" {
 #ifndef _di_kt_remove_get_mode_
   extern mode_t kt_remove_get_mode(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer);
 #endif // _di_kt_remove_get_mode_
+
+/**
+ * Convert the given date to the local time zone.
+ *
+ * This does not check the flags to see if UTC is in used.
+ * The caller must assure this is appropriate.
+ *
+ * @param setting
+ *   The main program settings.
+ *
+ *   This alters setting.status:
+ *     F_none on success.
+ *
+ *     F_number_overflow (with error bit) if the date after applying the timezone is too large.
+ *     F_number_underflow (with error bit) if the date after applying the timezone is too small.
+ *     F_parameter (with error bit) if a parameter is invalid.
+ * @param year
+ *   The year value.
+ *   This is commonly set to UNIX Epoch.
+ *   This is only updated if the timezone would result in a year change.
+ * @param seconds
+ *   The seconds since the start of the year.
+ *   This is updated based on the global timezone variable.
+ */
+#ifndef _di_kt_remove_convert_timezone_
+  extern void kt_remove_convert_timezone(kt_remove_setting_t * const setting, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds);
+#endif // _di_kt_remove_convert_timezone_
 
 #ifdef __cplusplus
 } // extern "C"

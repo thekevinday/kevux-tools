@@ -4,17 +4,13 @@
 extern "C" {
 #endif
 
-#ifndef _di_kt_remove_get_date_
-  struct timespec kt_remove_get_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, uint8_t * const type) {
+#ifndef _di_kt_remove_convert_date_
+  void kt_remove_convert_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, kt_remove_date_t * const date) {
 
-    if (!setting || !buffer.used) {
-      struct timespec result;
-
-      memset(&result, 0, sizeof(struct timespec));
-
+    if (!setting || !buffer.used || !date) {
       if (setting) setting->status = F_data_not;
 
-      return result;
+      return;
     }
 
     {
@@ -35,27 +31,22 @@ extern "C" {
       for (uint8_t i = 0; i < 4; ++i) {
 
         if (fl_string_dynamic_compare(buffer, strings[i]) == F_equal_to) {
-          setting->status = F_none;
+          date->type = enumerations[i];
 
-          if (type) {
-            *type = enumerations[i];
+          kt_remove_convert_date_relative(setting, date);
+
+          if (F_status_is_error(setting->status)) {
+            kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_date_relative));
           }
 
-          return kt_remove_get_date_relative(setting, enumerations[i]);
+          return;
         }
       } // for
     }
 
-    // 0x1 = single colon, 0x2 = double colon, 0x4 = matched first, 0x8 = matched second, 0x10 = matched negative on first, 0x20 = matched negative on second, 0x40 = matched positive on first, 0x80 = matched positive on second.
     uint8_t matches = 0;
-    uint64_t digit_first = 0;
-    uint64_t digit_second = 0;
     f_string_range_t range_first = f_string_range_t_initialize;
     f_string_range_t range_second = f_string_range_t_initialize;
-
-    struct timespec result;
-
-    memset(&result, 0, sizeof(struct timespec));
 
     {
       uint8_t width = 0;
@@ -64,6 +55,8 @@ extern "C" {
 
       for (; range.start <= range.stop; range.start += width, width_max -= width) {
 
+        if (kt_remove_signal_check(main)) return;
+
         // Skip past NULL characters.
         if (!buffer.string[range.start]) {
           width = 1;
@@ -71,15 +64,15 @@ extern "C" {
           continue;
         }
 
-        width = macro_f_utf_byte_width_is(buffer.string[range.start]);
+        width = macro_f_utf_byte_width(buffer.string[range.start]);
 
-        if (matches & 0x8) {
+        if (matches & kt_remove_flag_convert_match_second_e) {
           setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
 
           if (F_status_is_error(setting->status)) {
             kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
 
-            return result;
+            return;
           }
 
           if (setting->status == F_true) {
@@ -94,34 +87,19 @@ extern "C" {
           break;
         }
 
-        // @todo review this, this is 0x1, 0x2, and 0x20 (why match second negative?).
-        if (matches & 0x23) {
+        if (matches & kt_remove_flag_convert_colon_e) {
 
-          // Search until a colon, a digit, or a minus is found.
+          // Search until a colon or a digit is found.
           if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
 
             // A third colon is not valid.
-            if (matches & 0x2) {
+            if (matches & kt_remove_flag_convert_colon_double_e) {
               matches = 0;
 
               break;
             }
 
-            matches |= 0x2;
-
-            continue;
-          }
-
-          if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_minus_s, width) == F_equal_to) {
-
-            // An out of place minus sign is not valid.
-            if (matches & 0x20) {
-              matches = 0;
-
-              break;
-            }
-
-            matches |= 0x20;
+            matches |= kt_remove_flag_convert_colon_double_e;
 
             continue;
           }
@@ -131,87 +109,79 @@ extern "C" {
           if (F_status_is_error(setting->status)) {
             kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
 
-            return result;
+            return;
           }
 
           if (setting->status == F_true) {
-            matches |= 0x8;
+            matches |= kt_remove_flag_convert_match_second_e;
             range_second.start = range.start;
+            range_second.stop = range.start;
           }
-        }
-        else if (matches & 0x4) {
 
-          // Only a colon is expected.
+          continue;
+        }
+
+        if (matches & kt_remove_flag_convert_match_first_e) {
+
           if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
-            matches |= 0x1;
+            matches |= kt_remove_flag_convert_colon_single_e;
+
+            continue;
+          }
+
+          setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+
+          if (F_status_is_error(setting->status)) {
+            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+
+            return;
+          }
+
+          if (setting->status == F_true) {
+            range_first.stop = range.start;
           }
           else {
             matches = 0;
 
             break;
           }
+
+          continue;
+        }
+
+        setting->status = f_utf_is_whitespace(buffer.string + range.start, width_max, F_false);
+
+        if (F_status_is_error(setting->status)) {
+          kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_whitespace));
+
+          return;
+        }
+
+        if (setting->status == F_true) continue;
+
+        if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
+          matches |= kt_remove_flag_convert_colon_single_e;
+
+          continue;
+        }
+
+        setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+
+        if (F_status_is_error(setting->status)) {
+          kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+
+          return;
+        }
+
+        if (setting->status == F_true) {
+          matches |= kt_remove_flag_convert_match_first_e;
+          range_first.start = range.start;
+          range_first.stop = range.start;
         }
         else {
-          setting->status = f_utf_is_whitespace(buffer.string + range.start, width_max, F_false);
+          matches = 0;
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_whitespace));
-
-            return result;
-          }
-
-          if (setting->status == F_true) continue;
-
-          if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
-            matches |= 0x1;
-
-            continue;
-          }
-
-          if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_minus_s, width) == F_equal_to) {
-
-            // An out of place minus sign is not valid.
-            if (matches & 0x50) {
-              matches = 0;
-
-              break;
-            }
-
-            matches |= 0x10;
-
-            continue;
-          }
-
-          setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
-
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
-
-            return result;
-          }
-
-          if (setting->status == F_true) {
-            if (matches & 0x4) {
-              range_first.stop = range.start;
-            }
-            else {
-              matches |= 0x4;
-              range_first.start = range.start;
-
-              // A digit is found before a leading minus, so assume this is a positive number.
-              if (!(matches & 0x10)) {
-                matches |= 0x40;
-              }
-            }
-          }
-          else if (!(matches & 0x50) && fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_minus_s, width) == F_equal_to) {
-            matches |= 0x10;
-          }
-          else {
-            matches = 0;
-
-            break;
-          }
+          break;
         }
       } // for
 
@@ -219,176 +189,264 @@ extern "C" {
     }
 
     // If the first and possibly the second digit matches.
-    if (matches & 0xc) {
+    if (matches & kt_remove_flag_convert_match_e) {
       fl_conversion_data_t conversion_data = fl_conversion_data_base_10_c;
 
-      // Process the first character.
-      if (matches & 0x4) {
-        if (matches & 0x10) {
-          conversion_data.flag |= FL_conversion_data_flag_negative_d;
-        }
+      date->start_year = 0;
+      date->start_second = 0;
+      date->start_nanosecond = 0;
+      date->stop_second = 0;
+      date->stop_nanosecond = 0;
+      date->stop_year = 0;
+      date->type = 0;
 
-        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_first, &digit_first);
+      // Process the first character.
+      if (matches & kt_remove_flag_convert_match_first_e) {
+        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_first, &date->start_year);
 
         if (F_status_is_error(setting->status)) {
           kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
 
-          return result;
+          return;
         }
-
-        // Remove the negative bit for next use.
-        conversion_data.flag -= conversion_data.flag & FL_conversion_data_flag_negative_d;
       }
       else {
-        if (matches & 0x2) {
+        if (matches & kt_remove_flag_convert_colon_double_e) {
 
           // The Unix Epoch is used for double colons when no year is specified.
-          digit_first = kt_remove_time_year_unix_epoch_d;
-
-          if (type) {
-            *type = kt_remove_flag_date_time_epoch_e;
-          }
+          date->start_year = kt_remove_time_year_unix_epoch_d;
+          date->type |= kt_remove_flag_date_time_epoch_e;
         }
         else {
+          struct timespec now;
+          int result = 0;
+
+          memset(&now, 0, sizeof(struct timespec));
 
           // The current year is used for single colon when no year is specified.
-          digit_first = (time(0) / kt_remove_time_seconds_in_year_d) + kt_remove_time_year_unix_epoch_d;
+          {
+            result = clock_gettime(CLOCK_REALTIME, &now);
 
-          if (type) {
-            *type = kt_remove_flag_date_time_e;
+            if (!result) {
+              if (result == EFAULT) {
+                 setting->status = F_status_set_error(F_buffer);
+              }
+              else if (result == EINVAL) {
+                setting->status = F_status_set_error(F_parameter);
+              }
+              else if (result == EPERM) {
+                setting->status = F_status_set_error(F_prohibited);
+              }
+              else {
+                setting->status = F_status_set_error(F_failure);
+              }
+
+              return;
+            }
           }
+
+          date->start_year = now.tv_sec / kt_remove_time_seconds_in_year_d;
+          date->type |= kt_remove_flag_date_time_e;
         }
       }
 
       // Process the second character.
-      if (matches & 0x8) {
-        if (matches & 0x20) {
-          conversion_data.flag |= FL_conversion_data_flag_negative_d;
-        }
-
-        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_second, &digit_second);
+      if (matches & kt_remove_flag_convert_match_second_e) {
+        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_second, &date->start_second);
 
         if (F_status_is_error(setting->status)) {
           kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
 
-          return result;
+          return;
         }
 
-        if (matches & 0x2) {
-          result.tv_sec = setting->flag & kt_remove_flag_utc_e ? digit_second : digit_second - timezone;
+        if (matches & kt_remove_flag_convert_colon_double_e) {
+          if (!(setting->flag & kt_remove_flag_utc_e)) {
+            kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
 
-          // This is a double colon, so it is in UnixTime format.
-          if (digit_first > kt_remove_time_year_unix_epoch_d) {
-            result.tv_sec += (digit_first - kt_remove_time_year_unix_epoch_d) * kt_remove_time_seconds_in_year_d;
-          }
-          else if (digit_first < kt_remove_time_year_unix_epoch_d) {
-            result.tv_sec -= (kt_remove_time_year_unix_epoch_d - digit_first) * kt_remove_time_seconds_in_year_d;
+            if (F_status_is_error(setting->status)) {
+              kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
+
+              return;
+            }
           }
         }
         else {
-          result.tv_sec = (digit_second / kt_remove_time_seconds_in_nanosecond_d);
-          result.tv_nsec = digit_second % kt_remove_time_seconds_in_nanosecond_d;
+          date->start_nanosecond = date->start_second % kt_remove_time_seconds_in_nanosecond_d;
+          date->start_second = (date->start_second / kt_remove_time_seconds_in_nanosecond_d);
 
-          if (setting->flag & kt_remove_flag_utc_e) {
-            result.tv_sec -= timezone;
-          }
+          if (!(setting->flag & kt_remove_flag_utc_e)) {
+            kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
 
-          const uint64_t year_current = (time(0) / kt_remove_time_seconds_in_year_d) + kt_remove_time_year_unix_epoch_d;
+            if (F_status_is_error(setting->status)) {
+              kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
 
-          // This is a single colon, so it is in Time format.
-          if (digit_first > kt_remove_time_year_unix_epoch_d) {
-            result.tv_sec += (digit_first - kt_remove_time_year_unix_epoch_d) * kt_remove_time_seconds_in_year_d;
-          }
-          else if (digit_first < kt_remove_time_year_unix_epoch_d) {
-            result.tv_sec -= (kt_remove_time_year_unix_epoch_d - digit_first) * kt_remove_time_seconds_in_year_d;
+              return;
+            }
           }
         }
       }
       else {
 
         // A colon after the end without a digit following it is not valid (such as '1234:' or '1234::').
-        if (matches & 0x3) {
+        if (matches & kt_remove_flag_convert_colon_e) {
           matches = 0;
         }
         else {
 
           // This is a UNIX timestamp by itself (has no colons).
-          result.tv_sec = setting->flag & kt_remove_flag_utc_e ? digit_first : digit_first - timezone;
+          date->start_year = kt_remove_time_year_unix_epoch_d;
+          date->type = kt_remove_flag_date_unix_e;
+
+          setting->status = fl_conversion_dynamic_to_unsigned_detect(conversion_data, buffer, &date->start_second);
+
+          if (F_status_is_error(setting->status)) {
+            kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_to_unsigned_detect));
+
+            return;
+          }
+
+          kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+
+          if (F_status_is_error(setting->status)) {
+            kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
+
+            return;
+          }
         }
       }
     }
-    else {
-      // @todo check to see if this is just a digit, and if so then it is UNIX Epoch time (kt_remove_flag_date_unix_e).
-    }
 
     if (!matches) {
-      // @todo attempt to process using the string date time conversion libc functions or return an error.
-      // @todo formats:
-      // - YYYY/MM/DD hh:ii:ss a +0000
-      // - YYYY/MM/DD HH:ii:ss +0000
-      // - YYYY/MM/DD hh:ii a +0000
-      // - YYYY/MM/DD HH:ii +0000
-      // - YYYY/MM/DD hh a +0000
-      // - YYYY/MM/DD HH +0000
-      // - YYYY/MM/DD hh:ii:ss a
-      // - YYYY/MM/DD HH:ii:ss
-      // - YYYY/MM/DD hh:ii a
-      // - YYYY/MM/DD HH:ii
-      // - YYYY/MM/DD hh a
-      // - YYYY/MM/DD HH
-      // - YYYY/MM/DD
-      // - YYYY/MM
-      // - YYYY/
-      // (Note how the year by itselfs still has a trailing '/'. this is done to ensure it is not confused with the Unix timestamp.
+      const f_string_t formats[] = {
+        kt_remove_date_format_00_s.string,
+        kt_remove_date_format_01_s.string,
+        kt_remove_date_format_02_s.string,
+        kt_remove_date_format_03_s.string,
+        kt_remove_date_format_04_s.string,
+        kt_remove_date_format_05_s.string,
+        kt_remove_date_format_06_s.string,
+        kt_remove_date_format_07_s.string,
+        kt_remove_date_format_08_s.string,
+        kt_remove_date_format_09_s.string,
+        kt_remove_date_format_10_s.string,
+        kt_remove_date_format_11_s.string,
+        kt_remove_date_format_12_s.string,
+        kt_remove_date_format_13_s.string,
+        kt_remove_date_format_14_s.string,
+      };
 
-      //if (type) {
-      //  *type = kt_remove_flag_date_string_e;
-      //}
+      struct tm time;
+
+      for (f_array_length_t i = 0; i < 15; ++i) {
+
+        if (kt_remove_signal_check(main)) return;
+
+        memset(&time, 0, sizeof(struct tm));
+
+        if (strptime(buffer.string, formats[i], &time) != 0) {
+          date->start_year = kt_remove_time_year_unix_epoch_d;
+          date->start_nanosecond = 0;
+          date->stop_second = 0;
+          date->stop_nanosecond = 0;
+          date->stop_year = 0;
+          date->type = kt_remove_flag_date_string_e;
+
+          date->start_second = time.tm_sec;
+          date->start_second += time.tm_min * kt_remove_time_seconds_in_minute_d;
+          date->start_second += time.tm_hour * kt_remove_time_seconds_in_hour_d;
+          date->start_second += time.tm_yday * kt_remove_time_seconds_in_day_d;
+          date->start_nanosecond = 0;
+
+          // @todo investigate whether or not tm_isdst needs to be taken into consideration.
+          matches = 1;
+
+          break;
+        }
+      } // for
     }
 
     setting->status = matches ? F_none : F_status_set_error(F_known_not);
-
-    return result;
   }
-#endif // _di_kt_remove_get_date_
+#endif // _di_kt_remove_convert_date_
 
-#ifndef _di_kt_remove_get_date_relative_
-  struct timespec kt_remove_get_date_relative(kt_remove_setting_t * const setting, const uint8_t type) {
+#ifndef _di_kt_remove_convert_date_relative_
+  void kt_remove_convert_date_relative(kt_remove_setting_t * const setting, kt_remove_date_t * const date) {
 
-    struct timespec result;
+    if (!setting || !date) {
+      if (setting) setting->status = F_status_set_error(F_parameter);
 
-    memset(&result, 0, sizeof(struct timespec));
+      return;
+    }
 
-    if (!setting) return result;
+    struct timespec now;
 
-    const time_t since_epoch = time(0);
+    memset(&now, 0, sizeof(struct timespec));
 
-    if (type == kt_remove_flag_date_now_e) {
-      result.tv_sec = since_epoch;
+    {
+      const int result = clock_gettime(CLOCK_REALTIME, &now);
 
-      if (setting->flag & kt_remove_flag_utc_e) {
-        result.tv_sec -= timezone;
+      if (result) {
+        if (errno == EFAULT) {
+           setting->status = F_status_set_error(F_buffer);
+        }
+        else if (errno == EINVAL) {
+          setting->status = F_status_set_error(F_parameter);
+        }
+        else if (errno == EPERM) {
+          setting->status = F_status_set_error(F_prohibited);
+        }
+        else {
+          setting->status = F_status_set_error(F_failure);
+        }
+
+        return;
+      }
+    }
+
+    date->start_year = kt_remove_time_year_unix_epoch_d;
+    date->start_second = now.tv_sec;
+    date->start_nanosecond = 0;
+    date->stop_year = kt_remove_time_year_unix_epoch_d;
+    date->stop_second = 0;
+    date->stop_nanosecond = 0;
+
+    if (date->type == kt_remove_flag_date_now_e) {
+      date->start_nanosecond = now.tv_nsec;
+
+      if (!(setting->flag & kt_remove_flag_utc_e)) {
+        kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+        if (F_status_is_error(setting->status)) return;
       }
 
-      return result;
+      setting->status = F_none;
+
+      return;
     }
 
     // Determine start of day.
-    const time_t today = since_epoch - ((setting->flag & kt_remove_flag_utc_e ? since_epoch : since_epoch - timezone) % kt_remove_time_seconds_in_day_d);
-
-    if (type == kt_remove_flag_date_today_e) {
-      result.tv_sec = today;
-    }
-    else if (type == kt_remove_flag_date_tomorrow_e) {
-      result.tv_sec = today + kt_remove_time_seconds_in_day_d;
-    }
-    else {
-      result.tv_sec = today - kt_remove_time_seconds_in_day_d;
+    if (!(setting->flag & kt_remove_flag_utc_e)) {
+      kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+      if (F_status_is_error(setting->status)) return;
     }
 
-    return result;
+    date->start_second -= date->start_second % kt_remove_time_seconds_in_day_d;
+
+    if (date->type == kt_remove_flag_date_today_e) {
+      date->stop_second = date->start_second + kt_remove_time_seconds_in_day_d; // @fixme, check to see if this would overflow and if so increment year.
+    }
+    else if (date->type == kt_remove_flag_date_tomorrow_e) {
+      date->start_second += kt_remove_time_seconds_in_day_d;
+      date->stop_second = date->start_second + kt_remove_time_seconds_in_day_d; // @fixme, check to see if this would overflow and if so increment year.
+    }
+    else if (date->type == kt_remove_flag_date_yesterday_e) {
+      date->start_second -= kt_remove_time_seconds_in_day_d;
+      date->stop_second = date->start_second;
+    }
+
+    setting->status = F_none;
   }
-#endif // _di_kt_remove_get_date_relative_
+#endif // _di_kt_remove_convert_date_relative_
 
 #ifndef _di_kt_remove_get_id_group_
   uint32_t kt_remove_get_id_group(kt_remove_setting_t * const setting, const f_string_static_t buffer) {
@@ -515,6 +573,52 @@ extern "C" {
     return mode;
   }
 #endif // _di_kt_remove_get_mode_
+
+#ifndef _di_kt_remove_convert_timezone_
+  void kt_remove_convert_timezone(kt_remove_setting_t * const setting, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds) {
+
+    if (!setting || !year || !seconds) {
+      if (setting) setting->status = F_status_set_error(F_parameter);
+
+      return;
+    }
+
+    if (timezone < 0) {
+      if (*seconds > kt_remove_time_seconds_in_year_d + timezone) {
+        if (*year < F_number_t_size_max_unsigned_d) {
+          ++(*year);
+          *seconds -= kt_remove_time_seconds_in_year_d + timezone;
+        }
+        else {
+          setting->status = F_status_set_error(F_number_overflow);
+
+          return;
+        }
+      }
+      else {
+        *seconds -= timezone;
+      }
+    }
+    else {
+      if (*seconds < timezone) {
+        if (*year) {
+          --(*year);
+          *seconds = kt_remove_time_seconds_in_year_d - (timezone - *seconds);
+        }
+        else {
+          setting->status = F_status_set_error(F_number_underflow);
+
+          return;
+        }
+      }
+      else {
+        *seconds -= timezone;
+      }
+    }
+
+    setting->status = F_none;
+  }
+#endif // _di_kt_remove_convert_timezone_
 
 #ifdef __cplusplus
 } // extern "C"

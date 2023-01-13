@@ -124,8 +124,8 @@ extern "C" {
 
     f_print_dynamic_raw(f_string_eol_s, print.to.stream);
 
-    fll_program_print_help_option_long(print.to, context, kt_remove_long_local_s, f_console_symbol_long_enable_s, "Designate dates are in local time.");
-    fll_program_print_help_option_long(print.to, context, kt_remove_long_utc_s, f_console_symbol_long_enable_s, "  Designate dates are in UTC.");
+    fll_program_print_help_option_long(print.to, context, kt_remove_long_local_s, f_console_symbol_long_enable_s, "Designate dates are in local time, unless time zone is specified.");
+    fll_program_print_help_option_long(print.to, context, kt_remove_long_utc_s, f_console_symbol_long_enable_s, "  Designate dates are in UTC, unless time zone is specified.");
 
     fll_program_print_help_usage(print.to, context, kt_remove_program_name_s, kt_remove_program_help_parameters_s);
 
@@ -213,7 +213,22 @@ extern "C" {
     fl_print_format("'%[1672639985%]'.%r", print.to.stream, context.set.notable, context.set.notable, f_string_eol_s);
     fl_print_format("  - '%[%r%]':  Use the previous day.%r%r", print.to.stream, context.set.notable, kt_remove_yesterday_s, context.set.notable, f_string_eol_s, f_string_eol_s);
 
-    // @todo add the additional date string formats once implemented.
+    fl_print_format("  Valid formats for the date related parameters must be any of the following:%r", print.to.stream, f_string_eol_s);
+    fl_print_format("  - '%[%r%]': A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_00_s, context.set.notable, context.set.notable, kt_remove_date_format_example_00_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':    A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_01_s, context.set.notable, context.set.notable, kt_remove_date_format_example_01_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':    A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_02_s, context.set.notable, context.set.notable, kt_remove_date_format_example_02_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':       A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_03_s, context.set.notable, context.set.notable, kt_remove_date_format_example_03_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':       A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_04_s, context.set.notable, context.set.notable, kt_remove_date_format_example_04_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':          A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_05_s, context.set.notable, context.set.notable, kt_remove_date_format_example_05_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':    A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_06_s, context.set.notable, context.set.notable, kt_remove_date_format_example_06_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':       A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_07_s, context.set.notable, context.set.notable, kt_remove_date_format_example_07_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':       A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_08_s, context.set.notable, context.set.notable, kt_remove_date_format_example_08_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':          A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_09_s, context.set.notable, context.set.notable, kt_remove_date_format_example_09_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':          A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_10_s, context.set.notable, context.set.notable, kt_remove_date_format_example_10_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':             A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_11_s, context.set.notable, context.set.notable, kt_remove_date_format_example_11_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':                A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_12_s, context.set.notable, context.set.notable, kt_remove_date_format_example_12_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':                   A date like '%[%r%]'.%r", print.to.stream, context.set.notable, kt_remove_date_format_13_s, context.set.notable, context.set.notable, kt_remove_date_format_example_13_s, context.set.notable, f_string_eol_s);
+    fl_print_format("  - '%[%r%]':                     A date like '%[%r%]'.%r%r", print.to.stream, context.set.notable, kt_remove_date_format_14_s, context.set.notable, context.set.notable, kt_remove_date_format_example_14_s, context.set.notable, f_string_eol_s, f_string_eol_s);
 
     fflush(print.to.stream);
     funlockfile(print.to.stream);

@@ -22,12 +22,31 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
   fll_program_standard_setup(&data.signal);
 
   {
-    const f_console_arguments_t arguments = macro_f_console_arguments_t_initialize(argc, argv, envp);
+    f_thread_id_t id_signal;
+    kt_remove_arguments_t signal_arguments = macro_kt_remove_arguments_t_initialize(&data, &setting);
 
-    kt_remove_setting_load(arguments, &data, &setting);
+    memset(&id_signal, 0, sizeof(f_thread_id_t));
+
+    setting.status = f_thread_create(0, &id_signal, &kt_remove_thread_signal, (void *) &signal_arguments);
+
+    if (F_status_is_error(setting.status)) {
+      kt_remove_print_error(&setting, data.error, macro_kt_remove_f(f_thread_create));
+    }
+    else {
+      {
+        const f_console_arguments_t arguments = macro_f_console_arguments_t_initialize(argc, argv, envp);
+
+        kt_remove_setting_load(arguments, &data, &setting);
+      }
+
+      if (!kt_remove_signal_check(&data)) {
+        kt_remove_main(&data, &setting);
+      }
+
+      f_thread_cancel(id_signal);
+      f_thread_join(id_signal, 0);
+    }
   }
-
-  kt_remove_main(&data, &setting);
 
   kt_remove_setting_unload(&data, &setting);
 

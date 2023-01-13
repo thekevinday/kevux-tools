@@ -48,7 +48,8 @@ extern "C" {
 
     f_status_t status = f_file_is(path, F_file_type_link_d, F_false);
 
-    if (F_status_is_error(status)) {
+
+    if (F_status_is_error(status) && F_status_set_fine(status) != F_file_found_not) {
       fl_print_format("  file_read_failure %ui%r", main->output.to.stream, F_status_set_fine(status), f_string_eol_s);
 
       return;
@@ -213,21 +214,130 @@ extern "C" {
         &kt_remove_long_updated_s,
       };
 
-      f_string_static_t name_type = f_string_empty_s;
       uint8_t p = 0;
       f_status_t result = F_none;
+      f_string_static_t name_type = f_string_empty_s;
+      f_number_unsigned_t match_year = 0;
+      f_number_unsigned_t match_second = 0;
+      f_number_unsigned_t start_year = 0;
+      f_number_unsigned_t start_second = 0;
+      f_number_unsigned_t stop_year = 0;
+      f_number_unsigned_t stop_second = 0;
 
-      // @todo: these are put drafted implementations, what needs to be done is consider the type as well (for example 'today' would allow anything at all in the day, this requires more complicated logic than what is below (break this into separte functions to simplify).
       for (; p < 3; ++p) {
 
         for (i = 0; i < dates[p]->used; ++i) {
 
+          if (kt_remove_signal_check(main)) return;
+
+          match_year = kt_remove_time_year_unix_epoch_d + (times[p].tv_sec / kt_remove_time_seconds_in_year_d);
+          match_second = times[p].tv_sec % kt_remove_time_seconds_in_year_d;
+
+          start_year = dates[p]->array[i].start_year + (dates[p]->array[i].start_second / kt_remove_time_seconds_in_year_d);
+          start_second = dates[p]->array[i].start_second % kt_remove_time_seconds_in_year_d;
+
           name_type = f_string_empty_s;
           result = F_none;
 
-          if (dates[p]->array[i].operation == kt_remove_flag_date_equal_e) {
-            if (times[p].tv_sec == dates[p]->array[i].seconds && times[p].tv_nsec == dates[p]->array[i].nanoseconds) {
+          if (dates[p]->array[i].type == kt_remove_flag_date_today_e || dates[p]->array[i].type == kt_remove_flag_date_tomorrow_e || dates[p]->array[i].type == kt_remove_flag_date_yesterday_e) {
+            stop_year = dates[p]->array[i].stop_year + (dates[p]->array[i].stop_second / kt_remove_time_seconds_in_year_d);
+            stop_second = dates[p]->array[i].stop_second % kt_remove_time_seconds_in_year_d;
+
+            if (dates[p]->array[i].operation == kt_remove_flag_date_equal_e) {
               name_type = kt_remove_date_symbol_equal_s;
+              result = F_false;
+
+              if (match_year == start_year) {
+                if (match_second > start_second && match_second < stop_second) {
+                  result = F_true;
+                }
+                else if (match_second == start_second && times[p].tv_nsec >= dates[p]->array[i].start_nanosecond && times[p].tv_nsec < dates[p]->array[i].stop_nanosecond) {
+                  result = F_true;
+                }
+              }
+            }
+            else if (dates[p]->array[i].operation == kt_remove_flag_date_less_e) {
+              name_type = kt_remove_date_symbol_less_s;
+              result = F_false;
+
+              if (match_year < start_year) {
+                result = F_true;
+              }
+              else if (match_year == start_year) {
+                if (match_second < start_second) {
+                  result = F_true;
+                }
+                else if (match_second == start_second && times[p].tv_nsec < dates[p]->array[i].start_nanosecond) {
+                  result = F_true;
+                }
+              }
+            }
+            else if (dates[p]->array[i].operation == kt_remove_flag_date_less_equal_e) {
+              name_type = kt_remove_date_symbol_less_equal_s;
+              result = F_false;
+
+              if (match_year < start_year) {
+                result = F_true;
+              }
+              else if (match_year == start_year) {
+                if (match_second < stop_second) {
+                  result = F_true;
+                }
+                else if (match_second == stop_second && times[p].tv_nsec < dates[p]->array[i].stop_nanosecond) {
+                  result = F_true;
+                }
+              }
+            }
+            else if (dates[p]->array[i].operation == kt_remove_flag_date_more_e) {
+              name_type = kt_remove_date_symbol_more_s;
+              result = F_false;
+
+              if (match_year > start_year) {
+                result = F_true;
+              }
+              else if (match_year == start_year) {
+                if (match_second > stop_second) {
+                  result = F_true;
+                }
+                else if (match_second == stop_second && times[p].tv_nsec >= dates[p]->array[i].stop_nanosecond) {
+                  result = F_true;
+                }
+              }
+            }
+            else if (dates[p]->array[i].operation == kt_remove_flag_date_more_equal_e) {
+              name_type = kt_remove_date_symbol_more_equal_s;
+              result = F_false;
+
+              if (match_year > start_year) {
+                result = F_true;
+              }
+              else if (match_year == start_year) {
+                if (match_second > start_second) {
+                  result = F_true;
+                }
+                else if (match_second == start_second && times[p].tv_nsec >= dates[p]->array[i].start_nanosecond) {
+                  result = F_true;
+                }
+              }
+            }
+            else if (dates[p]->array[i].operation == kt_remove_flag_date_not_e) {
+              name_type = kt_remove_date_symbol_not_s;
+              result = F_true;
+
+              if (match_year == start_year) {
+                if (match_second > start_second && match_second < stop_second) {
+                  result = F_false;
+                }
+                else if (match_second == start_second && times[p].tv_nsec >= dates[p]->array[i].start_nanosecond && times[p].tv_nsec < dates[p]->array[i].stop_nanosecond) {
+                  result = F_false;
+                }
+              }
+            }
+          }
+          else if (dates[p]->array[i].operation == kt_remove_flag_date_equal_e) {
+            name_type = kt_remove_date_symbol_equal_s;
+
+            if (match_year == start_year && match_second == start_second && times[p].tv_nsec == dates[p]->array[i].start_nanosecond) {
               result = F_true;
             }
             else {
@@ -235,60 +345,73 @@ extern "C" {
             }
           }
           else if (dates[p]->array[i].operation == kt_remove_flag_date_less_e) {
-            if (times[p].tv_sec < dates[p]->array[i].seconds) {
-              name_type = kt_remove_date_symbol_less_s;
+            name_type = kt_remove_date_symbol_less_s;
+            result = F_false;
+
+            if (match_year < start_year) {
               result = F_true;
             }
-            else if (times[p].tv_sec == dates[p]->array[i].seconds && times[p].tv_nsec < dates[p]->array[i].nanoseconds) {
-              name_type = kt_remove_date_symbol_less_s;
-              result = F_true;
-            }
-            else {
-              result = F_false;
+            else if (match_year == start_year) {
+              if (match_second < start_second) {
+                result = F_true;
+              }
+              else if (match_second == start_second && times[p].tv_nsec < dates[p]->array[i].start_nanosecond) {
+                result = F_true;
+              }
             }
           }
           else if (dates[p]->array[i].operation == kt_remove_flag_date_less_equal_e) {
-            if (times[p].tv_sec < dates[p]->array[i].seconds) {
-              name_type = kt_remove_date_symbol_less_equal_s;
+            name_type = kt_remove_date_symbol_less_equal_s;
+            result = F_false;
+
+            if (match_year < start_year) {
               result = F_true;
             }
-            else if (times[p].tv_sec == dates[p]->array[i].seconds && times[p].tv_nsec <= dates[p]->array[i].nanoseconds) {
-              name_type = kt_remove_date_symbol_less_equal_s;
-              result = F_true;
-            }
-            else {
-              result = F_false;
+            else if (match_year == start_year) {
+              if (match_second < start_second) {
+                result = F_true;
+              }
+              else if (match_second == start_second && times[p].tv_nsec <= dates[p]->array[i].start_nanosecond) {
+                result = F_true;
+              }
             }
           }
           else if (dates[p]->array[i].operation == kt_remove_flag_date_more_e) {
-            if (times[p].tv_sec > dates[p]->array[i].seconds) {
-              name_type = kt_remove_date_symbol_more_s;
+            name_type = kt_remove_date_symbol_more_s;
+            result = F_false;
+
+            if (match_year > start_year) {
               result = F_true;
             }
-            else if (times[p].tv_sec == dates[p]->array[i].seconds && times[p].tv_nsec > dates[p]->array[i].nanoseconds) {
-              name_type = kt_remove_date_symbol_more_s;
-              result = F_true;
-            }
-            else {
-              result = F_false;
+            else if (match_year == start_year) {
+              if (match_second > start_second) {
+                result = F_true;
+              }
+              else if (match_second == start_second && times[p].tv_nsec > dates[p]->array[i].start_nanosecond) {
+                result = F_true;
+              }
             }
           }
           else if (dates[p]->array[i].operation == kt_remove_flag_date_more_equal_e) {
-            if (times[p].tv_sec > dates[p]->array[i].seconds) {
-              name_type = kt_remove_date_symbol_more_equal_s;
+            name_type = kt_remove_date_symbol_more_equal_s;
+            result = F_false;
+
+            if (match_year > start_year) {
               result = F_true;
             }
-            else if (times[p].tv_sec == dates[p]->array[i].seconds && times[p].tv_nsec >= dates[p]->array[i].nanoseconds) {
-              name_type = kt_remove_date_symbol_more_equal_s;
-              result = F_true;
-            }
-            else {
-              result = F_false;
+            else if (match_year == start_year) {
+              if (match_second > start_second) {
+                result = F_true;
+              }
+              else if (match_second == start_second && times[p].tv_nsec >= dates[p]->array[i].start_nanosecond) {
+                result = F_true;
+              }
             }
           }
           else if (dates[p]->array[i].operation == kt_remove_flag_date_not_e) {
-            if (times[p].tv_sec != dates[p]->array[i].seconds || times[p].tv_nsec != dates[p]->array[i].nanoseconds) {
-              name_type = kt_remove_date_symbol_not_s;
+            name_type = kt_remove_date_symbol_not_s;
+
+            if (match_year != start_year || match_second != start_second || times[p].tv_nsec != dates[p]->array[i].start_nanosecond) {
               result = F_true;
             }
             else {
@@ -298,8 +421,8 @@ extern "C" {
 
           if (name_type.used) {
             fll_print_format("  %Q %Q ", main->output.to.stream, *names[p], result ? kt_remove_yes_s : kt_remove_no_s);
-            fll_print_format("%u::%un 0:%un %Q ", main->output.to.stream, kt_remove_time_year_unix_epoch_d, (f_number_unsigned_t) times[p].tv_sec, (f_number_unsigned_t) times[p].tv_nsec, name_type);
-            fll_print_format("%u::%un 0:%un%r", main->output.to.stream, kt_remove_time_year_unix_epoch_d, dates[p]->array[i].seconds, dates[p]->array[i].nanoseconds, f_string_eol_s);
+            fll_print_format("%u::%un 0:%un %Q ", main->output.to.stream, match_year, (f_number_unsigned_t) times[p].tv_sec, (f_number_unsigned_t) times[p].tv_nsec, name_type);
+            fll_print_format("%u::%un 0:%un%r", main->output.to.stream, dates[p]->array[i].start_year, dates[p]->array[i].start_second, dates[p]->array[i].start_nanosecond, f_string_eol_s);
 
             break;
           }

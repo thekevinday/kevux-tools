@@ -48,11 +48,14 @@ extern "C" {
     kt_remove_f_f_utf_is_digit_e,
     kt_remove_f_f_utf_is_whitespace_e,
     kt_remove_f_fl_conversion_dynamic_partial_to_unsigned_detect_e,
+    kt_remove_f_fl_conversion_dynamic_to_unsigned_detect_e,
     kt_remove_f_fll_program_parameter_process_empty_e,
+    kt_remove_f_kt_remove_convert_date_relative_e,
+    kt_remove_f_kt_remove_convert_timezone_e,
     kt_remove_f_kt_remove_dates_resize_e,
-    kt_remove_f_kt_remove_modes_resize_e,
     kt_remove_f_kt_remove_get_id_group_e,
     kt_remove_f_kt_remove_get_id_user_e,
+    kt_remove_f_kt_remove_modes_resize_e,
   }; // enum
 #endif // _di_kt_remove_f_e_
 

@@ -15,11 +15,14 @@ extern "C" {
     "f_uint32s_increase_by",
     "f_utf_is_whitespace",
     "fl_conversion_dynamic_partial_to_unsigned_detect",
+    "fl_conversion_dynamic_to_unsigned_detect",
     "fll_program_parameter_process_empty",
+    "kt_remove_convert_date_relative",
+    "kt_remove_convert_timezone",
     "kt_remove_dates_resize",
-    "kt_remove_modes_resize",
     "kt_remove_get_id_group",
     "kt_remove_get_id_user",
+    "kt_remove_modes_resize",
   };
 #endif // _di_kt_remove_f_a_
 

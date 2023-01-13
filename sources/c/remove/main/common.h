@@ -118,8 +118,137 @@ extern "C" {
 
 /**
  * Strings associated with the date parameters.
+ *
+ * kt_remove_date_format_*_s:
+ * - 00: The string "YYYY/MM/DD hh:ii:ss a +0000".
+ * - 01: The string "YYYY/MM/DD HH:ii:ss +0000".
+ * - 02: The string "YYYY/MM/DD hh:ii a +0000".
+ * - 03: The string "YYYY/MM/DD HH:ii +0000".
+ * - 04: The string "YYYY/MM/DD hh a +0000".
+ * - 05: The string "YYYY/MM/DD HH +0000".
+ * - 06: The string "YYYY/MM/DD hh:ii:ss a".
+ * - 07: The string "YYYY/MM/DD HH:ii:ss".
+ * - 08: The string "YYYY/MM/DD hh:ii a".
+ * - 09: The string "YYYY/MM/DD HH:ii".
+ * - 10: The string "YYYY/MM/DD hh a".
+ * - 11: The string "YYYY/MM/DD HH".
+ * - 12: The string "YYYY/MM/DD".
+ * - 13: The string "YYYY/MM".
+ * - 14: The string "YYYY/".
+ *
+ * kt_remove_date_symbol_*_s:
+ * - equal:      Equal to operator.
+ * - less:       Less than operator.
+ * - less_equal: Less than or equal to operator.
+ * - more:       Greater than operator.
+ * - more_equal: Greater than or equal to operator.
+ * - not:        Not equal to operator.
+ *
+ * kt_remove_date_word_*_s:
+ * - equal:      Equal to words.
+ * - less:       Less than words.
+ * - less_equal: Less than or equal to words.
+ * - more:       Greater than words.
+ * - more_equal: Greater than or equal to words.
+ * - not:        Not equal to words.
  */
 #ifndef _di_kt_remove_date_s_
+  #define KT_REMOVE_date_format_00_s "%Y/%m/%d %I:%M:%S %p %z"
+  #define KT_REMOVE_date_format_01_s "%Y/%m/%d %H:%M:%S %z"
+  #define KT_REMOVE_date_format_02_s "%Y/%m/%d %I:%M %p %z"
+  #define KT_REMOVE_date_format_03_s "%Y/%m/%d %H:%M %z"
+  #define KT_REMOVE_date_format_04_s "%Y/%m/%d %I %p %z"
+  #define KT_REMOVE_date_format_05_s "%Y/%m/%d %H %z"
+  #define KT_REMOVE_date_format_06_s "%Y/%m/%d %I:%M:%S %p"
+  #define KT_REMOVE_date_format_07_s "%Y/%m/%d %H:%M:%S"
+  #define KT_REMOVE_date_format_08_s "%Y/%m/%d %I:%M %p"
+  #define KT_REMOVE_date_format_09_s "%Y/%m/%d %H:%M"
+  #define KT_REMOVE_date_format_10_s "%Y/%m/%d %I %p"
+  #define KT_REMOVE_date_format_11_s "%Y/%m/%d %H"
+  #define KT_REMOVE_date_format_12_s "%Y/%m/%d"
+  #define KT_REMOVE_date_format_13_s "%Y/%m"
+  #define KT_REMOVE_date_format_14_s "%Y/"
+
+  #define KT_REMOVE_date_format_00_s_length 23
+  #define KT_REMOVE_date_format_01_s_length 20
+  #define KT_REMOVE_date_format_02_s_length 20
+  #define KT_REMOVE_date_format_03_s_length 17
+  #define KT_REMOVE_date_format_04_s_length 17
+  #define KT_REMOVE_date_format_05_s_length 14
+  #define KT_REMOVE_date_format_06_s_length 20
+  #define KT_REMOVE_date_format_07_s_length 17
+  #define KT_REMOVE_date_format_08_s_length 17
+  #define KT_REMOVE_date_format_09_s_length 14
+  #define KT_REMOVE_date_format_10_s_length 14
+  #define KT_REMOVE_date_format_11_s_length 11
+  #define KT_REMOVE_date_format_12_s_length 8
+  #define KT_REMOVE_date_format_13_s_length 5
+  #define KT_REMOVE_date_format_14_s_length 3
+
+  extern const f_string_static_t kt_remove_date_format_00_s;
+  extern const f_string_static_t kt_remove_date_format_01_s;
+  extern const f_string_static_t kt_remove_date_format_02_s;
+  extern const f_string_static_t kt_remove_date_format_03_s;
+  extern const f_string_static_t kt_remove_date_format_04_s;
+  extern const f_string_static_t kt_remove_date_format_05_s;
+  extern const f_string_static_t kt_remove_date_format_06_s;
+  extern const f_string_static_t kt_remove_date_format_07_s;
+  extern const f_string_static_t kt_remove_date_format_08_s;
+  extern const f_string_static_t kt_remove_date_format_09_s;
+  extern const f_string_static_t kt_remove_date_format_10_s;
+  extern const f_string_static_t kt_remove_date_format_11_s;
+  extern const f_string_static_t kt_remove_date_format_12_s;
+  extern const f_string_static_t kt_remove_date_format_13_s;
+  extern const f_string_static_t kt_remove_date_format_14_s;
+
+  #define KT_REMOVE_date_format_example_00_s "2022/12/30 1:45:02 pm +0600"
+  #define KT_REMOVE_date_format_example_01_s "2022/12/30 13:45:02 +0600"
+  #define KT_REMOVE_date_format_example_02_s "2022/12/30 1:45 pm +0600"
+  #define KT_REMOVE_date_format_example_03_s "2022/12/30 13:45 +0600"
+  #define KT_REMOVE_date_format_example_04_s "2022/12/30 1 pm +0600"
+  #define KT_REMOVE_date_format_example_05_s "2022/12/30 13 +0600"
+  #define KT_REMOVE_date_format_example_06_s "2022/12/30 1:45:02 pm"
+  #define KT_REMOVE_date_format_example_07_s "2022/12/30 13:45:02"
+  #define KT_REMOVE_date_format_example_08_s "2022/12/30 1:45 pm"
+  #define KT_REMOVE_date_format_example_09_s "2022/12/30 13:45"
+  #define KT_REMOVE_date_format_example_10_s "2022/12/30 1 pm"
+  #define KT_REMOVE_date_format_example_11_s "2022/12/30 13"
+  #define KT_REMOVE_date_format_example_12_s "2022/12/30"
+  #define KT_REMOVE_date_format_example_13_s "2022/12"
+  #define KT_REMOVE_date_format_example_14_s "2022/"
+
+  #define KT_REMOVE_date_format_example_00_s_length 27
+  #define KT_REMOVE_date_format_example_01_s_length 25
+  #define KT_REMOVE_date_format_example_02_s_length 24
+  #define KT_REMOVE_date_format_example_03_s_length 22
+  #define KT_REMOVE_date_format_example_04_s_length 21
+  #define KT_REMOVE_date_format_example_05_s_length 19
+  #define KT_REMOVE_date_format_example_06_s_length 21
+  #define KT_REMOVE_date_format_example_07_s_length 19
+  #define KT_REMOVE_date_format_example_08_s_length 18
+  #define KT_REMOVE_date_format_example_09_s_length 16
+  #define KT_REMOVE_date_format_example_10_s_length 15
+  #define KT_REMOVE_date_format_example_11_s_length 13
+  #define KT_REMOVE_date_format_example_12_s_length 10
+  #define KT_REMOVE_date_format_example_13_s_length 9
+  #define KT_REMOVE_date_format_example_14_s_length 5
+
+  extern const f_string_static_t kt_remove_date_format_example_00_s;
+  extern const f_string_static_t kt_remove_date_format_example_01_s;
+  extern const f_string_static_t kt_remove_date_format_example_02_s;
+  extern const f_string_static_t kt_remove_date_format_example_03_s;
+  extern const f_string_static_t kt_remove_date_format_example_04_s;
+  extern const f_string_static_t kt_remove_date_format_example_05_s;
+  extern const f_string_static_t kt_remove_date_format_example_06_s;
+  extern const f_string_static_t kt_remove_date_format_example_07_s;
+  extern const f_string_static_t kt_remove_date_format_example_08_s;
+  extern const f_string_static_t kt_remove_date_format_example_09_s;
+  extern const f_string_static_t kt_remove_date_format_example_10_s;
+  extern const f_string_static_t kt_remove_date_format_example_11_s;
+  extern const f_string_static_t kt_remove_date_format_example_12_s;
+  extern const f_string_static_t kt_remove_date_format_example_13_s;
+  extern const f_string_static_t kt_remove_date_format_example_14_s;
+
   #define KT_REMOVE_date_symbol_equal_s      "=="
   #define KT_REMOVE_date_symbol_less_s       "<"
   #define KT_REMOVE_date_symbol_less_equal_s "<="
@@ -165,6 +294,18 @@ extern "C" {
 
 /**
  * Strings associated with the mode parameters.
+ *
+ * kt_remove_mode_symbol_*_s:
+ * - different: The not similar to operator.
+ * - same:      The same as operator.
+ * - similar:   The similar to operator.
+ * - not:       The not same as operator.
+ *
+ * kt_remove_mode_word_*_s:
+ * - different: The not similar to words.
+ * - same:      The same as words.
+ * - similar:   The similar to words.
+ * - not:       The not same as words.
  */
 #ifndef _di_kt_remove_mode_s_
   #define KT_REMOVE_mode_symbol_different_s "~~"
@@ -200,6 +341,8 @@ extern "C" {
 
 /**
  * Additional strings used for various purposes.
+ *
+ * kt_remove_*_s: Arbitrary strings.
  */
 #ifndef _di_kt_remove_s_
   #define KT_REMOVE_all_s       "all"
@@ -257,22 +400,36 @@ extern "C" {
 /**
  * A processed Date parameter.
  *
+ * The start is inclusive and the stop is exclusive just like with f_string_range_t.
+ *
  * operation: The comparison operation.
  * type:      The date type.
  *
- * seconds:     The entire date value in seconds.
- * nanoseconds: The remaining nanosecond not represented in the seconds.
+ * start_year:       The year in which the seconds is relative to (is only processed when
+ * start_second:     The entire date value in seconds for the date or the start of a date range.
+ * start_nanosecond: The remaining nanosecond not represented in the seconds for the date or the start of a date range.
+ * stop_second:      The entire date value in seconds for the stop of a date range (not used for non-range dates).
+ * stop_nanosecond:  The remaining nanosecond not represented in the seconds for the stop of a date range (not used for non-range dates).
  */
 #ifndef _di_kt_remove_date_t_
   typedef struct {
     uint8_t operation;
     uint8_t type;
 
-    f_number_unsigned_t seconds;
-    f_number_unsigned_t nanoseconds;
+    f_number_unsigned_t start_year;
+    f_number_unsigned_t start_second;
+    f_number_unsigned_t start_nanosecond;
+
+    f_number_unsigned_t stop_year;
+    f_number_unsigned_t stop_second;
+    f_number_unsigned_t stop_nanosecond;
   } kt_remove_date_t;
 
   #define kt_remove_date_t_initialize { \
+    0, \
+    0, \
+    0, \
+    0, \
     0, \
     0, \
     0, \
@@ -358,41 +515,41 @@ extern "C" {
  * @todo /proc needs to be implemented, but before that try to understand how --one-file-system, --no-preserve-root, and --preserve-root work in coreutils rm command.
  *
  * kt_remove_flag_*_e:
- *   - none:                      No flags set.
- *   - block:                     Remove by file type: block.
- *   - character:                 Remove by file type: character.
- *   - date:                      Remove by date (separate flag for <, <=, ==, >=, and >).
- *   - different:                 Remove by user different from caller.
- *   - directory:                 Remove by file type: directory.
- *   - empty_only:                Remove empty directories.
- *   - empty_only_fail:           Fail on empty directories.
- *   - empty_not:                 Remove not empty directories.
- *   - empty_not_fail:            Fail on not empty directories.
- *   - fifo:                      Remove by file type: FIFO.
- *   - follow:                    Follow symbolic links deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
- *   - force:                     Forcibly delete.
- *   - group:                     Remove by GID.
- *   - help:                      Print help.
- *   - isolate_all:               Isolate to a single file system, error on all outside file system files (@todo requires /proc support).
- *   - isolate_ignore:            Ignore rather than fail for anything on a different file system (@todo requires /proc support).
- *   - isolate_root:              Isolate to a single file system, error on remove on '/' (@todo requires /proc support).
- *   - link:                      Remove by file type: link.
- *   - mode:                      Remove by mode.
- *   - option_used:               This gets set when when certain options are specified to toggle the default match detection boolean during removal of each file.
- *   - print_warning:             When specified, warnings are still printed even when verbosity is less than verbose.
- *   - prompt_all:                Operate in interactive mode, prompting for every file.
- *   - prompt_follow:             Operate in interactive mode: prompting for every link that is being followed.
- *   - prompt_never:              Do not operate in interactive mode.
- *   - prompt_once:               Operate in interactive mode: prompting if removing 3 or more files.
- *   - recurse:                   Recurse directories.
- *   - regular:                   Remove by file type: regular.
- *   - same:                      Remove by same user as caller.
- *   - simulate:                  Do not actually perform deletes, instead print messages (when silent, should still return 0 or 1).
- *   - socket:                    Remove by file type: socket.
- *   - tree:                      Remove directory tree (parent directories) (remove a/b/c, removes a/b/c, then a/b/, then a).
- *   - user:                      Remove by UID.
- *   - utc:                       Process dates in UTC mode.
- *   - version:                   Print version.
+ *   - none:            No flags set.
+ *   - block:           Remove by file type: block.
+ *   - character:       Remove by file type: character.
+ *   - date:            Remove by date (separate flag for <, <=, ==, >=, and >).
+ *   - different:       Remove by user different from caller.
+ *   - directory:       Remove by file type: directory.
+ *   - empty_only:      Remove empty directories.
+ *   - empty_only_fail: Fail on empty directories.
+ *   - empty_not:       Remove not empty directories.
+ *   - empty_not_fail:  Fail on not empty directories.
+ *   - fifo:            Remove by file type: FIFO.
+ *   - follow:          Follow symbolic links deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
+ *   - force:           Forcibly delete.
+ *   - group:           Remove by GID.
+ *   - help:            Print help.
+ *   - isolate_all:     Isolate to a single file system, error on all outside file system files (@todo requires /proc support).
+ *   - isolate_ignore:  Ignore rather than fail for anything on a different file system (@todo requires /proc support).
+ *   - isolate_root:    Isolate to a single file system, error on remove on '/' (@todo requires /proc support).
+ *   - link:            Remove by file type: link.
+ *   - mode:            Remove by mode.
+ *   - option_used:     This gets set when when certain options are specified to toggle the default match detection boolean during removal of each file.
+ *   - print_warning:   When specified, warnings are still printed even when verbosity is less than verbose.
+ *   - prompt_all:      Operate in interactive mode, prompting for every file.
+ *   - prompt_follow:   Operate in interactive mode: prompting for every link that is being followed.
+ *   - prompt_never:    Do not operate in interactive mode.
+ *   - prompt_once:     Operate in interactive mode: prompting if removing 3 or more files.
+ *   - recurse:         Recurse directories.
+ *   - regular:         Remove by file type: regular.
+ *   - same:            Remove by same user as caller.
+ *   - simulate:        Do not actually perform deletes, instead print messages (when silent, should still return 0 or 1).
+ *   - socket:          Remove by file type: socket.
+ *   - tree:            Remove directory tree (parent directories) (remove a/b/c, removes a/b/c, then a/b/, then a).
+ *   - user:            Remove by UID.
+ *   - utc:             Process dates in UTC mode.
+ *   - version:         Print version.
  */
 #ifndef _di_kt_remove_flag_e_
   enum {
@@ -437,9 +594,32 @@ extern "C" {
 #endif // _di_kt_remove_flag_e_
 
 /**
- * Flags associated with a date.
+ * A set of flags used internally in the convert process.
  *
- * @todo Consider (K H D B D C M) for both Time and EpochTime (entire metric?).
+ * These are generally used during parsing of Time and EpochTime strings.
+ *
+ * kt_remove_flag_convert_*_e:
+ * - colon:             Either single or double colon.
+ * - colon_single:      Single colon detected.
+ * - colon_double:      Double colon detected.
+ * - match:             Matched either part.
+ * - match_first:       Matched first (left) part.
+ * - match_second:      Matched second (right) part.
+ */
+#ifndef _di_kt_remove_flag_convert_e_
+  enum {
+    kt_remove_flag_convert_none_e         = 0x0,
+    kt_remove_flag_convert_colon_e        = 0x3,
+    kt_remove_flag_convert_colon_single_e = 0x1,
+    kt_remove_flag_convert_colon_double_e = 0x2,
+    kt_remove_flag_convert_match_e        = 0xc,
+    kt_remove_flag_convert_match_first_e  = 0x4,
+    kt_remove_flag_convert_match_second_e = 0x8,
+  }; // enum
+#endif // _di_kt_remove_flag_convert_e_
+
+/**
+ * Flags associated with a date.
  *
  * kt_remove_flag_date_*_e:
  *   - none:       No flags set.
@@ -450,15 +630,15 @@ extern "C" {
  *   - more_equal: Perform greater than or equal to on date, '>=' or 'more_equal'.
  *   - not:        Perform not equal to on date. '<>' or 'not'
  *
- *   - has_year:    Date has a year.
- *   - now:         Date is relative to 'now'.
- *   - string:      Date is processed via the string date functions (such as via strftime_r() or getdate_r()).
- *   - time:        Date is based off of Time format.
- *   - time_epoch:  Date is based off of EpochTime format.
- *   - today:       Date is relative to 'today'.
- *   - tomorrow:    Date is relative to 'tomorrow'.
- *   - unix:        Date is based off of Unix Epoch format.
- *   - yesterday:   Date is relative to 'yesterday'.
+ *   - year:       Date has a year.
+ *   - now:        Date is relative to 'now'.
+ *   - string:     Date is processed via the string date functions (such as via strftime_r() or getdate_r()).
+ *   - time:       Date is based off of Time format.
+ *   - time_epoch: Date is based off of EpochTime format.
+ *   - today:      Date is relative to 'today'.
+ *   - tomorrow:   Date is relative to 'tomorrow'.
+ *   - unix:       Date is based off of Unix Epoch format.
+ *   - yesterday:  Date is relative to 'yesterday'.
  */
 #ifndef _di_kt_remove_flag_date_e_
   enum {
@@ -473,15 +653,14 @@ extern "C" {
     kt_remove_flag_date_not_e        = 0x20,
 
     // Used for processing and converting.
-    kt_remove_flag_date_has_year_e   = 0x1,
-    kt_remove_flag_date_now_e        = 0x2,
-    kt_remove_flag_date_string_e     = 0x4,
-    kt_remove_flag_date_time_e       = 0x8,
-    kt_remove_flag_date_time_epoch_e = 0x10,
-    kt_remove_flag_date_today_e      = 0x20,
-    kt_remove_flag_date_tomorrow_e   = 0x40,
-    kt_remove_flag_date_unix_e       = 0x80,
-    kt_remove_flag_date_yesterday_e  = 0x100,
+    kt_remove_flag_date_now_e        = 0x1,
+    kt_remove_flag_date_string_e     = 0x2,
+    kt_remove_flag_date_time_e       = 0x4,
+    kt_remove_flag_date_time_epoch_e = 0x8,
+    kt_remove_flag_date_today_e      = 0x10,
+    kt_remove_flag_date_tomorrow_e   = 0x20,
+    kt_remove_flag_date_unix_e       = 0x40,
+    kt_remove_flag_date_yesterday_e  = 0x80,
   }; // enum
 #endif // _di_kt_remove_flag_date_e_
 

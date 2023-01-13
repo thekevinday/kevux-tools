@@ -60,14 +60,6 @@ extern "C" {
 
     memset(&id_signal, 0, sizeof(f_thread_id_t));
 
-    macro_kt_remove_setting(void_setting)->status = f_thread_create(0, &id_signal, &kt_remove_thread_signal, (void *) &arguments);
-
-    if (F_status_is_error(macro_kt_remove_setting(void_setting)->status)) {
-      kt_remove_print_error(macro_kt_remove_setting(void_setting), main->error, macro_kt_remove_f(f_thread_create));
-
-      return;
-    }
-
     kt_remove_process_normal_operate(main, macro_kt_remove_setting(void_setting));
 
     f_thread_cancel(id_signal);

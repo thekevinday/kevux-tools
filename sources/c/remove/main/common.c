@@ -18,6 +18,38 @@ extern "C" {
 #endif // _di_utf8_program_help_parameters_s_
 
 #ifndef _di_kt_remove_date_s_
+  const f_string_static_t kt_remove_date_format_00_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_00_s, 0, KT_REMOVE_date_format_00_s_length);
+  const f_string_static_t kt_remove_date_format_01_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_01_s, 0, KT_REMOVE_date_format_01_s_length);
+  const f_string_static_t kt_remove_date_format_02_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_02_s, 0, KT_REMOVE_date_format_02_s_length);
+  const f_string_static_t kt_remove_date_format_03_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_03_s, 0, KT_REMOVE_date_format_03_s_length);
+  const f_string_static_t kt_remove_date_format_04_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_04_s, 0, KT_REMOVE_date_format_04_s_length);
+  const f_string_static_t kt_remove_date_format_05_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_05_s, 0, KT_REMOVE_date_format_05_s_length);
+  const f_string_static_t kt_remove_date_format_06_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_06_s, 0, KT_REMOVE_date_format_06_s_length);
+  const f_string_static_t kt_remove_date_format_07_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_07_s, 0, KT_REMOVE_date_format_07_s_length);
+  const f_string_static_t kt_remove_date_format_08_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_08_s, 0, KT_REMOVE_date_format_08_s_length);
+  const f_string_static_t kt_remove_date_format_09_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_09_s, 0, KT_REMOVE_date_format_09_s_length);
+  const f_string_static_t kt_remove_date_format_10_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_10_s, 0, KT_REMOVE_date_format_10_s_length);
+  const f_string_static_t kt_remove_date_format_11_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_11_s, 0, KT_REMOVE_date_format_11_s_length);
+  const f_string_static_t kt_remove_date_format_12_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_12_s, 0, KT_REMOVE_date_format_12_s_length);
+  const f_string_static_t kt_remove_date_format_13_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_13_s, 0, KT_REMOVE_date_format_13_s_length);
+  const f_string_static_t kt_remove_date_format_14_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_14_s, 0, KT_REMOVE_date_format_14_s_length);
+
+  const f_string_static_t kt_remove_date_format_example_00_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_00_s, 0, KT_REMOVE_date_format_example_00_s_length);
+  const f_string_static_t kt_remove_date_format_example_01_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_01_s, 0, KT_REMOVE_date_format_example_01_s_length);
+  const f_string_static_t kt_remove_date_format_example_02_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_02_s, 0, KT_REMOVE_date_format_example_02_s_length);
+  const f_string_static_t kt_remove_date_format_example_03_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_03_s, 0, KT_REMOVE_date_format_example_03_s_length);
+  const f_string_static_t kt_remove_date_format_example_04_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_04_s, 0, KT_REMOVE_date_format_example_04_s_length);
+  const f_string_static_t kt_remove_date_format_example_05_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_05_s, 0, KT_REMOVE_date_format_example_05_s_length);
+  const f_string_static_t kt_remove_date_format_example_06_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_06_s, 0, KT_REMOVE_date_format_example_06_s_length);
+  const f_string_static_t kt_remove_date_format_example_07_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_07_s, 0, KT_REMOVE_date_format_example_07_s_length);
+  const f_string_static_t kt_remove_date_format_example_08_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_08_s, 0, KT_REMOVE_date_format_example_08_s_length);
+  const f_string_static_t kt_remove_date_format_example_09_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_09_s, 0, KT_REMOVE_date_format_example_09_s_length);
+  const f_string_static_t kt_remove_date_format_example_10_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_10_s, 0, KT_REMOVE_date_format_example_10_s_length);
+  const f_string_static_t kt_remove_date_format_example_11_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_11_s, 0, KT_REMOVE_date_format_example_11_s_length);
+  const f_string_static_t kt_remove_date_format_example_12_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_12_s, 0, KT_REMOVE_date_format_example_12_s_length);
+  const f_string_static_t kt_remove_date_format_example_13_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_13_s, 0, KT_REMOVE_date_format_example_13_s_length);
+  const f_string_static_t kt_remove_date_format_example_14_s = macro_f_string_static_t_initialize(KT_REMOVE_date_format_example_14_s, 0, KT_REMOVE_date_format_example_14_s_length);
+
   const f_string_static_t kt_remove_date_symbol_equal_s = macro_f_string_static_t_initialize(KT_REMOVE_date_symbol_equal_s, 0, KT_REMOVE_date_symbol_equal_s_length);
   const f_string_static_t kt_remove_date_symbol_less_s = macro_f_string_static_t_initialize(KT_REMOVE_date_symbol_less_s, 0, KT_REMOVE_date_symbol_less_s_length);
   const f_string_static_t kt_remove_date_symbol_less_equal_s = macro_f_string_static_t_initialize(KT_REMOVE_date_symbol_less_equal_s, 0, KT_REMOVE_date_symbol_less_equal_s_length);
@@ -491,13 +523,15 @@ extern "C" {
 
                   index2 = parameters[p]->values.array[i + 1];
 
-                  kt_remove_get_date(main, setting, main->parameters.arguments.array[index2], &dates[p]->array[dates[p]->used].type);
+                  kt_remove_convert_date(main, setting, main->parameters.arguments.array[index2], &dates[p]->array[dates[p]->used]);
                   if (F_status_is_error(setting->status)) return;
 
                   ++dates[p]->used;
 
                   break;
                 }
+
+                if (kt_remove_signal_check(main)) return;
               } // for
 
               if (j == 12) {
