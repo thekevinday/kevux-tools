@@ -30,11 +30,9 @@ extern "C" {
  * More 'time' string values will likely be implemented in a not yet existent 'f_time' project in FLL 0.7 or greater (possibly including fl_time and fll_time).
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *     F_data_not on success, but buffer is empty and there is no data to process.
  *
@@ -63,7 +61,7 @@ extern "C" {
  * @see kt_remove_get_date_relative()
  */
 #ifndef _di_kt_remove_convert_date_
-  extern void kt_remove_convert_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, kt_remove_date_t * const date);
+  extern void kt_remove_convert_date(kt_remove_main_t * const main, const f_string_static_t buffer, kt_remove_date_t * const date);
 #endif // _di_kt_remove_convert_date_
 
 /**
@@ -80,10 +78,10 @@ extern "C" {
  * Only a limited set of 'time' string values are implemented in this project.
  * More 'time' string values will likely be implemented in a not yet existent 'f_time' project in FLL 0.7 or greater (possibly including fl_time and fll_time).
  *
- * @param setting
- *   The main program settings.
+ * @param main
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *     F_data_not on success, but buffer is empty or there is no data to process.
  *
@@ -103,16 +101,16 @@ extern "C" {
  * @see kt_remove_get_date_relative()
  */
 #ifndef _di_kt_remove_convert_date_relative_
-  extern void kt_remove_convert_date_relative(kt_remove_setting_t * const setting, kt_remove_date_t * const date);
+  extern void kt_remove_convert_date_relative(kt_remove_main_t * const main, kt_remove_date_t * const date);
 #endif // _di_kt_remove_convert_date_relative_
 
 /**
  * Convert the string from a string representation of an ID or a group name into the numeric representation of that ID or group name.
  *
- * @param setting
- *   The main program settings.
+ * @param main
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_number_too_large (with error bit) if the given ID is too large.
@@ -128,16 +126,16 @@ extern "C" {
  * @see fl_string_dynamic_rip_nulless()
  */
 #ifndef _di_kt_remove_get_id_group_
-  extern uint32_t kt_remove_get_id_group(kt_remove_setting_t * const setting, const f_string_static_t buffer);
+  extern uint32_t kt_remove_get_id_group(kt_remove_main_t * const main, const f_string_static_t buffer);
 #endif // _di_kt_remove_get_id_group_
 
 /**
  * Convert the string from a string representation of an ID or a user name into the numeric representation of that ID or user name.
  *
- * @param setting
- *   The main program settings.
+ * @param main
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_number_too_large (with error bit) if the given ID is too large.
@@ -153,16 +151,16 @@ extern "C" {
  * @see fl_string_dynamic_rip_nulless()
  */
 #ifndef _di_kt_remove_get_id_user_
-  extern uint32_t kt_remove_get_id_user(kt_remove_setting_t * const setting, const f_string_static_t buffer);
+  extern uint32_t kt_remove_get_id_user(kt_remove_main_t * const main, const f_string_static_t buffer);
 #endif // _di_kt_remove_get_id_user_
 
 /**
  * Convert the string from a string representation of a mode into the numeric representation of that mode.
  *
- * @param setting
- *   The main program settings.
+ * @param main
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     Errors (with error bit) from: f_file_mode_from_string().
@@ -174,7 +172,7 @@ extern "C" {
  * @see f_file_mode_to_mode()
  */
 #ifndef _di_kt_remove_get_mode_
-  extern mode_t kt_remove_get_mode(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer);
+  extern mode_t kt_remove_get_mode(kt_remove_main_t * const main, const f_string_static_t buffer);
 #endif // _di_kt_remove_get_mode_
 
 /**
@@ -183,10 +181,10 @@ extern "C" {
  * This does not check the flags to see if UTC is in used.
  * The caller must assure this is appropriate.
  *
- * @param setting
- *   The main program settings.
+ * @param main
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_number_overflow (with error bit) if the date after applying the timezone is too large.
@@ -201,7 +199,7 @@ extern "C" {
  *   This is updated based on the global timezone variable.
  */
 #ifndef _di_kt_remove_convert_timezone_
-  extern void kt_remove_convert_timezone(kt_remove_setting_t * const setting, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds);
+  extern void kt_remove_convert_timezone(kt_remove_main_t * const main, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds);
 #endif // _di_kt_remove_convert_timezone_
 
 #ifdef __cplusplus

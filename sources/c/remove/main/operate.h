@@ -16,12 +16,9 @@ extern "C" {
  * Operate on a single file.
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
- *   Must be of type (kt_remove_setting_t *).
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *     F_data_not on success but file is an empty string.
  *
@@ -30,7 +27,7 @@ extern "C" {
  *   The path to the file to operate on.
  */
 #ifndef _di_kt_remove_operate_file_
-  extern void kt_remove_operate_file(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t path);
+  extern void kt_remove_operate_file(kt_remove_main_t * const main, const f_string_static_t path);
 #endif // _di_kt_remove_operate_file_
 
 #ifdef __cplusplus

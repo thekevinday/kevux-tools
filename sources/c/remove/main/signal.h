@@ -28,7 +28,9 @@ extern "C" {
  * The threaded version checks the flag state which is set by a separate thread that is blocking until signal is received.
  *
  * @param main
- *   The main program data.
+ *   The main program and settings data.
+ *
+ *   This does not alter main.setting.state.status.
  *
  * @return
  *   F_true on signal received.
@@ -39,7 +41,7 @@ extern "C" {
  * @see fll_program_standard_signal_received()
  */
 #ifndef _di_kt_remove_signal_check_
-  extern f_status_t kt_remove_signal_check(fll_program_data_t * const main);
+  extern f_status_t kt_remove_signal_check(kt_remove_main_t * const main);
 #endif // _di_kt_remove_signal_check_
 
 /**
@@ -57,11 +59,9 @@ extern "C" {
  *   - F_signal_termination
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
+ *   The main program and settings data.
  *
- *   This alters setting.signal_received, setting it to a received signal.
+ *   This alters main.program.signal_received, setting it to a received signal.
  *
  *   This alters setting.status:
  *     Errors with (error bit set) from: f_signal_open()
@@ -72,7 +72,7 @@ extern "C" {
  * @see f_signal_wait()
  */
 #if !defined(_di_kt_remove_signal_handler_) && !defined(_di_thread_support_)
-  extern void kt_remove_signal_handler(fll_program_data_t * const main, kt_remove_setting_t * const setting);
+  extern void kt_remove_signal_handler(kt_remove_main_t * const main);
 #endif // !defined(_di_kt_remove_signal_handler_) && !defined(_di_thread_support_)
 
 #ifdef __cplusplus

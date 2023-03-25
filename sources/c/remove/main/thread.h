@@ -23,18 +23,20 @@ extern "C" {
  *   - F_signal_quit
  *   - F_signal_termination
  *
- * @param arguments
- *   The thread arguments.
- *   Must be of type kt_remove_arguments_t.
+ * @param main
+ *   The program and settings data.
+ *
+ *   Must be of type kt_remove_main_t.
  *
  * @return
  *   0, always.
  *
- * @see f_signal_mask()
- * @see f_signal_wait()
+ * @see f_thread_cancel_state_set()
+ *
+ * @see kt_remove_signal_handler()
  */
 #if !defined(_di_kt_remove_thread_signal_) && !defined(_di_thread_support_)
-  extern void * kt_remove_thread_signal(void * const arguments);
+  extern void * kt_remove_thread_signal(void * const main);
 #endif // !defined(_di_kt_remove_thread_signal_) && !defined(_di_thread_support_)
 
 #ifdef __cplusplus

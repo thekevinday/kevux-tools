@@ -1,47 +1,56 @@
-#include "remove.h"
+#include "../remove.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifndef _di_kt_remove_simulate_operate_
-  void kt_remove_simulate_operate(fll_program_data_t * const main, kt_remove_setting_t * const setting) {
+#ifndef _di_kt_remove_print_simulate_operate_
+  void kt_remove_print_simulate_operate(fl_print_t * const print) {
 
-    if (!main || !setting) return;
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
+    if (!print || !print->custom) return;
 
-    flockfile(main->output.to.stream);
+    kt_remove_main_t * const main = (kt_remove_main_t *) print->custom;
 
-    fl_print_format("%r%[Files to Remove%]:%r", main->output.to.stream, f_string_eol_s, main->output.set->title, main->output.set->title, f_string_eol_s);
+    if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
 
-    for (f_array_length_t i = 0; i < setting->files.used; ++i) {
-      fl_print_format("  %Q%r", main->output.to.stream, setting->files.array[i], f_string_eol_s);
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%r%[Files to Remove%]:%r", print->to, f_string_eol_s, print->set->title, print->set->title, f_string_eol_s);
+
+    for (f_array_length_t i = 0; i < main->setting.files.used; ++i) {
+      fl_print_format("  %Q%r", print->to, main->setting.files.array[i], f_string_eol_s);
     } // for
 
-    f_print_dynamic(f_string_eol_s, main->output.to.stream);
+    f_print_dynamic(f_string_eol_s, print->to);
 
-    funlockfile(main->output.to.stream);
+    f_file_stream_unlock(main->program.output.to);
   }
-#endif // _di_kt_remove_simulate_operate_
+#endif // _di_kt_remove_print_simulate_operate_
 
-#ifndef _di_kt_remove_simulate_operate_file_
-  void kt_remove_simulate_operate_file(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t path) {
+#ifndef _di_kt_remove_print_simulate_operate_file_
+  void kt_remove_print_simulate_operate_file(fl_print_t * const print, const f_string_static_t path) {
 
-    if (!main || !setting) return;
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
+    if (!print || !print->custom) return;
 
-    fll_print_format("%[Remove '%Q'%]:%r", main->output.to.stream, main->output.set->notable, path, main->output.set->notable, f_string_eol_s);
+    kt_remove_main_t * const main = (kt_remove_main_t *) print->custom;
+
+    if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
+
+    fll_print_format("%[Remove '%Q'%]:%r", main->program.output.to, main->program.output.set->notable, path, main->program.output.set->notable, f_string_eol_s);
   }
-#endif // _di_kt_remove_simulate_operate_file_
+#endif // _di_kt_remove_print_simulate_operate_file_
 
-#ifndef _di_kt_remove_simulate_operate_file_exists_
-  void kt_remove_simulate_operate_file_exists(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t path) {
+#ifndef _di_kt_remove_print_simulate_operate_file_exists_
+  void kt_remove_print_simulate_operate_file_exists(fl_print_t * const print, const f_string_static_t path) {
 
-    if (!main || !setting) return;
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
+    if (!print || !print->custom) return;
 
-    if (F_status_is_error(setting->status)) {
-      fl_print_format("  file_access_failure %ui%r", main->output.to.stream, F_status_set_fine(setting->status), f_string_eol_s);
+    kt_remove_main_t * const main = (kt_remove_main_t *) print->custom;
+
+    if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
+
+    if (F_status_is_error(main->setting.state.status)) {
+      fl_print_format("  file_access_failure %ui%r", main->program.output.to, F_status_set_fine(main->setting.state.status), f_string_eol_s);
 
       return;
     }
@@ -50,126 +59,129 @@ extern "C" {
 
 
     if (F_status_is_error(status) && F_status_set_fine(status) != F_file_found_not) {
-      fl_print_format("  file_read_failure %ui%r", main->output.to.stream, F_status_set_fine(status), f_string_eol_s);
+      fl_print_format("  file_read_failure %ui%r", main->program.output.to, F_status_set_fine(status), f_string_eol_s);
 
       return;
     }
 
     if (status == F_true) {
-      setting->buffer.used = 0;
+      main->setting.buffer.used = 0;
 
-      status = f_file_link_read(path, F_false, &setting->buffer);
+      status = f_file_link_read(path, F_false, &main->setting.buffer);
 
       if (F_status_is_error(status)) {
-        fl_print_format("  link_read_failure %ui%r", main->output.to.stream, F_status_set_fine(status), f_string_eol_s);
+        fl_print_format("  link_read_failure %ui%r", main->program.output.to, F_status_set_fine(status), f_string_eol_s);
 
         return;
       }
 
-      flockfile(main->output.to.stream);
+      f_file_stream_lock(main->program.output.to);
 
-      fl_print_format("  follow %Q%r", main->output.to.stream, (setting->flag & kt_remove_flag_follow_e) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
-      fl_print_format("  to '%Q'%r", main->output.to.stream, setting->buffer, f_string_eol_s);
+      fl_print_format("  follow %r%r", main->program.output.to, (main->setting.flag & kt_remove_main_flag_follow_e) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+      fl_print_format("  to '%Q'%r", main->program.output.to, main->setting.buffer, f_string_eol_s);
 
-      funlockfile(main->output.to.stream);
+      f_file_stream_unlock(main->program.output.to);
     }
 
-    fll_print_format("  exists %Q%r", main->output.to.stream, setting->status == F_true ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    fll_print_format("  exists %r%r", main->program.output.to, main->setting.state.status == F_true ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
   }
-#endif // _di_kt_remove_simulate_operate_file_exists_
+#endif // _di_kt_remove_print_simulate_operate_file_exists_
 
-#ifndef _di_kt_remove_simulate_operate_file_stat_
-  void kt_remove_simulate_operate_file_stat(fll_program_data_t * const main, kt_remove_setting_t * const setting, struct stat statistics) {
+#ifndef _di_kt_remove_print_simulate_operate_file_stat_
+  void kt_remove_print_simulate_operate_file_stat(fl_print_t * const print, struct stat statistics) {
 
-    if (!main || !setting) return;
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
+    if (!print || !print->custom) return;
 
-    if (setting->flag & kt_remove_flag_block_e) {
-      fll_print_format("  block %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_block_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    kt_remove_main_t * const main = (kt_remove_main_t *) print->custom;
+
+    if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
+
+    if (main->setting.flag & kt_remove_main_flag_block_e) {
+      fll_print_format("  block %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_block_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_character_e) {
-      fll_print_format("  character %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_character_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_character_e) {
+      fll_print_format("  character %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_character_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_directory_e) {
-      fll_print_format("  directory %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_directory_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_directory_e) {
+      fll_print_format("  directory %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_directory_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_fifo_e) {
-      fll_print_format("  fifo %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_fifo_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_fifo_e) {
+      fll_print_format("  fifo %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_fifo_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_link_e) {
-      fll_print_format("  link %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_link_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_link_e) {
+      fll_print_format("  link %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_link_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_regular_e) {
-      fll_print_format("  regular %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_regular_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_regular_e) {
+      fll_print_format("  regular %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_regular_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_socket_e) {
-      fll_print_format("  socket %Q%r", main->output.to.stream, (macro_f_file_type_get(statistics.st_mode) == F_file_type_socket_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_socket_e) {
+      fll_print_format("  socket %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_socket_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
     f_array_length_t i = 0;
 
-    if (setting->flag & kt_remove_flag_user_e) {
-      for (; i < setting->users.used; ++i) {
-        if (statistics.st_uid == (uid_t) setting->users.array[i]) break;
+    if (main->setting.flag & kt_remove_main_flag_user_e) {
+      for (; i < main->setting.users.used; ++i) {
+        if (statistics.st_uid == (uid_t) main->setting.users.array[i]) break;
       } // for
 
-      if (i == setting->users.used) {
-        fll_print_format("  user%r", main->output.to.stream, f_string_eol_s);
+      if (i == main->setting.users.used) {
+        fll_print_format("  user%r", main->program.output.to, f_string_eol_s);
       }
       else {
-        fll_print_format("  user %un%r", main->output.to.stream, (f_number_unsigned_t) statistics.st_uid, f_string_eol_s);
+        fll_print_format("  user %un%r", main->program.output.to, (f_number_unsigned_t) statistics.st_uid, f_string_eol_s);
       }
     }
 
-    if (setting->flag & kt_remove_flag_same_e) {
-      fll_print_format("  same %Q%r", main->output.to.stream, (statistics.st_uid == geteuid()) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_same_e) {
+      fll_print_format("  same %r%r", main->program.output.to, (statistics.st_uid == geteuid()) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_different_e) {
-      fll_print_format("  different %Q%r", main->output.to.stream, (statistics.st_uid == geteuid()) ? kt_remove_no_s : kt_remove_yes_s, f_string_eol_s);
+    if (main->setting.flag & kt_remove_main_flag_different_e) {
+      fll_print_format("  different %r%r", main->program.output.to, (statistics.st_uid == geteuid()) ? kt_remove_no_s : kt_remove_yes_s, f_string_eol_s);
     }
 
-    if (setting->flag & kt_remove_flag_group_e) {
-      for (i = 0; i < setting->groups.used; ++i) {
-        if (statistics.st_gid == (gid_t) setting->groups.array[i]) break;
+    if (main->setting.flag & kt_remove_main_flag_group_e) {
+      for (i = 0; i < main->setting.groups.used; ++i) {
+        if (statistics.st_gid == (gid_t) main->setting.groups.array[i]) break;
       } // for
 
-      if (i == setting->groups.used) {
-        fll_print_format("  group%r", main->output.to.stream, f_string_eol_s);
+      if (i == main->setting.groups.used) {
+        fll_print_format("  group%r", main->program.output.to, f_string_eol_s);
       }
       else {
-        fll_print_format("  group %un%r", main->output.to.stream, (f_number_unsigned_t) statistics.st_gid, f_string_eol_s);
+        fll_print_format("  group %un%r", main->program.output.to, (f_number_unsigned_t) statistics.st_gid, f_string_eol_s);
       }
     }
 
-    if (setting->flag & kt_remove_flag_mode_e) {
+    if (main->setting.flag & kt_remove_main_flag_mode_e) {
       const mode_t mode = statistics.st_mode & F_file_mode_all_d;
 
-      fll_print_format("  mode %@03un%r", main->output.to.stream, (f_number_unsigned_t) mode, f_string_eol_s);
+      fll_print_format("  mode %@03un%r", main->program.output.to, (f_number_unsigned_t) mode, f_string_eol_s);
 
-      for (i = 0; i < setting->modes.used; ++i) {
+      for (i = 0; i < main->setting.modes.used; ++i) {
 
-        if (setting->modes.array[i].type == kt_remove_flag_mode_different_e) {
-          if (setting->modes.array[i].mode & ~mode) break;
+        if (main->setting.modes.array[i].type == kt_remove_flag_mode_different_e) {
+          if (main->setting.modes.array[i].mode & ~mode) break;
         }
-        else if (setting->modes.array[i].type == kt_remove_flag_mode_same_e) {
-          if (setting->modes.array[i].mode == mode) break;
+        else if (main->setting.modes.array[i].type == kt_remove_flag_mode_same_e) {
+          if (main->setting.modes.array[i].mode == mode) break;
         }
-        else if (setting->modes.array[i].type == kt_remove_flag_mode_similar_e) {
-          if (setting->modes.array[i].mode & mode) break;
+        else if (main->setting.modes.array[i].type == kt_remove_flag_mode_similar_e) {
+          if (main->setting.modes.array[i].mode & mode) break;
         }
-        else if (setting->modes.array[i].type == kt_remove_flag_mode_not_e) {
-          if (setting->modes.array[i].mode != mode) break;
+        else if (main->setting.modes.array[i].type == kt_remove_flag_mode_not_e) {
+          if (main->setting.modes.array[i].mode != mode) break;
         }
       } // for
 
-      if (i < setting->modes.used) {
+      if (i < main->setting.modes.used) {
         uint8_t types[] = {
           kt_remove_flag_mode_different_e,
           kt_remove_flag_mode_same_e,
@@ -186,8 +198,8 @@ extern "C" {
 
         for (uint8_t j = 0; j < 4; ++j) {
 
-          if (setting->modes.array[i].type == types[j]) {
-            fll_print_format("  mode_matched %Q %@03un%r", main->output.to.stream, strings[j], (f_number_unsigned_t) setting->modes.array[i].mode, f_string_eol_s);
+          if (main->setting.modes.array[i].type == types[j]) {
+            fll_print_format("  mode_matched %Q %@03un%r", main->program.output.to, strings[j], (f_number_unsigned_t) main->setting.modes.array[i].mode, f_string_eol_s);
 
             break;
           }
@@ -197,9 +209,9 @@ extern "C" {
 
     {
       kt_remove_dates_t * const dates[] = {
-        &setting->accessed,
-        &setting->created,
-        &setting->updated,
+        &main->setting.accessed,
+        &main->setting.created,
+        &main->setting.updated,
       };
 
       struct timespec times[] = {
@@ -420,9 +432,9 @@ extern "C" {
           }
 
           if (name_type.used) {
-            fll_print_format("  %Q %Q ", main->output.to.stream, *names[p], result ? kt_remove_yes_s : kt_remove_no_s);
-            fll_print_format("%u::%un 0:%un %Q ", main->output.to.stream, match_year, (f_number_unsigned_t) times[p].tv_sec, (f_number_unsigned_t) times[p].tv_nsec, name_type);
-            fll_print_format("%u::%un 0:%un%r", main->output.to.stream, dates[p]->array[i].start_year, dates[p]->array[i].start_second, dates[p]->array[i].start_nanosecond, f_string_eol_s);
+            fll_print_format("  %Q %Q ", main->program.output.to, *names[p], result ? kt_remove_yes_s : kt_remove_no_s);
+            fll_print_format("%u::%un 0:%un %Q ", main->program.output.to, match_year, (f_number_unsigned_t) times[p].tv_sec, (f_number_unsigned_t) times[p].tv_nsec, name_type);
+            fll_print_format("%u::%un 0:%un%r", main->program.output.to, dates[p]->array[i].start_year, dates[p]->array[i].start_second, dates[p]->array[i].start_nanosecond, f_string_eol_s);
 
             break;
           }
@@ -430,43 +442,20 @@ extern "C" {
       } // for
     }
   }
-#endif // _di_kt_remove_simulate_operate_file_stat_
+#endif // _di_kt_remove_print_simulate_operate_file_stat_
 
-#ifndef _di_kt_remove_simulate_operate_remove_force_yes_
-  void kt_remove_simulate_operate_remove_force_yes(fll_program_data_t * const main, kt_remove_setting_t * const setting) {
+#ifndef _di_kt_remove_print_simulate_operate_remove_
+  void kt_remove_print_simulate_operate_remove(fl_print_t * const print, const bool yes, const bool force) {
 
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
+    if (!print || !print->custom) return;
 
-    fll_print_format("  force yes%r", main->output.to.stream, f_string_eol_s);
+    kt_remove_main_t * const main = (kt_remove_main_t *) print->custom;
+
+    if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
+
+    fll_print_format("  %r %r%r", main->program.output.to, force ? kt_remove_force_s : kt_remove_remove_s, yes ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
   }
-#endif // _di_kt_remove_simulate_operate_remove_force_yes_
-
-#ifndef _di_kt_remove_simulate_operate_remove_force_no_
-  void kt_remove_simulate_operate_remove_force_no(fll_program_data_t * const main, kt_remove_setting_t * const setting) {
-
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
-
-    fll_print_format("  force no%r", main->output.to.stream, f_string_eol_s);
-  }
-#endif // _di_kt_remove_simulate_operate_remove_force_no_
-
-#ifndef _di_kt_remove_simulate_operate_remove_yes_
-  void kt_remove_simulate_operate_remove_yes(fll_program_data_t * const main, kt_remove_setting_t * const setting) {
-
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
-
-    fll_print_format("  remove yes%r", main->output.to.stream, f_string_eol_s);
-  }
-#endif // _di_kt_remove_simulate_operate_remove_yes_
-
-#ifndef _di_kt_remove_simulate_operate_remove_no_
-  void kt_remove_simulate_operate_remove_no(fll_program_data_t * const main, kt_remove_setting_t * const setting) {
-
-    if (!(setting->flag & kt_remove_flag_simulate_e)) return;
-
-    fll_print_format("  remove no%r", main->output.to.stream, f_string_eol_s);
-  }
-#endif // _di_kt_remove_simulate_operate_remove_no_
+#endif // _di_kt_remove_print_simulate_operate_remove_
 
 #ifdef __cplusplus
 } // extern "C"

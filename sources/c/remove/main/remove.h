@@ -45,14 +45,21 @@
 #include <fll/level_2/program.h>
 
 // Kevux Tools includes.
-#include <program/kevux/tools/remove/common.h>
-#include <program/kevux/tools/remove/common-print.h>
-#include <program/kevux/tools/remove/convert.h>
-#include <program/kevux/tools/remove/operate.h>
-#include <program/kevux/tools/remove/print.h>
-#include <program/kevux/tools/remove/signal.h>
-#include <program/kevux/tools/remove/simulate.h>
-#include <program/kevux/tools/remove/thread.h>
+#include <program/kevux/tools/remove/main/common/define.h>
+#include <program/kevux/tools/remove/main/common/enumeration.h>
+#include <program/kevux/tools/remove/main/common/print.h>
+#include <program/kevux/tools/remove/main/common/string.h>
+#include <program/kevux/tools/remove/main/common/type.h>
+#include <program/kevux/tools/remove/main/common.h>
+#include <program/kevux/tools/remove/main/convert.h>
+#include <program/kevux/tools/remove/main/operate.h>
+#include <program/kevux/tools/remove/main/print/error.h>
+#include <program/kevux/tools/remove/main/print/message.h>
+#include <program/kevux/tools/remove/main/print/simulate.h>
+#include <program/kevux/tools/remove/main/print/verbose.h>
+#include <program/kevux/tools/remove/main/print/warning.h>
+#include <program/kevux/tools/remove/main/signal.h>
+#include <program/kevux/tools/remove/main/thread.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,11 +77,9 @@ extern "C" {
  *   - F_signal_termination
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *     F_true on success when performing verification and verify passed.
  *     F_false on success when performing verification and verify failed.
@@ -83,38 +88,36 @@ extern "C" {
  *     F_parameter (with error bit) if main is NULL or setting is NULL.
  */
 #ifndef _di_kt_remove_main_
-  extern void kt_remove_main(fll_program_data_t * const main, kt_remove_setting_t * const setting);
+  extern void kt_remove_main(kt_remove_main_t * const main);
 #endif // _di_kt_remove_main_
 
 /**
  * Process printing help.
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
- *   Must be of type (kt_remove_setting_t *).
+ *   The main program and settings data.
  *
- *   This does not alter setting.status.
+ *   This must be of type kt_remove_main_t.
+ *
+ *   This does not alter main.setting.state.status.
  *
  * @return
  *   F_none on success.
  *   F_output_not on success, but no printing is performed.
  */
 #ifndef _di_kt_remove_process_help_
-  extern f_status_t kt_remove_process_help(fll_program_data_t * const main, void * const setting);
+  extern f_status_t kt_remove_process_help(void * const main);
 #endif // _di_kt_remove_process_help_
 
 /**
  * Process normally, writing to the output.
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
- *   Must be of type (kt_remove_setting_t *).
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This must be of type kt_remove_main_t.
+ *
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_parameter (with error bit) if main is NULL or setting is NULL.
@@ -124,25 +127,22 @@ extern "C" {
  * @see kt_remove_process_normal_operate()
  */
 #ifndef _di_kt_remove_process_normal_
-  extern void kt_remove_process_normal(fll_program_data_t * const main, void * const setting);
+  extern void kt_remove_process_normal(void * const main);
 #endif // _di_kt_remove_process_normal_
 
 /**
  * Perform the normal processing.
  *
  * @param main
- *   The main program data.
- * @param setting
- *   The main program settings.
- *   Must be of type (kt_remove_setting_t *).
+ *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_parameter (with error bit) if main is NULL or setting is NULL.
  */
 #ifndef _di_kt_remove_process_normal_operate_
-  extern void kt_remove_process_normal_operate(fll_program_data_t * const main, kt_remove_setting_t * const setting);
+  extern void kt_remove_process_normal_operate(kt_remove_main_t * const main);
 #endif // _di_kt_remove_process_normal_operate_
 
 #ifdef __cplusplus

@@ -66,17 +66,19 @@ install_main() {
   local destination_libraries_shared=
   local destination_programs_static=
   local destination_programs_shared=
+  local destination_settings=etc/
 
   local work=
 
-  local enable_documentation=
-  local enable_shared=
-  local enable_shared_programs=
-  local enable_shared_libraries=
-  local enable_static=
-  local enable_static_programs=
-  local enable_static_libraries=
-  local enable_includes=yes
+  local enable_documentation="yes"
+  local enable_settings="yes"
+  local enable_shared="yes"
+  local enable_shared_programs="yes"
+  local enable_shared_libraries="yes"
+  local enable_static="yes"
+  local enable_static_programs="yes"
+  local enable_static_libraries="yes"
+  local enable_includes="yes"
 
   if [[ $# -gt 0 ]] ; then
     t=$#
@@ -127,6 +129,10 @@ install_main() {
           grab_next=prefix
         elif [[ $p == "-B" || $p == "--bindir" ]] ; then
           grab_next=bindir
+        elif [[ $p == "-D" || $p == "--docdir" ]] ; then
+          grab_next=docdir
+        elif [[ $p == "-E" || $p == "--etcdir" ]] ; then
+          grab_next=etcdir
         elif [[ $p == "-I" || $p == "--includedir" ]] ; then
           grab_next=includedir
         elif [[ $p == "-L" || $p == "--libdir" ]] ; then
@@ -137,6 +143,10 @@ install_main() {
           enable_documentation="yes"
         elif [[ $p == "--disable-doc" ]] ; then
           enable_documentation="no"
+        elif [[ $p == "--enable-settings" ]] ; then
+          enable_settings="yes"
+        elif [[ $p == "--disable-settings" ]] ; then
+          enable_settings="no"
         elif [[ $p == "--enable-shared" ]] ; then
           enable_shared="yes"
         elif [[ $p == "--disable-shared" ]] ; then
@@ -157,8 +167,6 @@ install_main() {
           enable_includes="yes"
         elif [[ $p == "--disable-includes" ]] ; then
           enable_includes="no"
-        elif [[ $p == "--documentation" ]] ; then
-          grab_next="destination_documentation"
         elif [[ $p == "--libraries-static" ]] ; then
           grab_next="destination_libraries_static"
         elif [[ $p == "--libraries-shared" ]] ; then
@@ -178,14 +186,16 @@ install_main() {
           destination_prefix=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "bindir" ]] ; then
           destination_programs=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
+        elif [[ $grab_next == "docdir" ]] ; then
+          destination_documentation=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
+        elif [[ $grab_next == "etcdir" ]] ; then
+          destination_settings=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "includedir" ]] ; then
           destination_includes=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "libdir" ]] ; then
           destination_libraries=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "work" ]] ; then
           work=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
-        elif [[ $grab_next == "destination_documentation" ]] ; then
-          destination_documentation=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "destination_libraries_static" ]] ; then
           destination_libraries_static=$(echo $p | sed -e 's|^//*|/|' -e 's|/*$|/|')
         elif [[ $grab_next == "destination_libraries_shared" ]] ; then
@@ -258,6 +268,10 @@ install_main() {
     if [[ $(echo $destination_libraries | grep -o '^/') == "" ]] ; then
       destination_libraries="$destination_prefix$destination_libraries"
     fi
+
+    if [[ $(echo $destination_settings | grep -o '^/') == "" ]] ; then
+      destination_settings="$destination_prefix$destination_settings"
+    fi
   fi
 
   if [[ $destination_libraries_static != "" ]] ; then
@@ -302,7 +316,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_programs ]] ; then
+  if [[ $work == "" && -e $destination_programs && ! -d $destination_programs ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination bindir ${c_notice}$destination_programs${c_error} is not a valid directory.${c_reset}"
     fi
@@ -312,7 +326,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_programs_static ]] ; then
+  if [[ $work == "" && -e $destination_programs_static && ! -d $destination_programs_static ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination (${c_notice}static${c_error}) bindir ${c_notice}$destination_programs_static${c_error} is not a valid directory.${c_reset}"
     fi
@@ -322,7 +336,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_programs_shared ]] ; then
+  if [[ $work == "" && -e $destination_programs_shared && ! -d $destination_programs_shared ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination (${c_notice}shared${c_error}) bindir ${c_notice}$destination_programs_shared${c_error} is not a valid directory.${c_reset}"
     fi
@@ -332,7 +346,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_includes ]] ; then
+  if [[ $work == "" && -e $destination_includes && ! -d $destination_includes ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination incluedir ${c_notice}$destination_includes${c_error} is not a valid directory.${c_reset}"
     fi
@@ -342,7 +356,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_libraries_static ]] ; then
+  if [[ $work == "" && -e $destination_libraries_static && ! -d $destination_libraries_static ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination (${c_notice}static${c_error}) libdir ${c_notice}$destination_libraries_static${c_error} is not a valid directory.${c_reset}"
     fi
@@ -352,7 +366,7 @@ install_main() {
     return 1
   fi
 
-  if [[ $work == "" && ! -d $destination_libraries_shared ]] ; then
+  if [[ $work == "" && -e $destination_libraries_shared && ! -d $destination_libraries_shared ]] ; then
     if [[ $verbosity != "quiet" ]] ; then
       echo -e "${c_error}ERROR: The destination (${c_notice}shared${c_error}) libdir ${c_notice}$destination_libraries_shared${c_error} is not a valid directory.${c_reset}"
     fi
@@ -414,13 +428,17 @@ install_help() {
   echo -e " -${c_important}b${c_reset}, --${c_important}build${c_reset}       Custom build directory."
   echo -e " -${c_important}P${c_reset}, --${c_important}prefix${c_reset}      Custom destination prefix."
   echo -e " -${c_important}B${c_reset}, --${c_important}bindir${c_reset}      Custom destination bin/ directory."
+  echo -e " -${c_important}D${c_reset}, --${c_important}docdir${c_reset}      Custom destination share/ directory (documentation directory)."
+  echo -e " -${c_important}E${c_reset}, --${c_important}etcdir${c_reset}      Custom destination etc/ directory (settings directory)."
   echo -e " -${c_important}I${c_reset}, --${c_important}includedir${c_reset}  Custom destination include/ directory."
   echo -e " -${c_important}L${c_reset}, --${c_important}libdir${c_reset}      Custom destination lib/ directory."
-  echo -e " -${c_important}w${c_reset}, --${c_important}work${c_reset}        Install to this directory instead of system."
+  echo -e " -${c_important}w${c_reset}, --${c_important}work${c_reset}        Install to this work directory using a 'working' directory structure."
   echo
   echo -e "${c_highlight}Special Options:${c_reset}"
   echo -e " --${c_important}enable-doc${c_reset}                Forcibly do install documentation files."
   echo -e " --${c_important}disable-doc${c_reset}               Forcibly do not install documentation files."
+  echo -e " --${c_important}enable-settings${c_reset}           Forcibly do install settings files."
+  echo -e " --${c_important}disable-settings${c_reset}          Forcibly do not install settings files."
   echo -e " --${c_important}enable-shared${c_reset}             Forcibly do install shared files."
   echo -e " --${c_important}disable-shared${c_reset}            Forcibly do not install shared files."
   echo -e " --${c_important}disable-shared-programs${c_reset}   Forcibly do not install shared programs."
@@ -431,7 +449,6 @@ install_help() {
   echo -e " --${c_important}disable-static-libraries${c_reset}  Forcibly do not install shared libraries."
   echo -e " --${c_important}enable-includes${c_reset}           Forcibly do not install include files."
   echo -e " --${c_important}disable-includes${c_reset}          Forcibly do not install include files."
-  echo -e " --${c_important}documentation${c_reset}             Custom destination for documentation files."
   echo -e " --${c_important}libraries-static${c_reset}          Custom destination for static libraries."
   echo -e " --${c_important}libraries-shared${c_reset}          Custom destination for shared libraries."
   echo -e " --${c_important}programs-static${c_reset}           Custom destination for static programs."
@@ -444,136 +461,161 @@ install_perform_install() {
   local i=
   local path=
   local failure=
+  local message=
 
-  if [[ $enable_documentation == "" ]] ; then
-    enable_documentation="yes"
+  if [[ $enable_shared == "no" ]] ; then
+    enable_shared_programs="no"
+    enable_shared_libraries="no"
   fi
 
-  if [[ $enable_shared == "" ]] ; then
-    enable_shared="yes"
+  if [[ $enable_static == "no" ]] ; then
+    enable_static_programs="no"
+    enable_static_libraries="no"
   fi
 
-  if [[ $enable_shared_programs == "" ]] ; then
-    enable_shared_programs="yes"
+  if [[ $work == "" ]] ; then
+    message="install destination directory"
+  else
+    message="work directory"
+    destination_prefix=${work}
+    destination_documentation=${work}documentation/
+    destination_programs=${work}programs/
+    destination_programs_static=${destination_programs}static/
+    destination_programs_shared=${destination_programs}shared/
+    destination_includes=${work}includes/
+    destination_libraries=${work}libraries/
+    destination_libraries_static=${destination_libraries}static/
+    destination_libraries_shared=${destination_libraries}shared/
+    destination_settings=${work}settings/
   fi
 
-  if [[ $enable_shared_libraries == "" ]] ; then
-    enable_shared_libraries="yes"
-  fi
+  if [[ ! -d ${destination_prefix} ]] ; then
+    mkdir $verbose_common ${destination_prefix}
 
-  if [[ $enable_static == "" ]] ; then
-    enable_static="yes"
-  fi
-
-  if [[ $enable_static_programs == "" ]] ; then
-    enable_static_programs="yes"
-  fi
-
-  if [[ $enable_static_libraries == "" ]] ; then
-    enable_static_libraries="yes"
-  fi
-
-  if [[ $work != "" ]] ; then
-    if [[ $enable_shared_programs == "yes" || $enable_static_programs == "yes" ]] ; then
-      if [[ ! -d ${work}programs ]] ; then
-        mkdir $verbose_common ${work}programs
-
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}programs${c_error}.${c_reset}"
-          fi
-
-          failure=1
-        fi
+    if [[ $? -ne 0 ]] ; then
+      if [[ $verbosity != "quiet" ]] ; then
+        echo -e "${c_error}ERROR: Failed to create install ${message} ${c_notice}${destination_prefix}${c_error}.${c_reset}"
       fi
 
-      if [[ $enable_shared_programs == "yes" && -d ${path_build}${path_programs}${path_shared} && ! -d ${work}programs/shared ]] ; then
-        mkdir $verbose_common ${work}programs/shared
+      failure=1
+    fi
+  fi
 
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}programs/shared${c_error}.${c_reset}"
-          fi
+  if [[ $enable_shared_programs == "yes" || $enable_static_programs == "yes" ]] ; then
+    if [[ -d ${path_build}${path_programs} && ! -d ${destination_programs} ]] ; then
+      mkdir $verbose_common ${destination_programs}
 
-          failure=1
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create install ${message} ${c_notice}${destination_programs}${c_error}.${c_reset}"
         fi
-      fi
 
-      if [[ $enable_static_programs == "yes" && -d ${path_build}${path_programs}${path_static} && ! -d ${work}programs/static ]] ; then
-        mkdir $verbose_common ${work}programs/static
-
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}programs/static${c_error}.${c_reset}"
-          fi
-
-          failure=1
-        fi
+        failure=1
       fi
     fi
 
-    if [[ $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ]] ; then
-      if [[ ! -d ${work}libraries ]] ; then
-        mkdir $verbose_common ${work}libraries
+    if [[ $enable_shared_programs == "yes" && -d ${path_build}${path_programs}${path_shared} && ! -d ${destination_programs_shared} ]] ; then
+      mkdir $verbose_common ${destination_programs_shared}
 
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}libraries${c_error}.${c_reset}"
-          fi
-
-          failure=1
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create install ${message} ${c_notice}${destination_programs_shared}${c_error}.${c_reset}"
         fi
-      fi
 
-      if [[ $enable_shared_libraries == "yes" && -d ${path_build}${path_libraries}${path_shared} && ! -d ${work}libraries/shared ]] ; then
-        mkdir $verbose_common ${work}libraries/shared
-
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}libraries/shared${c_error}.${c_reset}"
-          fi
-
-          failure=1
-        fi
-      fi
-
-      if [[ $enable_static_libraries == "yes" && -d ${path_build}${path_libraries}${path_static} && ! -d ${work}libraries/static ]] ; then
-        mkdir $verbose_common ${work}libraries/static
-
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}libraries/static${c_error}.${c_reset}"
-          fi
-
-          failure=1
-        fi
+        failure=1
       fi
     fi
 
-    if [[ $enable_includes == "yes" ]] ; then
-      if [[ ! -d ${work}includes ]] ; then
-        mkdir $verbose_common ${work}includes
+    if [[ $enable_static_programs == "yes" && -d ${path_build}${path_programs}${path_static} && ! -d ${destination_programs_static} ]] ; then
+      mkdir $verbose_common ${destination_programs_static}
 
-        if [[ $? -ne 0 ]] ; then
-          if [[ $verbosity != "quiet" ]] ; then
-            echo -e "${c_error}ERROR: Failed to create work directories ${c_notice}${work}includes${c_error}.${c_reset}"
-          fi
-
-          failure=1
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create install ${message} ${c_notice}${destination_programs_static}${c_error}.${c_reset}"
         fi
+
+        failure=1
+      fi
+    fi
+  fi
+
+  if [[ $enable_shared_libraries == "yes" || $enable_static_libraries == "yes" ]] ; then
+    if [[ -d ${path_build}${path_libraries} && ! -d ${destination_libraries} ]] ; then
+      mkdir $verbose_common ${destination_libraries}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create install ${message} ${c_notice}${destination_libraries}${c_error}.${c_reset}"
+        fi
+
+        failure=1
       fi
     fi
 
-    if [[ $failure == "" ]] ; then
-      destination_prefix=${work}
-      destination_documentation=${work}documentation/
-      destination_programs=${work}programs/
-      destination_programs_static=${destination_programs}static/
-      destination_programs_shared=${destination_programs}shared/
-      destination_includes=${work}includes/
-      destination_libraries=${work}libraries/
-      destination_libraries_static=${destination_libraries}static/
-      destination_libraries_shared=${destination_libraries}shared/
+    if [[ $enable_shared_libraries == "yes" && -d ${path_build}${path_libraries}${path_shared} && ! -d ${destination_libraries_shared} ]] ; then
+      mkdir $verbose_common ${destination_libraries_shared}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create ${message} ${c_notice}${destination_libraries_shared}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
+    fi
+
+    if [[ $enable_static_libraries == "yes" && -d ${path_build}${path_libraries}${path_static} && ! -d ${destination_libraries_static} ]] ; then
+      mkdir $verbose_common ${destination_libraries_static}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create ${message} ${c_notice}${destination_libraries_static}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
+    fi
+  fi
+
+  if [[ $enable_includes == "yes" ]] ; then
+    if [[ -d ${path_build}${path_includes} && ! -d ${destination_includes} ]] ; then
+      mkdir $verbose_common ${destination_includes}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create ${message} ${c_notice}${destination_includes}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
+    fi
+  fi
+
+  if [[ $enable_documentation == "yes" ]] ; then
+    if [[ -d ${path_build}${path_documentation} && ! -d ${destination_documentation} ]] ; then
+      mkdir $verbose_common ${destination_documentation}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create ${message} ${c_notice}${destination_documentation}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
+    fi
+  fi
+
+  if [[ $enable_settings == "yes" ]] ; then
+    if [[ -d ${path_build}${path_settings} && ! -d ${destination_settings} ]] ; then
+      mkdir $verbose_common ${destination_settings}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: Failed to create ${message} ${c_notice}${destination_settings}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
     fi
   fi
 
@@ -744,8 +786,20 @@ install_perform_install() {
     fi
 
     if [[ $file != "" ]] ; then
-      echo
-      echo -e "${c_warning}Settings Files Detected, see: ${c_reset}${c_notice}${path_build}${path_settings}${c_reset}${c_warning}.${c_reset}"
+      if [[ $verbosity != "quiet" ]] ; then
+        echo
+        echo -e "${c_highlight}Installing Documentation to: ${c_reset}${c_notice}${destination_settings}${c_reset}${c_highlight}.${c_reset}"
+      fi
+
+      cp $verbose_common -R ${path_build}${path_settings}* ${destination_settings}
+
+      if [[ $? -ne 0 ]] ; then
+        if [[ $verbosity != "quiet" ]] ; then
+          echo -e "${c_error}ERROR: failed to copy documentation files from ${c_notice}${path_build}${path_programs}${path_static}${c_error} to ${c_notice}${destination_settings}${c_error}.${c_reset}"
+        fi
+
+        failure=1
+      fi
     fi
   fi
 

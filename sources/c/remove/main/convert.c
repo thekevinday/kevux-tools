@@ -5,10 +5,10 @@ extern "C" {
 #endif
 
 #ifndef _di_kt_remove_convert_date_
-  void kt_remove_convert_date(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer, kt_remove_date_t * const date) {
+  void kt_remove_convert_date(kt_remove_main_t * const main, const f_string_static_t buffer, kt_remove_date_t * const date) {
 
-    if (!setting || !buffer.used || !date) {
-      if (setting) setting->status = F_data_not;
+    if (!main || !buffer.used || !date) {
+      if (main) main->setting.state.status = F_data_not;
 
       return;
     }
@@ -33,10 +33,10 @@ extern "C" {
         if (fl_string_dynamic_compare(buffer, strings[i]) == F_equal_to) {
           date->type = enumerations[i];
 
-          kt_remove_convert_date_relative(setting, date);
+          kt_remove_convert_date_relative(main, date);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_date_relative));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(kt_remove_convert_date_relative));
           }
 
           return;
@@ -67,15 +67,15 @@ extern "C" {
         width = macro_f_utf_byte_width(buffer.string[range.start]);
 
         if (matches & kt_remove_flag_convert_match_second_e) {
-          setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+          main->setting.state.status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_utf_is_digit));
 
             return;
           }
 
-          if (setting->status == F_true) {
+          if (main->setting.state.status == F_true) {
             range_second.stop = range.start;
 
             continue;
@@ -104,15 +104,15 @@ extern "C" {
             continue;
           }
 
-          setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+          main->setting.state.status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_utf_is_digit));
 
             return;
           }
 
-          if (setting->status == F_true) {
+          if (main->setting.state.status == F_true) {
             matches |= kt_remove_flag_convert_match_second_e;
             range_second.start = range.start;
             range_second.stop = range.start;
@@ -129,15 +129,15 @@ extern "C" {
             continue;
           }
 
-          setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+          main->setting.state.status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_utf_is_digit));
 
             return;
           }
 
-          if (setting->status == F_true) {
+          if (main->setting.state.status == F_true) {
             range_first.stop = range.start;
           }
           else {
@@ -149,15 +149,15 @@ extern "C" {
           continue;
         }
 
-        setting->status = f_utf_is_whitespace(buffer.string + range.start, width_max, F_false);
+        main->setting.state.status = f_utf_is_whitespace(buffer.string + range.start, width_max, F_false);
 
-        if (F_status_is_error(setting->status)) {
-          kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_whitespace));
+        if (F_status_is_error(main->setting.state.status)) {
+          kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_utf_is_whitespace));
 
           return;
         }
 
-        if (setting->status == F_true) continue;
+        if (main->setting.state.status == F_true) continue;
 
         if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
           matches |= kt_remove_flag_convert_colon_single_e;
@@ -165,15 +165,15 @@ extern "C" {
           continue;
         }
 
-        setting->status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
+        main->setting.state.status = f_utf_is_digit(buffer.string + range.start, width_max, 0);
 
-        if (F_status_is_error(setting->status)) {
-          kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_utf_is_digit));
+        if (F_status_is_error(main->setting.state.status)) {
+          kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_utf_is_digit));
 
           return;
         }
 
-        if (setting->status == F_true) {
+        if (main->setting.state.status == F_true) {
           matches |= kt_remove_flag_convert_match_first_e;
           range_first.start = range.start;
           range_first.stop = range.start;
@@ -185,7 +185,7 @@ extern "C" {
         }
       } // for
 
-      setting->status = F_none;
+      main->setting.state.status = F_none;
     }
 
     // If the first and possibly the second digit matches.
@@ -202,10 +202,10 @@ extern "C" {
 
       // Process the first character.
       if (matches & kt_remove_flag_convert_match_first_e) {
-        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_first, &date->start_year);
+        main->setting.state.status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_first, &date->start_year);
 
-        if (F_status_is_error(setting->status)) {
-          kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
+        if (F_status_is_error(main->setting.state.status)) {
+          kt_remove_print_error(&main->program.error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
 
           return;
         }
@@ -229,16 +229,16 @@ extern "C" {
 
             if (!result) {
               if (result == EFAULT) {
-                 setting->status = F_status_set_error(F_buffer);
+                 main->setting.state.status = F_status_set_error(F_buffer);
               }
               else if (result == EINVAL) {
-                setting->status = F_status_set_error(F_parameter);
+                main->setting.state.status = F_status_set_error(F_parameter);
               }
               else if (result == EPERM) {
-                setting->status = F_status_set_error(F_prohibited);
+                main->setting.state.status = F_status_set_error(F_prohibited);
               }
               else {
-                setting->status = F_status_set_error(F_failure);
+                main->setting.state.status = F_status_set_error(F_failure);
               }
 
               return;
@@ -252,20 +252,20 @@ extern "C" {
 
       // Process the second character.
       if (matches & kt_remove_flag_convert_match_second_e) {
-        setting->status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_second, &date->start_second);
+        main->setting.state.status = fl_conversion_dynamic_partial_to_unsigned_detect(conversion_data, buffer, range_second, &date->start_second);
 
-        if (F_status_is_error(setting->status)) {
-          kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
+        if (F_status_is_error(main->setting.state.status)) {
+          kt_remove_print_error(&main->program.error, macro_kt_remove_f(fl_conversion_dynamic_partial_to_unsigned_detect));
 
           return;
         }
 
         if (matches & kt_remove_flag_convert_colon_double_e) {
-          if (!(setting->flag & kt_remove_flag_utc_e)) {
-            kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+          if (!(main->setting.flag & kt_remove_main_flag_utc_e)) {
+            kt_remove_convert_timezone(main, &date->start_year, &date->start_second);
 
-            if (F_status_is_error(setting->status)) {
-              kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
+            if (F_status_is_error(main->setting.state.status)) {
+              kt_remove_print_error(&main->program.error, macro_kt_remove_f(kt_remove_convert_timezone));
 
               return;
             }
@@ -275,11 +275,11 @@ extern "C" {
           date->start_nanosecond = date->start_second % kt_remove_time_seconds_in_nanosecond_d;
           date->start_second = (date->start_second / kt_remove_time_seconds_in_nanosecond_d);
 
-          if (!(setting->flag & kt_remove_flag_utc_e)) {
-            kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+          if (!(main->setting.flag & kt_remove_main_flag_utc_e)) {
+            kt_remove_convert_timezone(main, &date->start_year, &date->start_second);
 
-            if (F_status_is_error(setting->status)) {
-              kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
+            if (F_status_is_error(main->setting.state.status)) {
+              kt_remove_print_error(&main->program.error, macro_kt_remove_f(kt_remove_convert_timezone));
 
               return;
             }
@@ -298,18 +298,18 @@ extern "C" {
           date->start_year = kt_remove_time_year_unix_epoch_d;
           date->type = kt_remove_flag_date_unix_e;
 
-          setting->status = fl_conversion_dynamic_to_unsigned_detect(conversion_data, buffer, &date->start_second);
+          main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(conversion_data, buffer, &date->start_second);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(fl_conversion_dynamic_to_unsigned_detect));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(fl_conversion_dynamic_to_unsigned_detect));
 
             return;
           }
 
-          kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
+          kt_remove_convert_timezone(main, &date->start_year, &date->start_second);
 
-          if (F_status_is_error(setting->status)) {
-            kt_remove_print_error(setting, main->error, macro_kt_remove_f(kt_remove_convert_timezone));
+          if (F_status_is_error(main->setting.state.status)) {
+            kt_remove_print_error(&main->program.error, macro_kt_remove_f(kt_remove_convert_timezone));
 
             return;
           }
@@ -366,15 +366,15 @@ extern "C" {
       } // for
     }
 
-    setting->status = matches ? F_none : F_status_set_error(F_known_not);
+    main->setting.state.status = matches ? F_none : F_status_set_error(F_known_not);
   }
 #endif // _di_kt_remove_convert_date_
 
 #ifndef _di_kt_remove_convert_date_relative_
-  void kt_remove_convert_date_relative(kt_remove_setting_t * const setting, kt_remove_date_t * const date) {
+  void kt_remove_convert_date_relative(kt_remove_main_t * const main, kt_remove_date_t * const date) {
 
-    if (!setting || !date) {
-      if (setting) setting->status = F_status_set_error(F_parameter);
+    if (!main || !date) {
+      if (main) main->setting.state.status = F_status_set_error(F_parameter);
 
       return;
     }
@@ -388,16 +388,16 @@ extern "C" {
 
       if (result) {
         if (errno == EFAULT) {
-           setting->status = F_status_set_error(F_buffer);
+           main->setting.state.status = F_status_set_error(F_buffer);
         }
         else if (errno == EINVAL) {
-          setting->status = F_status_set_error(F_parameter);
+          main->setting.state.status = F_status_set_error(F_parameter);
         }
         else if (errno == EPERM) {
-          setting->status = F_status_set_error(F_prohibited);
+          main->setting.state.status = F_status_set_error(F_prohibited);
         }
         else {
-          setting->status = F_status_set_error(F_failure);
+          main->setting.state.status = F_status_set_error(F_failure);
         }
 
         return;
@@ -414,20 +414,20 @@ extern "C" {
     if (date->type == kt_remove_flag_date_now_e) {
       date->start_nanosecond = now.tv_nsec;
 
-      if (!(setting->flag & kt_remove_flag_utc_e)) {
-        kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
-        if (F_status_is_error(setting->status)) return;
+      if (!(main->setting.flag & kt_remove_main_flag_utc_e)) {
+        kt_remove_convert_timezone(main, &date->start_year, &date->start_second);
+        if (F_status_is_error(main->setting.state.status)) return;
       }
 
-      setting->status = F_none;
+      main->setting.state.status = F_none;
 
       return;
     }
 
     // Determine start of day.
-    if (!(setting->flag & kt_remove_flag_utc_e)) {
-      kt_remove_convert_timezone(setting, &date->start_year, &date->start_second);
-      if (F_status_is_error(setting->status)) return;
+    if (!(main->setting.flag & kt_remove_main_flag_utc_e)) {
+      kt_remove_convert_timezone(main, &date->start_year, &date->start_second);
+      if (F_status_is_error(main->setting.state.status)) return;
     }
 
     date->start_second -= date->start_second % kt_remove_time_seconds_in_day_d;
@@ -444,38 +444,38 @@ extern "C" {
       date->stop_second = date->start_second;
     }
 
-    setting->status = F_none;
+    main->setting.state.status = F_none;
   }
 #endif // _di_kt_remove_convert_date_relative_
 
 #ifndef _di_kt_remove_get_id_group_
-  uint32_t kt_remove_get_id_group(kt_remove_setting_t * const setting, const f_string_static_t buffer) {
+  uint32_t kt_remove_get_id_group(kt_remove_main_t * const main, const f_string_static_t buffer) {
 
-    if (!setting) return 0;
+    if (!main) return 0;
 
     f_number_unsigned_t number = 0;
 
-    setting->status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, buffer, &number);
+    main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, buffer, &number);
 
-    if (F_status_is_error(setting->status)) {
-      if (F_status_set_fine(setting->status) == F_number) {
-        setting->buffer.used = 0;
+    if (F_status_is_error(main->setting.state.status)) {
+      if (F_status_set_fine(main->setting.state.status) == F_number) {
+        main->setting.buffer.used = 0;
 
-        setting->status = fl_string_dynamic_rip_nulless(buffer, &setting->buffer);
-        if (F_status_is_error(setting->status)) return 0;
+        main->setting.state.status = fl_string_dynamic_rip_nulless(buffer, &main->setting.buffer);
+        if (F_status_is_error(main->setting.state.status)) return 0;
 
         gid_t gid = 0;
 
-        setting->status = f_account_group_id_by_name(setting->buffer, &gid);
-        if (F_status_is_error(setting->status)) return 0;
+        main->setting.state.status = f_account_group_id_by_name(main->setting.buffer, &gid);
+        if (F_status_is_error(main->setting.state.status)) return 0;
 
-        if (setting->status == F_exist_not) {
-          setting->status = F_status_set_error(F_exist_not);
+        if (main->setting.state.status == F_exist_not) {
+          main->setting.state.status = F_status_set_error(F_exist_not);
 
           return 0;
         }
 
-        setting->status = F_none;
+        main->setting.state.status = F_none;
 
         return (uint32_t) gid;
       }
@@ -484,45 +484,45 @@ extern "C" {
     }
 
     if (number > F_type_size_32_unsigned_d) {
-      setting->status = F_status_set_error(F_number_too_large);
+      main->setting.state.status = F_status_set_error(F_number_too_large);
 
       return 0;
     }
 
-    setting->status = F_none;
+    main->setting.state.status = F_none;
 
     return (uint32_t) number;
   }
 #endif // _di_kt_remove_get_id_group_
 
 #ifndef _di_kt_remove_get_id_user_
-  uint32_t kt_remove_get_id_user(kt_remove_setting_t * const setting, const f_string_static_t buffer) {
+  uint32_t kt_remove_get_id_user(kt_remove_main_t * const main, const f_string_static_t buffer) {
 
-    if (!setting) return 0;
+    if (!main) return 0;
 
     f_number_unsigned_t number = 0;
 
-    setting->status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, buffer, &number);
+    main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, buffer, &number);
 
-    if (F_status_is_error(setting->status)) {
-      if (F_status_set_fine(setting->status) == F_number) {
-        setting->buffer.used = 0;
+    if (F_status_is_error(main->setting.state.status)) {
+      if (F_status_set_fine(main->setting.state.status) == F_number) {
+        main->setting.buffer.used = 0;
 
-        setting->status = fl_string_dynamic_rip_nulless(buffer, &setting->buffer);
-        if (F_status_is_error(setting->status)) return 0;
+        main->setting.state.status = fl_string_dynamic_rip_nulless(buffer, &main->setting.buffer);
+        if (F_status_is_error(main->setting.state.status)) return 0;
 
         uid_t uid = 0;
 
-        setting->status = f_account_id_by_name(setting->buffer, &uid);
-        if (F_status_is_error(setting->status)) return 0;
+        main->setting.state.status = f_account_id_by_name(main->setting.buffer, &uid);
+        if (F_status_is_error(main->setting.state.status)) return 0;
 
-        if (setting->status == F_exist_not) {
-          setting->status = F_status_set_error(F_exist_not);
+        if (main->setting.state.status == F_exist_not) {
+          main->setting.state.status = F_status_set_error(F_exist_not);
 
           return 0;
         }
 
-        setting->status = F_none;
+        main->setting.state.status = F_none;
 
         return (uint32_t) uid;
       }
@@ -531,54 +531,54 @@ extern "C" {
     }
 
     if (number > F_type_size_32_unsigned_d) {
-      setting->status = F_status_set_error(F_number_too_large);
+      main->setting.state.status = F_status_set_error(F_number_too_large);
 
       return 0;
     }
 
-    setting->status = F_none;
+    main->setting.state.status = F_none;
 
     return (uint32_t) number;
   }
 #endif // _di_kt_remove_get_id_user_
 
 #ifndef _di_kt_remove_get_mode_
-  mode_t kt_remove_get_mode(fll_program_data_t * const main, kt_remove_setting_t * const setting, const f_string_static_t buffer) {
+  mode_t kt_remove_get_mode(kt_remove_main_t * const main, const f_string_static_t buffer) {
 
-    if (!setting) return 0;
+    if (!main) return 0;
 
     f_file_mode_t mode_file = f_file_mode_t_initialize;
     uint8_t mode_replace = 0;
 
-    setting->status = f_file_mode_from_string(buffer, main->umask, &mode_file, &mode_replace);
+    main->setting.state.status = f_file_mode_from_string(buffer, main->program.umask, &mode_file, &mode_replace);
 
-    if (F_status_is_error(setting->status)) {
-      kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_file_mode_from_string));
+    if (F_status_is_error(main->setting.state.status)) {
+      kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_file_mode_from_string));
 
       return 0;
     }
 
     mode_t mode = 0;
 
-    setting->status = f_file_mode_to_mode(mode_file, &mode);
+    main->setting.state.status = f_file_mode_to_mode(mode_file, &mode);
 
-    if (F_status_is_error(setting->status)) {
-      kt_remove_print_error(setting, main->error, macro_kt_remove_f(f_file_mode_to_mode));
+    if (F_status_is_error(main->setting.state.status)) {
+      kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_file_mode_to_mode));
 
       return 0;
     }
 
-    setting->status = F_none;
+    main->setting.state.status = F_none;
 
     return mode;
   }
 #endif // _di_kt_remove_get_mode_
 
 #ifndef _di_kt_remove_convert_timezone_
-  void kt_remove_convert_timezone(kt_remove_setting_t * const setting, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds) {
+  void kt_remove_convert_timezone(kt_remove_main_t * const main, f_number_unsigned_t * const year, f_number_unsigned_t * const seconds) {
 
-    if (!setting || !year || !seconds) {
-      if (setting) setting->status = F_status_set_error(F_parameter);
+    if (!main || !year || !seconds) {
+      if (main) main->setting.state.status = F_status_set_error(F_parameter);
 
       return;
     }
@@ -590,7 +590,7 @@ extern "C" {
           *seconds -= kt_remove_time_seconds_in_year_d + timezone;
         }
         else {
-          setting->status = F_status_set_error(F_number_overflow);
+          main->setting.state.status = F_status_set_error(F_number_overflow);
 
           return;
         }
@@ -606,7 +606,7 @@ extern "C" {
           *seconds = kt_remove_time_seconds_in_year_d - (timezone - *seconds);
         }
         else {
-          setting->status = F_status_set_error(F_number_underflow);
+          main->setting.state.status = F_status_set_error(F_number_underflow);
 
           return;
         }
@@ -616,7 +616,7 @@ extern "C" {
       }
     }
 
-    setting->status = F_none;
+    main->setting.state.status = F_none;
   }
 #endif // _di_kt_remove_convert_timezone_
 

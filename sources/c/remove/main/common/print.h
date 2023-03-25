@@ -5,7 +5,7 @@
  * API Version: 0.5
  * Licenses: lgpl-2.1-or-later
  *
- * Provides the common data structures.
+ * Provides the common print functionality.
  *
  * This is auto-included and should not need to be explicitly included.
  */
@@ -40,6 +40,7 @@ extern "C" {
 #ifndef _di_kt_remove_f_e_
   enum {
     kt_remove_f_f_console_parameter_prioritize_right_e,
+    kt_remove_f_f_console_parameter_process_e,
     kt_remove_f_f_file_mode_from_string_e,
     kt_remove_f_f_file_mode_to_mode_e,
     kt_remove_f_f_string_dynamics_increase_by_e,
@@ -49,7 +50,9 @@ extern "C" {
     kt_remove_f_f_utf_is_whitespace_e,
     kt_remove_f_fl_conversion_dynamic_partial_to_unsigned_detect_e,
     kt_remove_f_fl_conversion_dynamic_to_unsigned_detect_e,
+    kt_remove_f_fll_program_parameter_process_context_e,
     kt_remove_f_fll_program_parameter_process_empty_e,
+    kt_remove_f_fll_program_parameter_process_verbosity_e,
     kt_remove_f_kt_remove_convert_date_relative_e,
     kt_remove_f_kt_remove_convert_timezone_e,
     kt_remove_f_kt_remove_dates_resize_e,
@@ -58,23 +61,6 @@ extern "C" {
     kt_remove_f_kt_remove_modes_resize_e,
   }; // enum
 #endif // _di_kt_remove_f_e_
-
-/**
- * Strings used printing the reason why a removal failed.
- */
-#ifndef _di_kt_remove_print_reason_s_
-  #define KT_REMOVE_print_reason_no_access_s "file be accessed"
-  #define KT_REMOVE_print_reason_not_found_s "file cannot be found"
-  #define KT_REMOVE_print_reason_stat_fail_s "cannot read file statistics"
-
-  #define KT_REMOVE_print_reason_no_access_s_length 16
-  #define KT_REMOVE_print_reason_not_found_s_length 20
-  #define KT_REMOVE_print_reason_stat_fail_s_length 27
-
-  extern const f_string_static_t kt_remove_print_reason_no_access_s;
-  extern const f_string_static_t kt_remove_print_reason_not_found_s;
-  extern const f_string_static_t kt_remove_print_reason_stat_fail_s;
-#endif // _di_kt_remove_print_reason_s_
 
 #ifdef __cplusplus
 } // extern "C"
