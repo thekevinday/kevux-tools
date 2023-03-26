@@ -30,6 +30,7 @@ extern "C" {
   const f_string_static_t kt_remove_once_s = macro_f_string_static_t_initialize(KT_REMOVE_once_s, 0, KT_REMOVE_once_s_length);
   const f_string_static_t kt_remove_only_s = macro_f_string_static_t_initialize(KT_REMOVE_only_s, 0, KT_REMOVE_only_s_length);
   const f_string_static_t kt_remove_only_fail_s = macro_f_string_static_t_initialize(KT_REMOVE_only_fail_s, 0, KT_REMOVE_only_fail_s_length);
+  const f_string_static_t kt_remove_recurse_s = macro_f_string_static_t_initialize(KT_REMOVE_recurse_s, 0, KT_REMOVE_recurse_s_length);
   const f_string_static_t kt_remove_remove_s = macro_f_string_static_t_initialize(KT_REMOVE_remove_s, 0, KT_REMOVE_remove_s_length);
   const f_string_static_t kt_remove_root_s = macro_f_string_static_t_initialize(KT_REMOVE_root_s, 0, KT_REMOVE_root_s_length);
   const f_string_static_t kt_remove_today_s = macro_f_string_static_t_initialize(KT_REMOVE_today_s, 0, KT_REMOVE_today_s_length);

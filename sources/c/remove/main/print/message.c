@@ -36,7 +36,7 @@ extern "C" {
     fll_program_print_help_option(print, kt_remove_short_follow_s, kt_remove_long_follow_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "   Remove the file being pointed to rather than the symbolic link itself.");
     fll_program_print_help_option(print, kt_remove_short_force_s, kt_remove_long_force_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Forcibly perform remove.");
     fll_program_print_help_option(print, kt_remove_short_group_s, kt_remove_long_group_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Remove by file group ID or name.");
-    fll_program_print_help_option(print, kt_remove_short_isolate_s, kt_remove_long_isolate_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "  Isolate remove based on filesystem.");
+    //fll_program_print_help_option(print, kt_remove_short_isolate_s, kt_remove_long_isolate_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "  Isolate remove based on filesystem."); // Not implemented.
     fll_program_print_help_option(print, kt_remove_short_link_s, kt_remove_long_link_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "     Remove by file type of link.");
     fll_program_print_help_option(print, kt_remove_short_mode_s, kt_remove_long_mode_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "     Remove by file mode.");
     fll_program_print_help_option(print, kt_remove_short_prompt_s, kt_remove_long_prompt_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "   Prompt before removing.");
@@ -86,13 +86,11 @@ extern "C" {
     fl_print_format("  - '%[%r%]':      Remove directories that are empty.%r", print->to, context.set.notable, kt_remove_only_s, context.set.notable, f_string_eol_s);
     fl_print_format("  - '%[%r%]': Fail when removing directoies that are empty.%r%r", print->to, context.set.notable, kt_remove_only_fail_s, context.set.notable, f_string_eol_s, f_string_eol_s);
 
-    fl_print_format("  The parameter '%[%r%r%]' supports the following values:%r", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, context.set.notable, f_string_eol_s);
-    fl_print_format("  - '%[%r%]':    Isolate to a single file system, error on all files outside of the file system.%r", print->to, context.set.notable, kt_remove_all_s, context.set.notable, f_string_eol_s);
-    fl_print_format("  - '%[%r%]': Ignore rather than erroring on problems outside the file system.%r", print->to, context.set.notable, kt_remove_ignore_s, context.set.notable, f_string_eol_s);
-    fl_print_format("  - '%[%r%]':   Isolate to a single file system, error on '/'.%r%r", print->to, context.set.notable, kt_remove_root_s, context.set.notable, f_string_eol_s, f_string_eol_s);
-
-    // @todo "isolate" needs to optionally pass, ignoring when /proc is not available or fail when /proc is not available.
-    // @todo "/proc" needs to be configurable define macro and use that string here.
+    // Not being implemented currently, but may be in the future so the basic setup code is remaining.
+    //fl_print_format("  The parameter '%[%r%r%]' supports the following values:%r", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, context.set.notable, f_string_eol_s);
+    //fl_print_format("  - '%[%r%]':    Isolate to a single file system, error on all files outside of the file system.%r", print->to, context.set.notable, kt_remove_all_s, context.set.notable, f_string_eol_s);
+    //fl_print_format("  - '%[%r%]': Ignore rather than erroring on problems outside the file system.%r", print->to, context.set.notable, kt_remove_ignore_s, context.set.notable, f_string_eol_s);
+    //fl_print_format("  - '%[%r%]':   Isolate to a single file system, error on '/'.%r%r", print->to, context.set.notable, kt_remove_root_s, context.set.notable, f_string_eol_s, f_string_eol_s);
 
     fl_print_format("  The parameter '%[%r%r%]' supports the following values:%r", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_prompt_s, context.set.notable, f_string_eol_s);
     fl_print_format("  - '%[%r%]':    Operate in interactive mode, prompting for every file.%r", print->to, context.set.notable, kt_remove_all_s, context.set.notable, f_string_eol_s);

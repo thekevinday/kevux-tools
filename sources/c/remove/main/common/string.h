@@ -87,6 +87,7 @@ extern "C" {
   #define KT_REMOVE_once_s      "once"
   #define KT_REMOVE_only_s      "only"
   #define KT_REMOVE_only_fail_s "only_fail"
+  #define KT_REMOVE_recurse_s   "recurse"
   #define KT_REMOVE_remove_s    "remove"
   #define KT_REMOVE_root_s      "root"
   #define KT_REMOVE_today_s     "today"
@@ -106,6 +107,7 @@ extern "C" {
   #define KT_REMOVE_once_s_length      4
   #define KT_REMOVE_only_s_length      4
   #define KT_REMOVE_only_fail_s_length 9
+  #define KT_REMOVE_recurse_s_length   7
   #define KT_REMOVE_remove_s_length    6
   #define KT_REMOVE_root_s_length      4
   #define KT_REMOVE_today_s_length     5
@@ -125,6 +127,7 @@ extern "C" {
   extern const f_string_static_t kt_remove_once_s;
   extern const f_string_static_t kt_remove_only_s;
   extern const f_string_static_t kt_remove_only_fail_s;
+  extern const f_string_static_t kt_remove_recurse_s;
   extern const f_string_static_t kt_remove_remove_s;
   extern const f_string_static_t kt_remove_root_s;
   extern const f_string_static_t kt_remove_today_s;

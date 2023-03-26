@@ -21,11 +21,11 @@ extern "C" {
  *
  * kt_remove_main_flag_*_e:
  *   - none:            No flags set.
- *   - accessed:        @todo
+ *   - accessed:        Remove by last accessed datetime.
  *   - block:           Remove by file type: block.
  *   - character:       Remove by file type: character.
  *   - copyright:       Print copyright.
- *   - created:         @todo
+ *   - created:         Remove by created datetime.
  *   - different:       Remove by user different from caller.
  *   - directory:       Remove by file type: directory.
  *   - empty_only:      Remove empty directories.
@@ -37,9 +37,9 @@ extern "C" {
  *   - force:           Forcibly delete.
  *   - group:           Remove by GID.
  *   - help:            Print help.
- *   - isolate_all:     Isolate to a single file system, error on all outside file system files (@todo requires /proc support).
- *   - isolate_ignore:  Ignore rather than fail for anything on a different file system (@todo requires /proc support).
- *   - isolate_root:    Isolate to a single file system, error on remove on '/' (@todo requires /proc support).
+ *   - isolate_all:     Isolate to a single file system, error on all outside file system files (not implemented, requires /proc support).
+ *   - isolate_ignore:  Ignore rather than fail for anything on a different file system (not implemented, requires /proc support).
+ *   - isolate_root:    Isolate to a single file system, error on remove on '/' (not implemented, requires /proc support).
  *   - link:            Remove by file type: link.
  *   - mode:            Remove by mode.
  *   - option_used:     This gets set when when certain options are specified to toggle the default match detection boolean during removal of each file.
@@ -55,6 +55,7 @@ extern "C" {
  *   - simulate:        Do not actually perform deletes, instead print messages (when silent, should still return 0 or 1).
  *   - socket:          Remove by file type: socket.
  *   - tree:            Remove directory tree (parent directories) (remove a/b/c, removes a/b/c, then a/b/, then a).
+ *   - updated:         Remove by last updated datetime.
  *   - user:            Remove by UID.
  *   - utc:             Process dates in UTC mode.
  *   - version:         Print version.
@@ -130,7 +131,7 @@ extern "C" {
 #endif // _di_kt_remove_flag_convert_e_
 
 /**
- * Flags associated with a date.
+ * Flags associated with a datetime.
  *
  * kt_remove_flag_date_*_e:
  *   - none:       No flags set.
@@ -196,6 +197,24 @@ extern "C" {
 #endif // _di_kt_remove_flag_mode_e_
 
 /**
+ * Flags associated with performing an operation on a file.
+ *
+ * kt_remove_flag_file_operate_*_e:
+ *   - none:      No flags set.
+ *   - directory: Is a directory.
+ *   - recurse:   Perform recursively (only on directories).
+ *   - remove:    Perform remove.
+ */
+#ifndef _di_kt_remove_flag_file_operate_e_
+  enum {
+    kt_remove_flag_file_operate_none_e      = 0x0,
+    kt_remove_flag_file_operate_directory_e = 0x1,
+    kt_remove_flag_file_operate_recurse_e   = 0x2,
+    kt_remove_flag_file_operate_remove_e    = 0x4,
+  }; // enum
+#endif // _di_kt_remove_flag_file_operate_e_
+
+/**
  * The main program parameters.
  */
 #ifndef _di_kt_remove_parameter_e_
@@ -225,7 +244,7 @@ extern "C" {
     kt_remove_parameter_follow_e,
     kt_remove_parameter_force_e,
     kt_remove_parameter_group_e,
-    kt_remove_parameter_isolate_e,
+    //kt_remove_parameter_isolate_e, // Not implemented.
     kt_remove_parameter_link_e,
     kt_remove_parameter_local_e,
     kt_remove_parameter_mode_e,
@@ -244,19 +263,7 @@ extern "C" {
 
   #define kt_remove_console_parameter_t_initialize \
     { \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_help_s,          f_console_standard_long_help_s,          0, f_console_flag_normal_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_copyright_s,     f_console_standard_long_copyright_s,     0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_light_s,         f_console_standard_long_light_s,         0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_dark_s,          f_console_standard_long_dark_s,          0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_no_color_s,      f_console_standard_long_no_color_s,      0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_quiet_s,         f_console_standard_long_quiet_s,         0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_error_s,         f_console_standard_long_error_s,         0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_normal_s,        f_console_standard_long_normal_s,        0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_verbose_s,       f_console_standard_long_verbose_s,       0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_debug_s,         f_console_standard_long_debug_s,         0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_version_s,       f_console_standard_long_version_s,       0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_line_first_no_s, f_console_standard_long_line_first_no_s, 0, f_console_flag_inverse_e), \
-      macro_f_console_parameter_t_initialize_3(f_console_standard_short_line_last_no_s,  f_console_standard_long_line_last_no_s,  0, f_console_flag_inverse_e), \
+      macro_fll_program_console_parameter_standard_initialize, \
       \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_accessed_s,  kt_remove_long_accessed_s,  2, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_block_s,     kt_remove_long_block_s,     0, f_console_flag_normal_e), \
@@ -269,7 +276,6 @@ extern "C" {
       macro_f_console_parameter_t_initialize_3(kt_remove_short_follow_s,    kt_remove_long_follow_s,    0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_force_s,     kt_remove_long_force_s,     0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_group_s,     kt_remove_long_group_s,     1, f_console_flag_normal_e), \
-      macro_f_console_parameter_t_initialize_3(kt_remove_short_isolate_s,   kt_remove_long_isolate_s,   1, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_link_s,      kt_remove_long_link_s,      0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_5(                             kt_remove_long_local_s,     0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_mode_s,      kt_remove_long_mode_s,      2, f_console_flag_normal_e), \
@@ -286,7 +292,7 @@ extern "C" {
       macro_f_console_parameter_t_initialize_5(                             kt_remove_long_utc_s,       0, f_console_flag_normal_e), \
     }
 
-  #define kt_remove_total_parameters_d 39
+  #define kt_remove_total_parameters_d 38
 #endif // _di_kt_remove_parameter_e_
 
 /**

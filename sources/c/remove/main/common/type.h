@@ -152,8 +152,9 @@ extern "C" {
  * groups:   An array of Group IDs (gid_t) represented via an unsigned 32-bit integer.
  * users:    An array of Group IDs (uid_t) represented via an unsigned 32-bit integer.
  *
- * process_help:   Process help (generally printing help).
- * process_normal: Process normally (data from parameters and files).
+ * process_help:         Process help (generally printing help).
+ * process_normal:       Process normally (data from parameters and files).
+ * process_operate_file: Process an individual file, returning F_done to designate handled, and F_none for letting parent continue handling.
  */
 #ifndef _di_kt_remove_setting_t_
   typedef struct {
@@ -177,6 +178,7 @@ extern "C" {
 
     f_status_t (*process_help)(void * const main);
     void (*process_normal)(void * const main);
+    void (*process_operate_file)(void * const main, const f_string_static_t path, const struct stat statistics, uint8_t * const flag);
   } kt_remove_setting_t;
 
   #define kt_remove_setting_t_initialize \
@@ -192,6 +194,7 @@ extern "C" {
       kt_remove_modes_t_initialize, \
       f_uint32s_t_initialize, \
       f_uint32s_t_initialize, \
+      0, \
       0, \
       0, \
       0, \

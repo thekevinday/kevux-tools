@@ -166,6 +166,10 @@ extern "C" {
     }
 
     if (main->program.parameters.array[kt_remove_parameter_copyright_e].result & f_console_result_found_e) {
+      main->setting.flag |= kt_remove_main_flag_copyright_e;
+    }
+
+    if (main->program.parameters.array[kt_remove_parameter_block_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_remove_main_flag_block_e;
       main->setting.flag |= kt_remove_main_flag_option_used_e;
     }
@@ -540,68 +544,69 @@ extern "C" {
     }
 
     // kt_remove_parameter_isolate_e, needs additional parameters (all, ignore, or root).
-    if (main->program.parameters.array[kt_remove_parameter_isolate_e].result & f_console_result_found_e) {
-      main->setting.state.status = F_status_set_error(F_parameter);
-
-      kt_remove_print_error_parameter_missing_value_requires_amount(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, 1);
-
-      return;
-    }
-
-    if (main->program.parameters.array[kt_remove_parameter_isolate_e].result & f_console_result_value_e) {
-      total_arguments = main->program.parameters.array[kt_remove_parameter_isolate_e].values.used;
-
-      if (main->program.parameters.array[kt_remove_parameter_isolate_e].locations.used != total_arguments) {
-        main->setting.state.status = F_status_set_error(F_parameter);
-
-        kt_remove_print_error_parameter_missing_value_requires_amount(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, 1);
-
-        return;
-      }
-
-      index = main->program.parameters.array[kt_remove_parameter_isolate_e].values.array[total_arguments - 1];
-
-      if (fl_string_dynamic_compare(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
-        main->setting.flag |= kt_remove_main_flag_isolate_all_e;
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_ignore_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_ignore_e;
-        }
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_root_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_root_e;
-        }
-      }
-      else if (fl_string_dynamic_compare(kt_remove_ignore_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
-        main->setting.flag |= kt_remove_main_flag_isolate_ignore_e;
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_all_e;
-        }
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_root_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_root_e;
-        }
-      }
-      else if (fl_string_dynamic_compare(kt_remove_root_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
-        main->setting.flag |= kt_remove_main_flag_isolate_root_e;
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_all_e;
-        }
-
-        if (main->setting.flag & kt_remove_main_flag_isolate_ignore_e) {
-          main->setting.flag -= kt_remove_main_flag_isolate_ignore_e;
-        }
-      }
-      else {
-        main->setting.state.status = F_status_set_error(F_parameter);
-
-        kt_remove_print_error_parameter_unknown_value(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, main->program.parameters.arguments.array[index]);
-
-        return;
-      }
-    }
+    // Currently not supported, requires /proc support.
+    //if (main->program.parameters.array[kt_remove_parameter_isolate_e].result & f_console_result_found_e) {
+    //  main->setting.state.status = F_status_set_error(F_parameter);
+    //
+    //  kt_remove_print_error_parameter_missing_value_requires_amount(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, 1);
+    //
+    //  return;
+    //}
+    //
+    //if (main->program.parameters.array[kt_remove_parameter_isolate_e].result & f_console_result_value_e) {
+    //  total_arguments = main->program.parameters.array[kt_remove_parameter_isolate_e].values.used;
+    //
+    //  if (main->program.parameters.array[kt_remove_parameter_isolate_e].locations.used != total_arguments) {
+    //    main->setting.state.status = F_status_set_error(F_parameter);
+    //
+    //    kt_remove_print_error_parameter_missing_value_requires_amount(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, 1);
+    //
+    //    return;
+    //  }
+    //
+    //  index = main->program.parameters.array[kt_remove_parameter_isolate_e].values.array[total_arguments - 1];
+    //
+    //  if (fl_string_dynamic_compare(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //    main->setting.flag |= kt_remove_main_flag_isolate_all_e;
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_ignore_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_ignore_e;
+    //    }
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_root_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_root_e;
+    //    }
+    //  }
+    //  else if (fl_string_dynamic_compare(kt_remove_ignore_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //    main->setting.flag |= kt_remove_main_flag_isolate_ignore_e;
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_all_e;
+    //    }
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_root_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_root_e;
+    //    }
+    //  }
+    //  else if (fl_string_dynamic_compare(kt_remove_root_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //    main->setting.flag |= kt_remove_main_flag_isolate_root_e;
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_all_e;
+    //    }
+    //
+    //    if (main->setting.flag & kt_remove_main_flag_isolate_ignore_e) {
+    //      main->setting.flag -= kt_remove_main_flag_isolate_ignore_e;
+    //    }
+    //  }
+    //  else {
+    //    main->setting.state.status = F_status_set_error(F_parameter);
+    //
+    //    kt_remove_print_error_parameter_unknown_value(&main->program.error, f_console_symbol_long_normal_s, kt_remove_long_isolate_s, main->program.parameters.arguments.array[index]);
+    //
+    //    return;
+    //  }
+    //}
 
     // kt_remove_parameter_mode_e, needs additional parameters (modes, match parameters).
     if (main->program.parameters.array[kt_remove_parameter_mode_e].result & f_console_result_found_e) {

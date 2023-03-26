@@ -15,7 +15,7 @@ extern "C" {
 
     f_file_stream_lock(print->to);
 
-    fl_print_format("%r%[Files to Remove%]:%r", print->to, f_string_eol_s, print->set->title, print->set->title, f_string_eol_s);
+    fl_print_format("%[Files to Remove%]:%r", print->to, print->set->title, print->set->title, f_string_eol_s);
 
     for (f_array_length_t i = 0; i < main->setting.files.used; ++i) {
       fl_print_format("  %Q%r", print->to, main->setting.files.array[i], f_string_eol_s);
@@ -444,8 +444,8 @@ extern "C" {
   }
 #endif // _di_kt_remove_print_simulate_operate_file_stat_
 
-#ifndef _di_kt_remove_print_simulate_operate_remove_
-  void kt_remove_print_simulate_operate_remove(fl_print_t * const print, const bool yes, const bool force) {
+#ifndef _di_kt_remove_print_simulate_operate_boolean_
+  void kt_remove_print_simulate_operate_boolean(fl_print_t * const print, const f_string_static_t name, const bool yes) {
 
     if (!print || !print->custom) return;
 
@@ -453,9 +453,9 @@ extern "C" {
 
     if (!(main->setting.flag & kt_remove_main_flag_simulate_e)) return;
 
-    fll_print_format("  %r %r%r", main->program.output.to, force ? kt_remove_force_s : kt_remove_remove_s, yes ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
+    fll_print_format("  %r %r%r", main->program.output.to, name, yes ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
   }
-#endif // _di_kt_remove_print_simulate_operate_remove_
+#endif // _di_kt_remove_print_simulate_operate_boolean_
 
 #ifdef __cplusplus
 } // extern "C"
