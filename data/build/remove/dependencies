@@ -8,10 +8,12 @@ f_string
 f_utf
 f_account
 f_color
+f_compare
 f_console
 f_conversion
 f_file
 f_print
+f_rip
 f_signal
 f_thread
 

@@ -46,8 +46,8 @@ extern "C" {
  *     F_number_too_small (with error bit) if the given ID is too small.
  *     F_known_not (with error bit) if the given string is not of a known format
  *
+ *     Errors (with error bit) from: f_rip_dynamic_nulless().
  *     Errors (with error bit) from: fl_conversion_dynamic_partial_to_unsigned_detect().
- *     Errors (with error bit) from: fl_string_dynamic_partial_rip_nulless().
  *
  *     Errors (with error bit) from: kt_remove_get_date_relative().
  * @param buffer
@@ -55,8 +55,8 @@ extern "C" {
  * @param date
  *   The converted date.
  *
+ * @see f_rip_dynamic_nulless()
  * @see fl_conversion_dynamic_partial_to_unsigned_detect()
- * @see fl_string_dynamic_partial_rip_nulless()
  *
  * @see kt_remove_get_date_relative()
  */
@@ -116,14 +116,14 @@ extern "C" {
  *     F_number_too_large (with error bit) if the given ID is too large.
  *
  *     Errors (with error bit) from: f_account_group_id_by_name().
+ *     Errors (with error bit) from: f_rip_dynamic_nulless().
  *     Errors (with error bit) from: fl_conversion_dynamic_to_unsigned_detect().
- *     Errors (with error bit) from: fl_string_dynamic_rip_nulless().
  * @param buffer
  *   A string containing group name or ID.
  *
  * @see f_account_group_id_by_name()
+ * @see f_rip_dynamic_nulless()
  * @see fl_conversion_dynamic_to_unsigned_detect()
- * @see fl_string_dynamic_rip_nulless()
  */
 #ifndef _di_kt_remove_get_id_group_
   extern uint32_t kt_remove_get_id_group(kt_remove_main_t * const main, const f_string_static_t buffer);
@@ -141,14 +141,14 @@ extern "C" {
  *     F_number_too_large (with error bit) if the given ID is too large.
  *
  *     Errors (with error bit) from: f_account_group_id_by_name().
+ *     Errors (with error bit) from: f_rip_dynamic_nulless().
  *     Errors (with error bit) from: fl_conversion_dynamic_to_unsigned_detect().
- *     Errors (with error bit) from: fl_string_dynamic_rip_nulless().
  * @param buffer
  *   A string containing group name or ID.
  *
  * @see f_account_id_by_name()
+ * @see f_rip_dynamic_nulless()
  * @see fl_conversion_dynamic_to_unsigned_detect()
- * @see fl_string_dynamic_rip_nulless()
  */
 #ifndef _di_kt_remove_get_id_user_
   extern uint32_t kt_remove_get_id_user(kt_remove_main_t * const main, const f_string_static_t buffer);

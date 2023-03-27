@@ -30,7 +30,7 @@ extern "C" {
 
       for (uint8_t i = 0; i < 4; ++i) {
 
-        if (fl_string_dynamic_compare(buffer, strings[i]) == F_equal_to) {
+        if (f_compare_dynamic(buffer, strings[i]) == F_equal_to) {
           date->type = enumerations[i];
 
           kt_remove_convert_date_relative(main, date);
@@ -90,7 +90,7 @@ extern "C" {
         if (matches & kt_remove_flag_convert_colon_e) {
 
           // Search until a colon or a digit is found.
-          if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
+          if (f_compare_dynamic_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
 
             // A third colon is not valid.
             if (matches & kt_remove_flag_convert_colon_double_e) {
@@ -123,7 +123,7 @@ extern "C" {
 
         if (matches & kt_remove_flag_convert_match_first_e) {
 
-          if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
+          if (f_compare_dynamic_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
             matches |= kt_remove_flag_convert_colon_single_e;
 
             continue;
@@ -159,7 +159,7 @@ extern "C" {
 
         if (main->setting.state.status == F_true) continue;
 
-        if (fl_string_dynamic_compare_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
+        if (f_compare_dynamic_string(buffer.string + range.start, f_string_ascii_colon_s, width) == F_equal_to) {
           matches |= kt_remove_flag_convert_colon_single_e;
 
           continue;
@@ -461,7 +461,7 @@ extern "C" {
       if (F_status_set_fine(main->setting.state.status) == F_number) {
         main->setting.buffer.used = 0;
 
-        main->setting.state.status = fl_string_dynamic_rip_nulless(buffer, &main->setting.buffer);
+        main->setting.state.status = f_rip_dynamic_nulless(buffer, &main->setting.buffer);
         if (F_status_is_error(main->setting.state.status)) return 0;
 
         gid_t gid = 0;
@@ -508,7 +508,7 @@ extern "C" {
       if (F_status_set_fine(main->setting.state.status) == F_number) {
         main->setting.buffer.used = 0;
 
-        main->setting.state.status = fl_string_dynamic_rip_nulless(buffer, &main->setting.buffer);
+        main->setting.state.status = f_rip_dynamic_nulless(buffer, &main->setting.buffer);
         if (F_status_is_error(main->setting.state.status)) return 0;
 
         uid_t uid = 0;

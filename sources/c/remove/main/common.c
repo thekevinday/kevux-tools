@@ -372,7 +372,7 @@ extern "C" {
 
               for (j = 0; j < 12; ++j) {
 
-                if (fl_string_dynamic_compare(main->program.parameters.arguments.array[index], strings[j]) == F_equal_to) {
+                if (f_compare_dynamic(main->program.parameters.arguments.array[index], strings[j]) == F_equal_to) {
                   dates[p]->array[dates[p]->used].operation = enumerations[j];
 
                   index2 = parameters[p]->values.array[i + 1];
@@ -425,7 +425,7 @@ extern "C" {
 
       index = main->program.parameters.array[kt_remove_parameter_empty_e].values.array[total_arguments - 1];
 
-      if (fl_string_dynamic_compare(kt_remove_not_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      if (f_compare_dynamic(kt_remove_not_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_empty_not_e;
 
         if (main->setting.flag & kt_remove_main_flag_empty_not_fail_e) {
@@ -440,7 +440,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_empty_only_fail_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_not_fail_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_not_fail_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_empty_not_fail_e;
 
         if (main->setting.flag & kt_remove_main_flag_empty_not_e) {
@@ -455,7 +455,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_empty_only_fail_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_only_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_only_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_empty_only_e;
 
         if (main->setting.flag & kt_remove_main_flag_empty_not_e) {
@@ -470,7 +470,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_empty_only_fail_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_only_fail_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_only_fail_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_empty_only_fail_e;
 
         if (main->setting.flag & kt_remove_main_flag_empty_not_e) {
@@ -566,7 +566,7 @@ extern "C" {
     //
     //  index = main->program.parameters.array[kt_remove_parameter_isolate_e].values.array[total_arguments - 1];
     //
-    //  if (fl_string_dynamic_compare(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //  if (f_compare_dynamic(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
     //    main->setting.flag |= kt_remove_main_flag_isolate_all_e;
     //
     //    if (main->setting.flag & kt_remove_main_flag_isolate_ignore_e) {
@@ -577,7 +577,7 @@ extern "C" {
     //      main->setting.flag -= kt_remove_main_flag_isolate_root_e;
     //    }
     //  }
-    //  else if (fl_string_dynamic_compare(kt_remove_ignore_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //  else if (f_compare_dynamic(kt_remove_ignore_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
     //    main->setting.flag |= kt_remove_main_flag_isolate_ignore_e;
     //
     //    if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
@@ -588,7 +588,7 @@ extern "C" {
     //      main->setting.flag -= kt_remove_main_flag_isolate_root_e;
     //    }
     //  }
-    //  else if (fl_string_dynamic_compare(kt_remove_root_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+    //  else if (f_compare_dynamic(kt_remove_root_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
     //    main->setting.flag |= kt_remove_main_flag_isolate_root_e;
     //
     //    if (main->setting.flag & kt_remove_main_flag_isolate_all_e) {
@@ -669,7 +669,7 @@ extern "C" {
 
         for (j = 0; j < 8; ++j) {
 
-          if (fl_string_dynamic_compare(main->program.parameters.arguments.array[index], strings[j]) == F_equal_to) {
+          if (f_compare_dynamic(main->program.parameters.arguments.array[index], strings[j]) == F_equal_to) {
             main->setting.modes.array[main->setting.modes.used].type = enumerations[j];
 
             index2 = main->program.parameters.array[kt_remove_parameter_mode_e].values.array[i + 1];
@@ -765,7 +765,7 @@ extern "C" {
 
       index = main->program.parameters.array[kt_remove_parameter_prompt_e].values.array[total_arguments - 1];
 
-      if (fl_string_dynamic_compare(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      if (f_compare_dynamic(kt_remove_all_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_prompt_all_e;
 
         if (main->setting.flag & kt_remove_main_flag_prompt_follow_e) {
@@ -780,7 +780,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_prompt_never_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_follow_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_follow_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_prompt_follow_e;
 
         if (main->setting.flag & kt_remove_main_flag_prompt_all_e) {
@@ -795,7 +795,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_prompt_never_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_once_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_once_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_prompt_once_e;
 
         if (main->setting.flag & kt_remove_main_flag_prompt_all_e) {
@@ -810,7 +810,7 @@ extern "C" {
           main->setting.flag -= kt_remove_main_flag_prompt_never_e;
         }
       }
-      else if (fl_string_dynamic_compare(kt_remove_never_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
+      else if (f_compare_dynamic(kt_remove_never_s, main->program.parameters.arguments.array[index]) == F_equal_to) {
         main->setting.flag |= kt_remove_main_flag_prompt_never_e;
 
         if (main->setting.flag & kt_remove_main_flag_prompt_all_e) {
