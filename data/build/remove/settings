@@ -2,6 +2,17 @@
 #
 # Builds the main remove program of the project.
 #
+# Modes:
+#   - individual:        Compile using per project (individual) libraries, does not handle thread or threadless cases.
+#   - individual_thread: This is required when compiling in individual mode with "thread" mode.
+#   - level:             Compile using per level libraries.
+#   - monolithic:        Compile using per monolithic libraries.
+#   - clang:             Use clang rather than the default, which is generally gcc.
+#   - test:              Compile for a test, such as unit testing.
+#   - fanalyzer:         Compile using GCC's -fanalyzer compile time option.
+#   - thread:            Compile with thread support.
+#   - threadless:        Compile without thread support.
+#
 
 build_name remove
 
@@ -11,8 +22,8 @@ version_micro 0
 version_file micro
 version_target minor
 
-modes individual individual level monolithic clang test fanalyzer coverage threaded threadless
-modes_default monolithic threaded
+modes individual individual level monolithic clang test fanalyzer coverage thread threadless
+modes_default monolithic thread
 
 build_compiler gcc
 build_compiler-clang clang
@@ -61,15 +72,15 @@ environment LANG LC_ALL LC_COLLATE LC_CTYPE LC_FASTMSG LC_MESSAGES LC_MONETARY L
 
 #defines -D_di_libcap_
 defines -D_libcap_legacy_only_
-defines-threaded -D_pthread_attr_unsupported_ -D_pthread_sigqueue_unsupported_
 defines-threadless -D_di_thread_support_
+defines-thread -D_pthread_attr_unsupported_ -D_pthread_sigqueue_unsupported_
 
 flags -O2 -z now -g -fdiagnostics-color=always -Wno-logical-not-parentheses -Wno-parentheses -Wno-missing-braces
+flags-thread -pthread
 flags-clang -Wno-logical-op-parentheses
 flags-test -O0 -fstack-protector -Wall
 flags-fanalyzer -fanalyzer
 flags-coverage -O0 --coverage -fprofile-abs-path -fprofile-dir=build/coverage/
-flags-threaded -pthread
 
 flags_library -fPIC
 flags_object -fPIC

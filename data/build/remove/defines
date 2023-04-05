@@ -1,6 +1,7 @@
 # fss-0000
 
 _di_thread_support_ Disable thread support, handling signals without using a separate thread.
+
 _en_kt_settings_path_ Enable support for processing that settings path, such as /etc/.
 _en_kt_process_path_ Enable support for processing that process path, such as /proc/.
 _en_kt_default_to_utc_ Default to UTC mode rather than local time.

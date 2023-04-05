@@ -13,7 +13,7 @@ extern "C" {
     if (!((++main->program.signal_check) % kt_remove_signal_check_d)) {
       if (fll_program_standard_signal_received(&main->program)) return F_true;
 
-      data->main->program.signal_check = 0;
+      main->program.signal_check = 0;
     }
 
     return F_false;

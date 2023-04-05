@@ -38,31 +38,41 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
 
   fll_program_standard_set_up(&data.program);
 
-  {
-    f_thread_id_t id_signal;
+  #ifdef _di_thread_support_
+    {
+      const f_console_arguments_t arguments = macro_f_console_arguments_t_initialize(argc, argv, envp);
 
-    memset(&id_signal, 0, sizeof(f_thread_id_t));
-
-    data.setting.state.status = f_thread_create(0, &id_signal, &kt_remove_thread_signal, (void *) &data);
-
-    if (F_status_is_error(data.setting.state.status)) {
-      kt_remove_print_error(&data.program.error, macro_kt_remove_f(f_thread_create));
+      kt_remove_setting_load(arguments, &data);
     }
-    else {
-      {
-        const f_console_arguments_t arguments = macro_f_console_arguments_t_initialize(argc, argv, envp);
 
-        kt_remove_setting_load(arguments, &data);
+    status_code_main(&data);
+  #else
+    {
+      f_thread_id_t id_signal;
+
+      memset(&id_signal, 0, sizeof(f_thread_id_t));
+
+      data.setting.state.status = f_thread_create(0, &id_signal, &kt_remove_thread_signal, (void *) &data);
+
+      if (F_status_is_error(data.setting.state.status)) {
+        kt_remove_print_error(&data.program.error, macro_kt_remove_f(f_thread_create));
       }
+      else {
+        {
+          const f_console_arguments_t arguments = macro_f_console_arguments_t_initialize(argc, argv, envp);
 
-      if (!kt_remove_signal_check(&data)) {
-        kt_remove_main(&data);
+          kt_remove_setting_load(arguments, &data);
+        }
+
+        if (!kt_remove_signal_check(&data)) {
+          kt_remove_main(&data);
+        }
+
+        f_thread_cancel(id_signal);
+        f_thread_join(id_signal, 0);
       }
-
-      f_thread_cancel(id_signal);
-      f_thread_join(id_signal, 0);
     }
-  }
+  #endif // _di_thread_support_
 
   kt_remove_setting_unload(&data);
 
