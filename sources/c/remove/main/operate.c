@@ -47,7 +47,7 @@ extern "C" {
 
     if (main->program.signal_received) return;
 
-    f_array_length_t i = 0;
+    f_number_unsigned_t i = 0;
     uint8_t flag = (main->setting.flag & kt_remove_main_flag_option_used_e) ? 0 : kt_remove_flag_file_operate_remove_e;
 
     struct stat statistics;

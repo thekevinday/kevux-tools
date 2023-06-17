@@ -5,11 +5,11 @@ extern "C" {
 #endif
 
 #ifndef _di_kt_remove_dates_resize_
-  f_status_t kt_remove_dates_resize(const f_array_length_t length, kt_remove_dates_t * const dates) {
+  f_status_t kt_remove_dates_resize(const f_number_unsigned_t length, kt_remove_dates_t * const dates) {
 
     if (!dates) return F_status_set_error(F_parameter);
 
-    if (dates->used + length > F_array_length_t_size_d) return F_status_set_error(F_array_too_large);
+    if (dates->used + length > F_number_t_size_unsigned_d) return F_status_set_error(F_array_too_large);
 
     const f_status_t status = f_memory_resize(dates->size, length, sizeof(kt_remove_date_t), (void **) & dates->array);
     if (F_status_is_error(status)) return status;
@@ -25,11 +25,11 @@ extern "C" {
 #endif // _di_kt_remove_dates_resize_
 
 #ifndef _di_kt_remove_modes_resize_
-  f_status_t kt_remove_modes_resize(const f_array_length_t length, kt_remove_modes_t * const modes) {
+  f_status_t kt_remove_modes_resize(const f_number_unsigned_t length, kt_remove_modes_t * const modes) {
 
     if (!modes) return F_status_set_error(F_parameter);
 
-    if (modes->used + length > F_array_length_t_size_d) return F_status_set_error(F_array_too_large);
+    if (modes->used + length > F_number_t_size_unsigned_d) return F_status_set_error(F_array_too_large);
 
     const f_status_t status = f_memory_resize(modes->size, length, sizeof(kt_remove_mode_t), (void **) & modes->array);
     if (F_status_is_error(status)) return status;
@@ -149,11 +149,11 @@ extern "C" {
       }
     }
 
-    f_array_length_t i = 0;
-    f_array_length_t index = 0;
-    f_array_length_t index2 = 0;
-    f_array_length_t total_locations = 0;
-    f_array_length_t total_arguments = 0;
+    f_number_unsigned_t i = 0;
+    f_number_unsigned_t index = 0;
+    f_number_unsigned_t index2 = 0;
+    f_number_unsigned_t total_locations = 0;
+    f_number_unsigned_t total_arguments = 0;
 
     uint8_t j = 0;
 
@@ -838,8 +838,8 @@ extern "C" {
 
       // Use the right most parameter when both --utc and --local are passed.
       if (main->program.parameters.array[kt_remove_parameter_local_e].result & f_console_result_found_e) {
-        const f_array_length_t last_local = main->program.parameters.array[kt_remove_parameter_local_e].locations.array[main->program.parameters.array[kt_remove_parameter_local_e].locations.used];
-        const f_array_length_t last_utc = main->program.parameters.array[kt_remove_parameter_utc_e].locations.array[main->program.parameters.array[kt_remove_parameter_utc_e].locations.used];
+        const f_number_unsigned_t last_local = main->program.parameters.array[kt_remove_parameter_local_e].locations.array[main->program.parameters.array[kt_remove_parameter_local_e].locations.used];
+        const f_number_unsigned_t last_utc = main->program.parameters.array[kt_remove_parameter_utc_e].locations.array[main->program.parameters.array[kt_remove_parameter_utc_e].locations.used];
 
         if (last_local > kt_remove_parameter_utc_e) {
           if (main->setting.flag & kt_remove_main_flag_utc_e) {

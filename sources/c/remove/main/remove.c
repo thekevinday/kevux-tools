@@ -102,7 +102,7 @@ extern "C" {
 
     main->setting.state.status = F_none;
 
-    for (f_array_length_t i = 0; i < main->setting.files.used; ++i) {
+    for (f_number_unsigned_t i = 0; i < main->setting.files.used; ++i) {
 
       kt_remove_operate_file(main, main->setting.files.array[i]);
       if (F_status_is_error(main->setting.state.status)) break;

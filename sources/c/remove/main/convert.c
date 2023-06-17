@@ -50,8 +50,8 @@ extern "C" {
 
     {
       uint8_t width = 0;
-      f_string_range_t range = macro_f_string_range_t_initialize2(buffer.used);
-      f_array_length_t width_max = (range.stop - range.start) + 1;
+      f_string_range_t range = macro_f_string_range_t_initialize_2(buffer.used);
+      f_number_unsigned_t width_max = (range.stop - range.start) + 1;
 
       for (; range.start <= range.stop; range.start += width, width_max -= width) {
 
@@ -338,7 +338,7 @@ extern "C" {
 
       struct tm time;
 
-      for (f_array_length_t i = 0; i < 15; ++i) {
+      for (f_number_unsigned_t i = 0; i < 15; ++i) {
 
         if (kt_remove_signal_check(main)) return;
 

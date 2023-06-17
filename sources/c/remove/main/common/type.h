@@ -67,8 +67,8 @@ extern "C" {
   typedef struct {
     kt_remove_date_t *array;
 
-    f_array_length_t size;
-    f_array_length_t used;
+    f_number_unsigned_t size;
+    f_number_unsigned_t used;
   } kt_remove_dates_t;
 
   #define kt_remove_dates_t_initialize { \
@@ -112,8 +112,8 @@ extern "C" {
   typedef struct {
     kt_remove_mode_t *array;
 
-    f_array_length_t size;
-    f_array_length_t used;
+    f_number_unsigned_t size;
+    f_number_unsigned_t used;
   } kt_remove_modes_t;
 
   #define kt_remove_modes_t_initialize { \

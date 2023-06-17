@@ -17,7 +17,7 @@ extern "C" {
 
     fl_print_format("%[Files to Remove%]:%r", print->to, print->set->title, print->set->title, f_string_eol_s);
 
-    for (f_array_length_t i = 0; i < main->setting.files.used; ++i) {
+    for (f_number_unsigned_t i = 0; i < main->setting.files.used; ++i) {
       fl_print_format("  %Q%r", print->to, main->setting.files.array[i], f_string_eol_s);
     } // for
 
@@ -124,7 +124,7 @@ extern "C" {
       fll_print_format("  socket %r%r", main->program.output.to, (macro_f_file_type_get(statistics.st_mode) == F_file_type_socket_d) ? kt_remove_yes_s : kt_remove_no_s, f_string_eol_s);
     }
 
-    f_array_length_t i = 0;
+    f_number_unsigned_t i = 0;
 
     if (main->setting.flag & kt_remove_main_flag_user_e) {
       for (; i < main->setting.users.used; ++i) {

@@ -37,7 +37,7 @@ extern "C" {
     if (!main) return;
 
     siginfo_t information;
-    f_array_length_t failsafe = 0;
+    f_number_unsigned_t failsafe = 0;
 
     memset(&information, 0, sizeof(siginfo_t));
 

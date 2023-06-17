@@ -33,7 +33,7 @@ extern "C" {
  *   Errors (with error bit) from: f_memory_resize().
  */
 #ifndef _di_kt_remove_dates_resize_
-  extern f_status_t kt_remove_dates_resize(const f_array_length_t length, kt_remove_dates_t * const dates);
+  extern f_status_t kt_remove_dates_resize(const f_number_unsigned_t length, kt_remove_dates_t * const dates);
 #endif // _di_kt_remove_dates_resize_
 
 /**
@@ -53,7 +53,7 @@ extern "C" {
  *   Errors (with error bit) from: f_memory_resize().
  */
 #ifndef _di_kt_remove_modes_resize_
-  extern f_status_t kt_remove_modes_resize(const f_array_length_t length, kt_remove_modes_t * const modes);
+  extern f_status_t kt_remove_modes_resize(const f_number_unsigned_t length, kt_remove_modes_t * const modes);
 #endif // _di_kt_remove_modes_resize_
 
 /**
