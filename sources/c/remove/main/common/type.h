@@ -185,7 +185,7 @@ extern "C" {
     { \
       kt_remove_main_flag_none_e, \
       F_none, \
-      macro_f_state_t_initialize_1(kt_remove_allocation_large_d, kt_remove_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0), \
+      macro_f_state_t_initialize_1(kt_remove_allocation_large_d, kt_remove_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
       f_string_dynamic_t_initialize, \
       f_string_dynamics_t_initialize, \
       kt_remove_dates_t_initialize, \
