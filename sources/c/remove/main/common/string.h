@@ -366,7 +366,7 @@ extern "C" {
   #define KT_REMOVE_short_accessed_s  "A"
   #define KT_REMOVE_short_block_s     "b"
   #define KT_REMOVE_short_character_s "c"
-  #define KT_REMOVE_short_created_s   "C"
+  #define KT_REMOVE_short_changed_s   "C"
   #define KT_REMOVE_short_different_s "O"
   #define KT_REMOVE_short_directory_s "d"
   #define KT_REMOVE_short_empty_s     "e"
@@ -391,7 +391,7 @@ extern "C" {
   #define KT_REMOVE_long_accessed_s  "accessed"
   #define KT_REMOVE_long_block_s     "block"
   #define KT_REMOVE_long_character_s "character"
-  #define KT_REMOVE_long_created_s   "created"
+  #define KT_REMOVE_long_changed_s   "changed"
   #define KT_REMOVE_long_different_s "different"
   #define KT_REMOVE_long_directory_s "directory"
   #define KT_REMOVE_long_empty_s     "empty"
@@ -418,7 +418,7 @@ extern "C" {
   #define KT_REMOVE_short_accessed_s_length  1
   #define KT_REMOVE_short_block_s_length     1
   #define KT_REMOVE_short_character_s_length 1
-  #define KT_REMOVE_short_created_s_length   1
+  #define KT_REMOVE_short_changed_s_length   1
   #define KT_REMOVE_short_different_s_length 1
   #define KT_REMOVE_short_directory_s_length 1
   #define KT_REMOVE_short_empty_s_length     1
@@ -443,7 +443,7 @@ extern "C" {
   #define KT_REMOVE_long_accessed_s_length  8
   #define KT_REMOVE_long_block_s_length     6
   #define KT_REMOVE_long_character_s_length 9
-  #define KT_REMOVE_long_created_s_length   7
+  #define KT_REMOVE_long_changed_s_length   7
   #define KT_REMOVE_long_different_s_length 9
   #define KT_REMOVE_long_directory_s_length 9
   #define KT_REMOVE_long_empty_s_length     5
@@ -470,7 +470,7 @@ extern "C" {
   extern const f_string_static_t kt_remove_short_accessed_s;
   extern const f_string_static_t kt_remove_short_block_s;
   extern const f_string_static_t kt_remove_short_character_s;
-  extern const f_string_static_t kt_remove_short_created_s;
+  extern const f_string_static_t kt_remove_short_changed_s;
   extern const f_string_static_t kt_remove_short_different_s;
   extern const f_string_static_t kt_remove_short_directory_s;
   extern const f_string_static_t kt_remove_short_empty_s;
@@ -495,7 +495,7 @@ extern "C" {
   extern const f_string_static_t kt_remove_long_accessed_s;
   extern const f_string_static_t kt_remove_long_block_s;
   extern const f_string_static_t kt_remove_long_character_s;
-  extern const f_string_static_t kt_remove_long_created_s;
+  extern const f_string_static_t kt_remove_long_changed_s;
   extern const f_string_static_t kt_remove_long_different_s;
   extern const f_string_static_t kt_remove_long_directory_s;
   extern const f_string_static_t kt_remove_long_empty_s;

@@ -53,7 +53,7 @@ extern "C" {
     f_string_dynamics_resize(0, &setting->files);
 
     kt_remove_dates_resize(0, &setting->accessed);
-    kt_remove_dates_resize(0, &setting->created);
+    kt_remove_dates_resize(0, &setting->changed);
     kt_remove_dates_resize(0, &setting->updated);
     kt_remove_modes_resize(0, &setting->modes);
 
@@ -282,25 +282,25 @@ extern "C" {
     {
       f_console_parameter_t * const parameters[] = {
         &main->program.parameters.array[kt_remove_parameter_accessed_e],
-        &main->program.parameters.array[kt_remove_parameter_created_e],
+        &main->program.parameters.array[kt_remove_parameter_changed_e],
         &main->program.parameters.array[kt_remove_parameter_updated_e],
       };
 
       kt_remove_dates_t * const dates[] = {
         &main->setting.accessed,
-        &main->setting.created,
+        &main->setting.changed,
         &main->setting.updated,
       };
 
       const f_string_static_t longs[] = {
         kt_remove_long_accessed_s,
-        kt_remove_long_created_s,
+        kt_remove_long_changed_s,
         kt_remove_long_updated_s,
       };
 
       for (uint8_t p = 0; p < 3; ++p) {
 
-        // kt_remove_parameter_accessed_e, kt_remove_parameter_created_e, kt_remove_parameter_updated_e, needs additional parameters, ==, <, <=, >, >=, <>.
+        // kt_remove_parameter_accessed_e, kt_remove_parameter_changed_e, kt_remove_parameter_updated_e, needs additional parameters, ==, <, <=, >, >=, <>.
         if (parameters[p]->result & f_console_result_found_e) {
           main->setting.state.status = F_status_set_error(F_parameter);
 

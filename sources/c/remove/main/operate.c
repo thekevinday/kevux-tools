@@ -206,8 +206,6 @@ extern "C" {
 
     // @todo add check here to see if file is a directory, apply any appropriate restrictions (such as not removing non-empty directories without force or recursive).
     // @todo be sure too handle all of the remaining flags, such as tree, force, recurse, etc...:
-    //   - kt_remove_main_flag_accessed_e
-    //   - kt_remove_main_flag_created_e
     //   - kt_remove_main_flag_empty_only_e
     //   - kt_remove_main_flag_empty_only_fail_e
     //   - kt_remove_main_flag_empty_not_e
@@ -218,7 +216,6 @@ extern "C" {
     //   - kt_remove_main_flag_prompt_once_e
     //   - kt_remove_main_flag_recurse_e
     //   - kt_remove_main_flag_tree_e
-    //   - kt_remove_main_flag_updated_e
 
     kt_remove_print_simulate_operate_boolean(&main->program.output, kt_remove_remove_s, flag & kt_remove_flag_file_operate_remove_e);
 

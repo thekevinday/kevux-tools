@@ -210,7 +210,7 @@ extern "C" {
     {
       kt_remove_dates_t * const dates[] = {
         &main->setting.accessed,
-        &main->setting.created,
+        &main->setting.changed,
         &main->setting.updated,
       };
 
@@ -222,7 +222,7 @@ extern "C" {
 
       const f_string_static_t * const names[] = {
         &kt_remove_long_accessed_s,
-        &kt_remove_long_created_s,
+        &kt_remove_long_changed_s,
         &kt_remove_long_updated_s,
       };
 

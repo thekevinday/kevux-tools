@@ -28,7 +28,7 @@ extern "C" {
     fll_program_print_help_option(print, kt_remove_short_accessed_s, kt_remove_long_accessed_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, " Remove by file last accessed date and time.");
     fll_program_print_help_option(print, kt_remove_short_block_s, kt_remove_long_block_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Remove by file type of block.");
     fll_program_print_help_option(print, kt_remove_short_character_s, kt_remove_long_character_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Remove by file type of character.");
-    fll_program_print_help_option(print, kt_remove_short_created_s, kt_remove_long_created_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "  Remove by file created on date and time.");
+    fll_program_print_help_option(print, kt_remove_short_changed_s, kt_remove_long_changed_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "  Remove by file changed on date and time.");
     fll_program_print_help_option(print, kt_remove_short_different_s, kt_remove_long_different_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Remove by file owner by a user different from the current calling user.");
     fll_program_print_help_option(print, kt_remove_short_directory_s, kt_remove_long_directory_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Remove by file type of directory.");
     fll_program_print_help_option(print, kt_remove_short_empty_s, kt_remove_long_empty_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Remove directory by a specific empty or not empty state.");
@@ -66,7 +66,7 @@ extern "C" {
     );
 
     fl_print_format("  The parameters '%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_accessed_s, context.set.notable);
-    fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_created_s, context.set.notable);
+    fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_changed_s, context.set.notable);
     fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_group_s, context.set.notable);
     fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_mode_s, context.set.notable);
     fl_print_format("'%[%r%r%]', and ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_updated_s, context.set.notable);
@@ -116,8 +116,10 @@ extern "C" {
     fl_print_format(" or '%[u+rwX,g+r%]'.%r%r", print->to, context.set.notable, context.set.notable, f_string_eol_s, f_string_eol_s);
 
     fl_print_format("  The date related parameters are: '%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_accessed_s, context.set.notable);
-    fl_print_format("'%[%r%r%]', and ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_created_s, context.set.notable);
+    fl_print_format("'%[%r%r%]', and ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_changed_s, context.set.notable);
     fl_print_format("'%[%r%r%]'.%r%r", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_updated_s, context.set.notable, f_string_eol_s, f_string_eol_s);
+
+    fl_print_format("  Where '%[updated%]' refers to when the contents of a file have been changed and '%[changed%]' refers to when the filesystem data for that file have been changed.%r%r", print->to, context.set.notable, context.set.notable, context.set.notable, context.set.notable, f_string_eol_s, f_string_eol_s);
 
     fl_print_format("  The first value to the date related parameters must be any of the following comparison operators:%r", print->to, f_string_eol_s);
     fl_print_format("  - '%[%r%]'", print->to, context.set.notable, kt_remove_date_symbol_equal_s, context.set.notable);

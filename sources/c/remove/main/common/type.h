@@ -146,7 +146,7 @@ extern "C" {
  * files:  An array of file names (full paths to the files) to remove.
  *
  * accessed: An array of last accessed dates used for comparison.
- * created:  An array of created on dates used for comparison.
+ * changed:  An array of changed on dates used for comparison.
  * updated:  An array of last updated dates used for comparison.
  * modes:    An array of modes used for comparison.
  * groups:   An array of Group IDs (gid_t) represented via an unsigned 32-bit integer.
@@ -167,7 +167,7 @@ extern "C" {
     f_string_dynamics_t files;
 
     kt_remove_dates_t accessed;
-    kt_remove_dates_t created;
+    kt_remove_dates_t changed;
     kt_remove_dates_t updated;
     kt_remove_modes_t modes;
     f_uint32s_t groups;

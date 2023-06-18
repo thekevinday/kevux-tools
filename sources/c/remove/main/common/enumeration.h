@@ -25,7 +25,7 @@ extern "C" {
  *   - block:           Remove by file type: block.
  *   - character:       Remove by file type: character.
  *   - copyright:       Print copyright.
- *   - created:         Remove by created datetime.
+ *   - changed:         Remove by changed datetime.
  *   - different:       Remove by user different from caller.
  *   - directory:       Remove by file type: directory.
  *   - empty_only:      Remove empty directories.
@@ -67,7 +67,7 @@ extern "C" {
     kt_remove_main_flag_block_e           = 0x2,
     kt_remove_main_flag_character_e       = 0x4,
     kt_remove_main_flag_copyright_e       = 0x8,
-    kt_remove_main_flag_created_e         = 0x10,
+    kt_remove_main_flag_changed_e         = 0x10,
     kt_remove_main_flag_different_e       = 0x20,
     kt_remove_main_flag_directory_e       = 0x40,
     kt_remove_main_flag_empty_only_e      = 0x80,
@@ -236,7 +236,7 @@ extern "C" {
     kt_remove_parameter_accessed_e,
     kt_remove_parameter_block_e,
     kt_remove_parameter_character_e,
-    kt_remove_parameter_created_e,
+    kt_remove_parameter_changed_e,
     kt_remove_parameter_different_e,
     kt_remove_parameter_directory_e,
     kt_remove_parameter_empty_e,
@@ -268,7 +268,7 @@ extern "C" {
       macro_f_console_parameter_t_initialize_3(kt_remove_short_accessed_s,  kt_remove_long_accessed_s,  2, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_block_s,     kt_remove_long_block_s,     0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_character_s, kt_remove_long_character_s, 0, f_console_flag_normal_e), \
-      macro_f_console_parameter_t_initialize_3(kt_remove_short_created_s,   kt_remove_long_created_s,   2, f_console_flag_normal_e), \
+      macro_f_console_parameter_t_initialize_3(kt_remove_short_changed_s,   kt_remove_long_changed_s,   2, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_different_s, kt_remove_long_different_s, 0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_directory_s, kt_remove_long_directory_s, 0, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_remove_short_empty_s,     kt_remove_long_empty_s,     1, f_console_flag_normal_e), \
