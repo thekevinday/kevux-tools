@@ -85,8 +85,6 @@ extern "C" {
  *     F_true on success when performing verification and verify passed.
  *     F_false on success when performing verification and verify failed.
  *     F_interrupt on (exit) signal received.
- *
- *     F_parameter (with error bit) if main is NULL or setting is NULL.
  */
 #ifndef _di_kt_remove_main_
   extern void kt_remove_main(kt_remove_main_t * const main);
@@ -121,8 +119,6 @@ extern "C" {
  *   This alters main.setting.state.status:
  *     F_none on success.
  *
- *     F_parameter (with error bit) if main is NULL or setting is NULL.
- *
  *     Errors with (error bit set) from: kt_remove_process_normal_operate()
  *
  * @see kt_remove_process_normal_operate()
@@ -139,8 +135,6 @@ extern "C" {
  *
  *   This alters main.setting.state.status:
  *     F_none on success.
- *
- *     F_parameter (with error bit) if main is NULL or setting is NULL.
  */
 #ifndef _di_kt_remove_process_normal_operate_
   extern void kt_remove_process_normal_operate(kt_remove_main_t * const main);

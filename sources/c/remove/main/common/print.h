@@ -43,6 +43,7 @@ extern "C" {
     kt_remove_f_f_console_parameter_process_e,
     kt_remove_f_f_file_mode_from_string_e,
     kt_remove_f_f_file_mode_to_mode_e,
+    kt_remove_f_f_file_remove_e,
     kt_remove_f_f_string_dynamics_increase_by_e,
     kt_remove_f_f_thread_create_e,
     kt_remove_f_f_uint32s_increase_by_e,

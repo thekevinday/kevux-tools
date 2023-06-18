@@ -10,6 +10,7 @@ extern "C" {
     "f_console_parameter_process",
     "f_file_mode_from_string",
     "f_file_mode_to_mode",
+    "f_file_remove",
     "f_string_dynamics_increase_by",
     "f_thread_create",
     "f_uint32s_increase_by",

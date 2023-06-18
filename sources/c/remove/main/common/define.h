@@ -60,6 +60,21 @@ extern "C" {
   #define kt_remove_time_year_unix_epoch_d 1970
 #endif // _di_kt_remove_d_
 
+/**
+ * Defines for bitwise flag enumeration combinations.
+ *
+ * kt_remove_main_flag_empty_*_d:
+ *   - all: All empty flag bits are combined.
+ *
+ * kt_remove_main_flag_prompt_*_d:
+ *   - all: All prompt flag bits are combined.
+ */
+#ifndef _di_kt_remove_flag_d_
+  #define kt_remove_main_flag_empty_all_d (kt_remove_main_flag_empty_only_e | kt_remove_main_flag_empty_only_fail_e | kt_remove_main_flag_empty_not_e | kt_remove_main_flag_empty_not_fail_e)
+
+  #define kt_remove_main_flag_prompt_all_d (kt_remove_main_flag_prompt_all_e | kt_remove_main_flag_prompt_follow_e | kt_remove_main_flag_prompt_never_e | kt_remove_main_flag_prompt_once_e)
+#endif // _di_kt_remove_flag_d_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

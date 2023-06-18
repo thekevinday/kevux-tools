@@ -33,7 +33,7 @@ extern "C" {
  *   - empty_not:       Remove not empty directories.
  *   - empty_not_fail:  Fail on not empty directories.
  *   - fifo:            Remove by file type: FIFO.
- *   - follow:          Follow symbolic links deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
+ *   - follow:          Follow symbolic links for deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
  *   - force:           Forcibly delete.
  *   - group:           Remove by GID.
  *   - help:            Print help.
@@ -202,6 +202,7 @@ extern "C" {
  * kt_remove_flag_file_operate_*_e:
  *   - none:      No flags set.
  *   - directory: Is a directory.
+ *   - follow:    Follow the symbolic link.
  *   - recurse:   Perform recursively (only on directories).
  *   - remove:    Perform remove.
  */
@@ -209,8 +210,9 @@ extern "C" {
   enum {
     kt_remove_flag_file_operate_none_e      = 0x0,
     kt_remove_flag_file_operate_directory_e = 0x1,
-    kt_remove_flag_file_operate_recurse_e   = 0x2,
-    kt_remove_flag_file_operate_remove_e    = 0x4,
+    kt_remove_flag_file_operate_follow_e    = 0x2,
+    kt_remove_flag_file_operate_recurse_e   = 0x4,
+    kt_remove_flag_file_operate_remove_e    = 0x8,
   }; // enum
 #endif // _di_kt_remove_flag_file_operate_e_
 
