@@ -250,7 +250,7 @@ extern "C" {
   #define KT_REMOVE_date_format_example_10_s_length 15
   #define KT_REMOVE_date_format_example_11_s_length 13
   #define KT_REMOVE_date_format_example_12_s_length 10
-  #define KT_REMOVE_date_format_example_13_s_length 9
+  #define KT_REMOVE_date_format_example_13_s_length 7
   #define KT_REMOVE_date_format_example_14_s_length 5
 
   extern const f_string_static_t kt_remove_date_format_example_00_s;
