@@ -60,6 +60,8 @@ extern "C" {
     f_uint32s_resize(0, &setting->groups);
     f_uint32s_resize(0, &setting->users);
 
+    f_directory_recurse_do_delete(&setting->recurse);
+
     return F_none;
   }
 #endif // _di_kt_remove_setting_delete_

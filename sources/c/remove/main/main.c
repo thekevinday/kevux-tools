@@ -1,6 +1,10 @@
 #include "remove.h"
 #include "main.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
 
   kt_remove_main_t data = kt_remove_main_t_initialize;
@@ -21,6 +25,9 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
   data.setting.program_name_long = &kt_remove_program_name_long_s;
   data.setting.process_help = &kt_remove_process_help;
   data.setting.process_normal = &kt_remove_process_normal;
+  data.setting.recurse.action = &kt_remove_operate_file_directory_recurse_action;
+  data.setting.recurse.handle = &kt_remove_operate_file_directory_recurse_handle;
+  data.setting.recurse.depth_max = kt_remove_depth_max_d;
 
   #ifdef _en_kt_default_to_utc_
     data.setting.flag |= kt_remove_flag_utc_e;
@@ -82,3 +89,7 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
 
   return (F_status_is_error(data.setting.state.status) || data.setting.state.status == F_false) ? 1 : 0;
 }
+
+#ifdef __cplusplus
+} // extern "C"
+#endif

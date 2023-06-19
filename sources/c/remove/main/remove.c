@@ -49,7 +49,7 @@ extern "C" {
     }
 
     if (main->program.signal_received) {
-      main->setting.state.status = F_interrupt;
+      main->setting.state.status = F_status_set_error(F_interrupt);
     }
 
     if (main->setting.state.status == F_status_set_error(F_interrupt)) {
@@ -105,13 +105,12 @@ extern "C" {
     for (f_number_unsigned_t i = 0; i < main->setting.files.used; ++i) {
 
       kt_remove_operate_file(main, main->setting.files.array[i]);
-      if (F_status_is_error(main->setting.state.status)) break;
 
-      if ((main->setting.flag & kt_remove_main_flag_simulate_e) && i + 1 < main->setting.files.used) {
+      if ((main->setting.flag & kt_remove_main_flag_simulate_e) && i + 1 < main->setting.files.used && (F_status_is_error_not(main->setting.state.status) || F_status_set_fine(main->setting.state.status) == F_interrupt)) {
         f_print_dynamic(f_string_eol_s, main->program.output.to);
       }
 
-      if (main->setting.state.status == F_interrupt) break;
+      if (F_status_is_error(main->setting.state.status)) break;
     } // for
   }
 #endif // _di_kt_remove_process_normal_operate_

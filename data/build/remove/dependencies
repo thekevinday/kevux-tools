@@ -11,6 +11,7 @@ f_color
 f_compare
 f_console
 f_conversion
+f-directory
 f_file
 f_print
 f_rip
@@ -18,6 +19,7 @@ f_signal
 f_thread
 
 fl_conversion
+fl_directory
 fl_string
 fl_print
 

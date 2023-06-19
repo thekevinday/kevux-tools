@@ -173,6 +173,8 @@ extern "C" {
     f_uint32s_t groups;
     f_uint32s_t users;
 
+    f_directory_recurse_do_t recurse;
+
     const f_string_static_t *program_name;
     const f_string_static_t *program_name_long;
 
@@ -194,6 +196,7 @@ extern "C" {
       kt_remove_modes_t_initialize, \
       f_uint32s_t_initialize, \
       f_uint32s_t_initialize, \
+      f_directory_recurse_do_t_initialize, \
       0, \
       0, \
       0, \

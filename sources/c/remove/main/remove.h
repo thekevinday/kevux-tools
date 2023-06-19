@@ -28,6 +28,7 @@
 #include <fll/level_0/compare.h>
 #include <fll/level_0/console.h>
 #include <fll/level_0/conversion.h>
+#include <fll/level_0/directory.h>
 #include <fll/level_0/file.h>
 #include <fll/level_0/fss.h>
 #include <fll/level_0/pipe.h>
@@ -38,6 +39,7 @@
 
 // FLL-1 includes.
 #include <fll/level_1/conversion.h>
+#include <fll/level_1/directory.h>
 #include <fll/level_1/print.h>
 
 // FLL-2 includes.
@@ -84,7 +86,10 @@ extern "C" {
  *     F_none on success.
  *     F_true on success when performing verification and verify passed.
  *     F_false on success when performing verification and verify failed.
- *     F_interrupt on (exit) signal received.
+ *
+ *     F_interrupt (with error bit) on (exit) signal received.
+ *
+ *     Errors (with error bit) from: main.callback.process_normal().
  */
 #ifndef _di_kt_remove_main_
   extern void kt_remove_main(kt_remove_main_t * const main);

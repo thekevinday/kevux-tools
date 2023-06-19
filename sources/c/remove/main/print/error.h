@@ -134,6 +134,37 @@ extern "C" {
 #endif // _di_kt_remove_print_error_parameter_no_files_
 
 /**
+ * Print message about max recursion being reached.
+ *
+ * This is only printed when verbosity is not set to quiet.
+ *
+ * This uses the following:
+ *   - print.set.error: For the error context.
+ *   - print.set.strong: For the highlighting context
+ *   - print.prefix: For the prefixing a string to the message (such as "ERROR:").
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This locks, uses, and unlocks the file stream.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param path
+ *   The path in which the recursion max is reached.
+ *
+ * @return
+ *   F_none on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_print_format()
+ */
+#ifndef _di_kt_remove_print_error_recursion_max_
+  extern f_status_t kt_remove_print_error_recursion_max(fl_print_t * const print, const f_string_static_t path);
+#endif // _di_kt_remove_print_error_recursion_max_
+
+/**
  * Print message about parameter having an unknown value.
  *
  * This is only printed when verbosity is not set to quiet.
