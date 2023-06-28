@@ -81,9 +81,7 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
     }
   #endif // _di_thread_support_
 
-  kt_remove_setting_unload(&data);
-
-  fll_program_data_delete(&data.program);
+  kt_remove_main_delete(&data);
 
   fll_program_standard_set_down(&data.program);
 

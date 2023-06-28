@@ -44,28 +44,6 @@ extern "C" {
   }
 #endif // _di_kt_remove_modes_resize_
 
-#ifndef _di_kt_remove_setting_delete_
-  f_status_t kt_remove_setting_delete(kt_remove_setting_t * const setting) {
-
-    if (!setting) return F_status_set_error(F_parameter);
-
-    f_string_dynamic_resize(0, &setting->buffer);
-    f_string_dynamics_resize(0, &setting->files);
-
-    kt_remove_dates_resize(0, &setting->accessed);
-    kt_remove_dates_resize(0, &setting->changed);
-    kt_remove_dates_resize(0, &setting->updated);
-    kt_remove_modes_resize(0, &setting->modes);
-
-    f_uint32s_resize(0, &setting->groups);
-    f_uint32s_resize(0, &setting->users);
-
-    f_directory_recurse_do_delete(&setting->recurse);
-
-    return F_none;
-  }
-#endif // _di_kt_remove_setting_delete_
-
 #ifndef _di_kt_remove_setting_load_
   void kt_remove_setting_load(const f_console_arguments_t arguments, kt_remove_main_t * const main) {
 
@@ -162,13 +140,22 @@ extern "C" {
     if (main->program.parameters.array[kt_remove_parameter_help_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_remove_main_flag_help_e;
     }
+    else {
+      main->setting.flag -= main->setting.flag & kt_remove_main_flag_help_e;
+    }
 
     if (main->program.parameters.array[kt_remove_parameter_version_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_remove_main_flag_version_e;
     }
+    else {
+      main->setting.flag -= main->setting.flag & kt_remove_main_flag_version_e;
+    }
 
     if (main->program.parameters.array[kt_remove_parameter_copyright_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_remove_main_flag_copyright_e;
+    }
+    else {
+      main->setting.flag -= main->setting.flag & kt_remove_main_flag_copyright_e;
     }
 
     if (main->program.parameters.array[kt_remove_parameter_block_e].result & f_console_result_found_e) {
@@ -883,17 +870,6 @@ extern "C" {
     }
   }
 #endif // _di_kt_remove_setting_load_
-
-#ifndef _di_kt_remove_setting_unload_
-  f_status_t kt_remove_setting_unload(kt_remove_main_t * const main) {
-
-    if (!main) return F_status_set_error(F_parameter);
-
-    kt_remove_setting_delete(&main->setting);
-
-    return F_none;
-  }
-#endif // _di_kt_remove_setting_unload_
 
 #ifdef __cplusplus
 } // extern "C"

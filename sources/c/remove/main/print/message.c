@@ -65,7 +65,7 @@ extern "C" {
       kt_remove_program_help_parameters_s
     );
 
-    fl_print_format("  The parameters '%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_accessed_s, context.set.notable);
+    fl_print_format("%r  The parameters '%[%r%r%]', ", print->to, f_string_eol_s, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_accessed_s, context.set.notable);
     fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_changed_s, context.set.notable);
     fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_group_s, context.set.notable);
     fl_print_format("'%[%r%r%]', ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_remove_long_mode_s, context.set.notable);

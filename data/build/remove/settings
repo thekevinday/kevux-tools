@@ -22,7 +22,7 @@ version_micro 0
 version_file micro
 version_target minor
 
-modes individual individual level monolithic clang test fanalyzer coverage thread threadless
+modes individual individual_thread level monolithic clang test fanalyzer thread threadless
 modes_default monolithic thread
 
 build_compiler gcc
@@ -32,7 +32,8 @@ build_indexer_arguments rcs
 build_language c
 
 build_libraries -lc
-build_libraries-individual -lfll_error -lfll_print -lfll_program -lfl_conversion -fl_directory -lfl_print -lf_account -lf_color -lf_compare -lf_console -lf_conversion -lf_directory -lf_file -lf_memory -lf_pipe -lf_print -lf_rip -lf_signal -lf_string -lf_thread -lf_type_array -lf_utf
+build_libraries-individual -lfll_error -lfll_print -lfll_program -lfl_conversion -fl_directory -lfl_print -lf_account -lf_color -lf_compare -lf_console -lf_conversion -lf_directory -lf_file -lf_memory -lf_pipe -lf_print -lf_rip -lf_signal -lf_string -lf_type_array -lf_utf
+build_libraries-individual_thread -lf_thread
 build_libraries-level -lfll_2 -lfll_1 -lfll_0
 build_libraries-monolithic -lfll
 

@@ -224,6 +224,35 @@ extern "C" {
     }
 #endif // _di_kt_remove_main_t_
 
+/**
+ * Deallocate main program data.
+ *
+ * @param setting_make
+ *   The make setting data.
+ *
+ *   This does not alter main.setting.state.status.
+ */
+#ifndef _di_kt_remove_main_delete_
+  extern void kt_remove_main_delete(kt_remove_main_t * const main);
+#endif // _di_kt_remove_main_delete_
+
+/**
+ * Delete the program main setting data.
+ *
+ * @param setting
+ *   The program main setting data.
+ *
+ *   This does not alter setting.state.status.
+ *
+ * @return
+ *   F_none on success.
+ *
+ *   F_parameter (with error bit) if a parameter is invalid.
+ */
+#ifndef _di_kt_remove_setting_delete_
+  extern f_status_t kt_remove_setting_delete(kt_remove_setting_t * const setting);
+#endif // _di_kt_remove_setting_delete_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

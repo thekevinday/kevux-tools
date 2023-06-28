@@ -67,7 +67,7 @@ extern "C" {
   #define KT_REMOVE_program_help_parameters_s_length 7
 
   extern const f_string_static_t kt_remove_program_help_parameters_s;
-#endif // _di_utf8_program_help_parameters_s_
+#endif // kt_remove_program_help_parameters_s_
 
 /**
  * Additional strings used for various purposes.
