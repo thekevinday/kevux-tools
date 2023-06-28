@@ -1,0 +1,3 @@
+# fss-0000
+
+_di_thread_support_ Disable thread support, handling signals without using a separate thread.

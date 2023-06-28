@@ -1,0 +1,27 @@
+# fss-0005 iki-0002
+
+settings:
+  fail exit
+  modes individual level monolithic clang test fanalyzer coverage threaded threadless
+
+  environment PATH LD_LIBRARY_PATH
+  environment LANG LC_ALL LC_COLLATE LC_CTYPE LC_FASTMSG LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME LOCPATH NLSPATH
+
+main:
+  build tacocat/settings
+
+install:
+  shell ./install.sh parameter:'work' parameter:'verbosity' parameter:'color'
+
+help:
+  print
+  print context:'title'Fakefile Options for Kevux Tools Network Concatenate Software.context:'reset'
+
+  print
+  print The following operations are available\:
+  print "  - context:'notable'help:context:'reset'    Perform the help operation, printing this message."
+  print "  - context:'notable'install:context:'reset' A helper operation that simply calls the ./install.sh script with default settings."
+  print "  - context:'notable'main:context:'reset'    The default compilation using the build settings mode."
+
+  print
+  print The context:'notable'install context:'reset'operation supports the context:'notable'work,context:'reset' context:'notable'verbosity,context:'reset' and context:'notable'color context:'reset'parameters.
