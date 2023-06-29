@@ -50,7 +50,7 @@ extern "C" {
  */
 #ifndef _di_kt_tacocat_program_name_s_
   #define KT_TACOCAT_program_name_s      "tacocat"
-  #define KT_TACOCAT_program_name_long_s "tacocat"
+  #define KT_TACOCAT_program_name_long_s "TacocaT"
 
   #define KT_TACOCAT_program_name_s_length      7
   #define KT_TACOCAT_program_name_long_s_length 7

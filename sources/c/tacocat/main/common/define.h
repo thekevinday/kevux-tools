@@ -37,6 +37,18 @@ extern "C" {
   #define kt_tacocat_signal_check_failsafe_d 20000
 #endif // _di_kt_tacocat_d_
 
+/**
+ * The program macros.
+ *
+ * macro_setting_load_print_first: Intended to be used to simplify the code in kt_tacocat_setting_load() and make it more readable.
+ */
+#ifndef _di_kt_tacocat_macros_d_
+  #define macro_setting_load_print_first() \
+    if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) { \
+      fll_print_dynamic_raw(f_string_eol_s, main->program.message.to); \
+    }
+#endif // _di_kt_tacocat_macro_d_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

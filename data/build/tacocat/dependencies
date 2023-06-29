@@ -9,6 +9,7 @@ f_utf
 f_color
 f_console
 f_conversion
+f_path
 f_pipe
 f_print
 f_signal

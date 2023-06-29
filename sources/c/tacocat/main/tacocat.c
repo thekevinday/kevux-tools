@@ -17,9 +17,7 @@ extern "C" {
       return;
     }
 
-    if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-      fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-    }
+    macro_setting_load_print_first();
 
     main->setting.state.status = F_none;
 

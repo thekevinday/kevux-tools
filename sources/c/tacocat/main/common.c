@@ -32,10 +32,7 @@ extern "C" {
     }
 
     if (F_status_is_error(main->setting.state.status)) {
-      if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-        fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-      }
-
+      macro_setting_load_print_first();
       kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_console_parameter_process));
 
       return;
@@ -55,9 +52,7 @@ extern "C" {
         main->setting.state.status = fll_program_parameter_process_context(choices, modes, F_true, &main->program);
 
         if (F_status_is_error(main->setting.state.status)) {
-          if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-            fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-          }
+          macro_setting_load_print_first();
 
           kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(fll_program_parameter_process_context));
 
@@ -76,9 +71,7 @@ extern "C" {
         main->setting.state.status = fll_program_parameter_process_verbosity(choices, verbosity, F_true, &main->program);
 
         if (F_status_is_error(main->setting.state.status)) {
-          if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-            fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-          }
+          macro_setting_load_print_first();
 
           kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(fll_program_parameter_process_verbosity));
 
@@ -152,9 +145,7 @@ extern "C" {
             main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], strings[i]);
 
             if (F_status_is_error(main->setting.state.status)) {
-              if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-                fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-              }
+              macro_setting_load_print_first();
 
               kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_string_dynamic_append_nulless));
 
@@ -164,9 +155,7 @@ extern "C" {
           else {
             main->setting.state.status = F_status_set_error(F_parameter);
 
-            if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-              fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-            }
+            macro_setting_load_print_first();
 
             fll_program_print_error_parameter_empty_value(&main->program.error, f_console_symbol_long_normal_s, longs[i]);
 
@@ -176,9 +165,7 @@ extern "C" {
         else if (main->program.parameters.array[parameters[i]].result & f_console_result_found_e) {
           main->setting.state.status = F_status_set_error(F_parameter);
 
-          if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-            fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-          }
+          macro_setting_load_print_first();
 
           fll_program_print_error_parameter_missing_value(&main->program.error, f_console_symbol_long_normal_s, longs[i]);
 
@@ -203,6 +190,11 @@ extern "C" {
         &main->setting.tos,
       };
 
+      const bool const exists[] = {
+        F_true,
+        F_false,
+      };
+
       f_number_unsigned_t j = 0;
 
       for (i = 0; i < 2; ++i) {
@@ -213,9 +205,7 @@ extern "C" {
           main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used, strings[i]);
 
           if (F_status_is_error(main->setting.state.status)) {
-            if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-              fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-            }
+            macro_setting_load_print_first();
 
             kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_string_dynamics_increase_by));
 
@@ -232,21 +222,34 @@ extern "C" {
               main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &strings[i]->array[j]);
 
               if (F_status_is_error(main->setting.state.status)) {
-                if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-                  fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-                }
+                macro_setting_load_print_first();
 
                 kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_string_dynamic_append_nulless));
 
                 return;
               }
+
+              if (f_path_is_absolute(strings[i]->array[j]) == F_true || f_path_is_relative_current(strings[i]->array[j]) == F_true) {
+                if (exists[i]) {
+                  main->setting.state.status = f_file_exists(strings[i]->array[j], F_true);
+
+                  if (F_status_is_error(main->setting.state.status)) {
+                    macro_setting_load_print_first();
+
+                    kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_string_dynamic_append_nulless));
+
+                    return;
+                  }
+                }
+              }
+              else {
+                // @todo is network address, do validation.
+              }
             }
             else {
               main->setting.state.status = F_status_set_error(F_parameter);
 
-              if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-                fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-              }
+              macro_setting_load_print_first();
 
               fll_program_print_error_parameter_empty_value(&main->program.error, f_console_symbol_long_normal_s, longs[i]);
 
@@ -257,9 +260,7 @@ extern "C" {
         else if (main->program.parameters.array[parameters[i]].result & f_console_result_found_e) {
           main->setting.state.status = F_status_set_error(F_parameter);
 
-          if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) {
-            fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
-          }
+          macro_setting_load_print_first();
 
           fll_program_print_error_parameter_missing_value(&main->program.error, f_console_symbol_long_normal_s, longs[i]);
 
