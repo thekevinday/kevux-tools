@@ -40,7 +40,10 @@ extern "C" {
 #ifndef _di_kt_tacocat_f_e_
   enum {
     kt_tacocat_f_f_console_parameter_process_e,
+    kt_tacocat_f_f_network_from_ip_name_e,
+    kt_tacocat_f_f_string_append_nulless_e,
     kt_tacocat_f_f_string_dynamic_append_nulless_e,
+    kt_tacocat_f_f_string_dynamic_increase_by_e,
     kt_tacocat_f_f_string_dynamics_increase_by_e,
     kt_tacocat_f_f_thread_create_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
