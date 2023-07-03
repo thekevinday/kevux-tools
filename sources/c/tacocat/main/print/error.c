@@ -28,6 +28,30 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_error_file_
 
+#ifndef _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
+  f_status_t kt_tacocat_print_error_parameter_value_resolve_unknown(fl_print_t * const print, const f_string_dynamic_t unknown) {
+
+    if (!print || !print->custom) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QThe parameter%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format("%[%Q%Q%]", print->to, print->set->notable, f_console_symbol_long_normal_s, kt_tacocat_long_resolve_s, print->set->notable);
+    fl_print_format(" %[may only be either '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format("%[%Q%]", print->to, print->set->notable, kt_tacocat_classic_s, print->set->notable);
+    fl_print_format("%' or '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format("%[%Q%]", print->to, print->set->notable, kt_tacocat_kevux_s, print->set->notable);
+    fl_print_format(" %[' but '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format("%[%Q%]", print->to, print->set->notable, unknown, print->set->notable);
+    fl_print_format(" %[' is given.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    return F_none;
+  }
+#endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

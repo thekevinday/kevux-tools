@@ -63,10 +63,7 @@ extern "C" {
  * The program help related data.
  */
 #ifndef kt_tacocat_program_help_parameters_s_
-  #define KT_TACOCAT_program_help_parameters_s "socket(s)/address(s)"
-  #define KT_TACOCAT_program_help_parameters_s_length 20
-
-  extern const f_string_static_t kt_tacocat_program_help_parameters_s;
+  // Not used.
 #endif // _di_utf8_program_help_parameters_s_
 
 /**
@@ -75,90 +72,61 @@ extern "C" {
  * kt_tacocat_*_s: Arbitrary strings.
  */
 #ifndef _di_kt_tacocat_s_
-  #define KT_TACOCAT_network_s "network"
-  #define KT_TACOCAT_pid_s     "pid"
-  #define KT_TACOCAT_socket_s  "socket"
-  #define KT_TACOCAT_tacocat_s "tacocat"
+  #define KT_TACOCAT_classic_s           "classic"
+  #define KT_TACOCAT_kevux_s             "kevux"
+  #define KT_TACOCAT_file_s              "file"
+  #define KT_TACOCAT_network_s           "network"
+  #define KT_TACOCAT_network_or_socket_s "network / socket"
+  #define KT_TACOCAT_socket_s            "socket"
+  #define KT_TACOCAT_tacocat_s           "tacocat"
+  #define KT_TACOCAT_two_s               "two"
 
-  #define KT_TACOCAT_network_s_length 7
-  #define KT_TACOCAT_pid_s_length     3
-  #define KT_TACOCAT_socket_s_length  6
-  #define KT_TACOCAT_tacocat_s_length 7
+  #define KT_TACOCAT_classic_s_length           7
+  #define KT_TACOCAT_kevux_s_length             5
+  #define KT_TACOCAT_file_s_length              4
+  #define KT_TACOCAT_network_s_length           7
+  #define KT_TACOCAT_network_or_socket_s_length 16
+  #define KT_TACOCAT_socket_s_length            6
+  #define KT_TACOCAT_tacocat_s_length           7
+  #define KT_TACOCAT_two_s_length               3
 
+  extern const f_string_static_t kt_tacocat_classic_s;
+  extern const f_string_static_t kt_tacocat_kevux_s;
+  extern const f_string_static_t kt_tacocat_file_s;
   extern const f_string_static_t kt_tacocat_network_s;
-  extern const f_string_static_t kt_tacocat_pid_s;
+  extern const f_string_static_t kt_tacocat_network_or_socket_s;
   extern const f_string_static_t kt_tacocat_socket_s;
   extern const f_string_static_t kt_tacocat_tacocat_s;
+  extern const f_string_static_t kt_tacocat_two_s;
 #endif // _di_kt_tacocat_s_
-
-/**
- * Additional strings directly associated with PID file and path.
- *
- * kt_tacocat_pid_*_s: Pid Path specific strings.
- */
-#ifndef _di_kt_tacocat_pid_s_
-  #ifndef KT_TACOCAT_pid_path_s
-    #define KT_TACOCAT_pid_path_s "/var/run/tacocat/"
-  #endif // KT_TACOCAT_pid_path_s
-
-  #ifndef KT_TACOCAT_pid_path_s_length
-    #define KT_TACOCAT_pid_path_s_length 17
-  #endif // KT_TACOCAT_pid_path_s_length
-
-  extern const f_string_static_t kt_tacocat_pid_path_s;
-#endif // _di_kt_tacocat_pid_s_
 
 /**
  * The main program parameters.
  */
 #ifndef _di_kt_tacocat_parameter_s_
-  #define KT_TACOCAT_short_background_s "b"
-  #define KT_TACOCAT_short_from_s       "f"
-  #define KT_TACOCAT_short_pid_s        "p"
-  #define KT_TACOCAT_short_pid_name_s   "N"
-  #define KT_TACOCAT_short_pid_path_s   "P"
+  #define KT_TACOCAT_short_receive_s    "r"
   #define KT_TACOCAT_short_resolve_s    "R"
-  #define KT_TACOCAT_short_to_s         "t"
+  #define KT_TACOCAT_short_send_s       "s"
 
-  #define KT_TACOCAT_long_background_s "background"
-  #define KT_TACOCAT_long_from_s       "from"
-  #define KT_TACOCAT_long_pid_s        "pid"
-  #define KT_TACOCAT_long_pid_name_s   "pid_name"
-  #define KT_TACOCAT_long_pid_path_s   "pid_path"
+  #define KT_TACOCAT_long_receive_s    "receive"
   #define KT_TACOCAT_long_resolve_s    "resolve"
-  #define KT_TACOCAT_long_to_s         "to"
+  #define KT_TACOCAT_long_send_s       "send"
 
-  #define KT_TACOCAT_short_background_s_length 1
-  #define KT_TACOCAT_short_from_s_length       1
-  #define KT_TACOCAT_short_pid_s_length        1
-  #define KT_TACOCAT_short_pid_name_s_length   1
-  #define KT_TACOCAT_short_pid_path_s_length   1
+  #define KT_TACOCAT_short_receive_s_length    1
   #define KT_TACOCAT_short_resolve_s_length    1
-  #define KT_TACOCAT_short_to_s_length         1
+  #define KT_TACOCAT_short_send_s_length       1
 
-  #define KT_TACOCAT_long_background_s_length 10
-  #define KT_TACOCAT_long_from_s_length       4
-  #define KT_TACOCAT_long_pid_s_length        3
-  #define KT_TACOCAT_long_pid_name_s_length   8
-  #define KT_TACOCAT_long_pid_path_s_length   8
+  #define KT_TACOCAT_long_receive_s_length    7
   #define KT_TACOCAT_long_resolve_s_length    7
-  #define KT_TACOCAT_long_to_s_length         2
+  #define KT_TACOCAT_long_send_s_length       4
 
-  extern const f_string_static_t kt_tacocat_short_background_s;
-  extern const f_string_static_t kt_tacocat_short_from_s;
-  extern const f_string_static_t kt_tacocat_short_pid_s;
-  extern const f_string_static_t kt_tacocat_short_pid_name_s;
-  extern const f_string_static_t kt_tacocat_short_pid_path_s;
+  extern const f_string_static_t kt_tacocat_short_receive_s;
   extern const f_string_static_t kt_tacocat_short_resolve_s;
-  extern const f_string_static_t kt_tacocat_short_to_s;
+  extern const f_string_static_t kt_tacocat_short_send_s;
 
-  extern const f_string_static_t kt_tacocat_long_background_s;
-  extern const f_string_static_t kt_tacocat_long_from_s;
-  extern const f_string_static_t kt_tacocat_long_pid_s;
-  extern const f_string_static_t kt_tacocat_long_pid_name_s;
-  extern const f_string_static_t kt_tacocat_long_pid_path_s;
+  extern const f_string_static_t kt_tacocat_long_receive_s;
   extern const f_string_static_t kt_tacocat_long_resolve_s;
-  extern const f_string_static_t kt_tacocat_long_to_s;
+  extern const f_string_static_t kt_tacocat_long_send_s;
 #endif // _di_kt_tacocat_parameter_s_
 
 #ifdef __cplusplus

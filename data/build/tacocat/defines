@@ -1,3 +1,4 @@
 # fss-0000
 
 _di_thread_support_ Disable thread support, handling signals without using a separate thread.
+_kt_resolve_default_kevux_ Default to Kevux DNS resolution methods rather than classic DNS resolution methods.

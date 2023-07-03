@@ -27,6 +27,10 @@ extern "C" {
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
  *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
+ *
+ * kt_tacocat_block_size_*_d:
+ *   - receive: The block size in bytes to use when sending packets.
+ *   - send:    The block size in bytes to use when receiving packets.
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 4
@@ -35,17 +39,54 @@ extern "C" {
 
   #define kt_tacocat_signal_check_d          20000
   #define kt_tacocat_signal_check_failsafe_d 20000
+
+  #define kt_tacocat_block_size_receive_d 65535
+  #define kt_tacocat_block_size_send_d    65535
 #endif // _di_kt_tacocat_d_
 
 /**
  * The program macros.
  *
- * macro_setting_load_print_first: Intended to be used to simplify the code in kt_tacocat_setting_load() and make it more readable.
+ * macro_setting_load_print_first:
+ *   Intended to be used to simplify the code in kt_tacocat_setting_load() and make it more readable.
+ *
+ * macro_setting_load_handle_send_receive_error_continue_basic:
+ *   Intended to be used to simplify the code in kt_tacocat_setting_load_send_receive() and make it more readable.
+ *   This is for the basic error that calls kt_tacocat_print_error() when printing.
+ *
+ * macro_setting_load_handle_send_receive_error_file_continue_basic:
+ *   The same as macro_setting_load_handle_send_receive_error_continue_basic() but intended for file errors.
  */
 #ifndef _di_kt_tacocat_macros_d_
   #define macro_setting_load_print_first() \
     if ((main->setting.flag & kt_tacocat_main_flag_print_first_e) && main->program.message.verbosity > f_console_verbosity_error_e) { \
       fll_print_dynamic_raw(f_string_eol_s, main->program.message.to); \
+    }
+
+  #define macro_setting_load_handle_send_receive_error_continue_basic(method) \
+    if (F_status_is_error(main->setting.state.status)) { \
+      macro_setting_load_print_first(); \
+      \
+      kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(method)); \
+      \
+      if (F_status_is_error_not(failed)) { \
+        failed = main->setting.state.status; \
+      } \
+      \
+      continue; \
+    }
+
+  #define macro_setting_load_handle_send_receive_error_file_continue_basic(method, name, operation, type) \
+    if (F_status_is_error(main->setting.state.status)) { \
+      macro_setting_load_print_first(); \
+      \
+      kt_tacocat_print_error_file(&main->program.error, macro_kt_tacocat_f(method), name, operation, type); \
+      \
+      if (F_status_is_error_not(failed)) { \
+        failed = main->setting.state.status; \
+      } \
+      \
+      continue; \
     }
 #endif // _di_kt_tacocat_macro_d_
 

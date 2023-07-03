@@ -8,6 +8,8 @@ f_string
 f_utf
 f_color
 f_console
+f_compare
+f_file
 f_network
 f_path
 f_pipe

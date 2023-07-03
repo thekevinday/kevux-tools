@@ -21,8 +21,11 @@
 #include <fll/level_0/type.h>
 #include <fll/level_0/status.h>
 #include <fll/level_0/memory.h>
+#include <fll/level_0/type_array.h>
+#include <fll/level_0/type_array_file.h>
 #include <fll/level_0/string.h>
 #include <fll/level_0/color.h>
+#include <fll/level_0/compare.h>
 #include <fll/level_0/console.h>
 #include <fll/level_0/file.h>
 #include <fll/level_0/network.h>
@@ -51,6 +54,7 @@
 #include <program/kevux/tools/tacocat/main/print/message.h>
 #include <program/kevux/tools/tacocat/main/print/verbose.h>
 #include <program/kevux/tools/tacocat/main/print/warning.h>
+#include <program/kevux/tools/tacocat/main/process.h>
 #include <program/kevux/tools/tacocat/main/signal.h>
 #include <program/kevux/tools/tacocat/main/thread.h>
 

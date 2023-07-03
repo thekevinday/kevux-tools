@@ -65,6 +65,28 @@ extern "C" {
   extern f_status_t kt_tacocat_print_error_file(fl_print_t * const print, const f_string_t function, const f_string_static_t name, const f_string_static_t operation, const uint8_t type);
 #endif // _di_kt_tacocat_print_error_file_
 
+/**
+ * Print error message for when an unknown value for the resolve parameter is provided.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param unknown
+ *   The string representing the unknown value passed to the resolve parameter.
+ *
+ * @return
+ *   F_none on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
+  extern f_status_t kt_tacocat_print_error_parameter_value_resolve_unknown(fl_print_t * const print, const f_string_dynamic_t unknown);
+#endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

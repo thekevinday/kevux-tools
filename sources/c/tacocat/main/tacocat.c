@@ -39,7 +39,7 @@ extern "C" {
       return;
     }
 
-    // @todo do stuff (do everything).
+    kt_tacocat_process_main(main);
 
     if (main->program.signal_received) {
       main->setting.state.status = F_status_set_error(F_interrupt);

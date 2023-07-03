@@ -28,6 +28,8 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
   data.program.parameters.used = kt_tacocat_parameter_total_d;
   data.program.environment = envp;
 
+  data.callback.setting_load_send_receive = kt_tacocat_setting_load_send_receive;
+
   if (f_pipe_input_exists()) {
     data.program.pipe = fll_program_data_pipe_input_e;
   }

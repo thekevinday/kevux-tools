@@ -23,19 +23,22 @@ extern "C" {
 
     f_number_unsigned_t i = 0;
 
-    for (; i < setting->file_froms.used ; ++i) {
-      f_file_close(&setting->file_froms.array[i]);
+    for (; i < setting->file_receives.used ; ++i) {
+      f_file_close(&setting->file_receives.array[i]);
     } // for
 
-    for (; i < setting->file_tos.used ; ++i) {
-      f_file_close(&setting->file_tos.array[i]);
+    for (; i < setting->file_sends.used ; ++i) {
+      f_file_close(&setting->file_sends.array[i]);
     } // for
+
+    f_files_resize(0, &setting->file_receives);
+    f_files_resize(0, &setting->file_sends);
 
     f_string_dynamic_resize(0, &setting->buffer);
     f_string_dynamic_resize(0, &setting->pid_path);
     f_string_dynamic_resize(0, &setting->pid_name);
-    f_string_dynamics_resize(0, &setting->froms);
-    f_string_dynamics_resize(0, &setting->tos);
+    f_string_dynamics_resize(0, &setting->receives);
+    f_string_dynamics_resize(0, &setting->sends);
 
     return F_none;
   }
