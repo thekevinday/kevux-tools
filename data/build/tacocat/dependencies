@@ -15,6 +15,7 @@ f_path
 f_pipe
 f_print
 f_signal
+f_socket
 f_thread
 
 fl_print

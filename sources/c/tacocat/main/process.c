@@ -9,6 +9,8 @@ extern "C" {
 
     if (!main) return;
 
+    f_number_unsigned_t i = 0;
+
     // @todo:
     //   1: Establish connections.
     //   2: read / write from files.

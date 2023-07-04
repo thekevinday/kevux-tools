@@ -43,7 +43,7 @@ int main(const int argc, const f_string_t *argv, const f_string_t *envp) {
       kt_tacocat_setting_load(arguments, &data);
     }
 
-    status_code_main(&data);
+    kt_tacocat_main(&data);
   #else
     {
       f_thread_id_t id_signal;

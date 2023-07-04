@@ -30,13 +30,13 @@ extern "C" {
  * status_thread: A status used eclusively by the threaded signal handler.
  * state:         The state data used when processing data.
  *
- * pid_file:      The PID file.
  * file_receives: An array of input files.
  * file_sends:    An array of output files.
  *
+ * socket_receives: An array of the network sockets for receiving.
+ * socket_sends:    An array of the network sockets for sending.
+ *
  * buffer:   A string buffer used for caching purposes.
- * pid_name: The name of the PID file without the path and without the file extension (.pid).
- * pid_path: A file path to the directory containing the PID file.
  *
  * receives: An array of buffers for receiving data receive clients.
  * sends:    An array of buffers for sending data send clients.
@@ -51,13 +51,13 @@ extern "C" {
     f_status_t status_thread;
     f_state_t state;
 
-    f_file_t pid_file;
     f_files_t file_receives;
     f_files_t file_sends;
 
+    f_sockets_t socket_receives;
+    f_sockets_t socket_sends;
+
     f_string_dynamic_t buffer;
-    f_string_dynamic_t pid_path;
-    f_string_dynamic_t pid_name;
 
     f_string_dynamics_t receives;
     f_string_dynamics_t sends;
@@ -70,11 +70,10 @@ extern "C" {
       kt_tacocat_block_size_send_d, \
       F_none, \
       macro_f_state_t_initialize_1(kt_tacocat_allocation_large_d, kt_tacocat_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
-      f_file_t_initialize, \
       f_files_t_initialize, \
       f_files_t_initialize, \
-      f_string_dynamic_t_initialize, \
-      f_string_dynamic_t_initialize, \
+      f_sockets_t_initialize, \
+      f_sockets_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamics_t_initialize, \
       f_string_dynamics_t_initialize, \

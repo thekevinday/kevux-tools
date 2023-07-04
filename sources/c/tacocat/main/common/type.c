@@ -19,8 +19,6 @@ extern "C" {
 
     if (!setting) return F_status_set_error(F_parameter);
 
-    f_file_close(&setting->pid_file);
-
     f_number_unsigned_t i = 0;
 
     for (; i < setting->file_receives.used ; ++i) {
@@ -34,9 +32,10 @@ extern "C" {
     f_files_resize(0, &setting->file_receives);
     f_files_resize(0, &setting->file_sends);
 
+    f_sockets_resize(0, &setting->socket_receives);
+    f_sockets_resize(0, &setting->socket_sends);
+
     f_string_dynamic_resize(0, &setting->buffer);
-    f_string_dynamic_resize(0, &setting->pid_path);
-    f_string_dynamic_resize(0, &setting->pid_name);
     f_string_dynamics_resize(0, &setting->receives);
     f_string_dynamics_resize(0, &setting->sends);
 
