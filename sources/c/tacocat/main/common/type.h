@@ -30,16 +30,19 @@ extern "C" {
  * status_thread: A status used eclusively by the threaded signal handler.
  * state:         The state data used when processing data.
  *
- * file_receives: An array of input files.
- * file_sends:    An array of output files.
+ * file_receives: An array of files for receiving.
+ * file_sends:    An array of files for sending.
  *
  * socket_receives: An array of the network sockets for receiving.
  * socket_sends:    An array of the network sockets for sending.
  *
- * buffer:   A string buffer used for caching purposes.
+ * status_receives: An array of statuses for receiving.
+ * status_sends:    An array of statuses for sending.
  *
  * receives: An array of buffers for receiving data receive clients.
  * sends:    An array of buffers for sending data send clients.
+ *
+ * buffer:   A string buffer used for caching purposes.
  */
 #ifndef _di_kt_tacocat_setting_t_
   typedef struct {
@@ -57,10 +60,13 @@ extern "C" {
     f_sockets_t socket_receives;
     f_sockets_t socket_sends;
 
-    f_string_dynamic_t buffer;
+    f_statuss_t status_receives;
+    f_statuss_t status_sends;
 
     f_string_dynamics_t receives;
     f_string_dynamics_t sends;
+
+    f_string_dynamic_t buffer;
   } kt_tacocat_setting_t;
 
   #define kt_tacocat_setting_t_initialize \
@@ -74,9 +80,11 @@ extern "C" {
       f_files_t_initialize, \
       f_sockets_t_initialize, \
       f_sockets_t_initialize, \
+      f_statuss_t_initialize, \
+      f_statuss_t_initialize, \
+      f_string_dynamics_t_initialize, \
+      f_string_dynamics_t_initialize, \
       f_string_dynamic_t_initialize, \
-      f_string_dynamics_t_initialize, \
-      f_string_dynamics_t_initialize, \
     }
 #endif // _di_kt_tacocat_setting_t_
 
@@ -133,6 +141,8 @@ extern "C" {
 /**
  * Delete the program main setting data.
  *
+ * @param program
+ *   The main program data.
  * @param setting
  *   The program main setting data.
  *
@@ -144,7 +154,7 @@ extern "C" {
  *   F_parameter (with error bit) if a parameter is invalid.
  */
 #ifndef _di_kt_tacocat_setting_delete_
-  extern f_status_t kt_tacocat_setting_delete(kt_tacocat_setting_t * const setting);
+  extern f_status_t kt_tacocat_setting_delete(const fll_program_data_t program, kt_tacocat_setting_t * const setting);
 #endif // _di_kt_tacocat_setting_delete_
 
 #ifdef __cplusplus

@@ -177,6 +177,16 @@ extern "C" {
       &main->setting.file_sends,
     };
 
+    f_sockets_t * const sockets[] = {
+      &main->setting.socket_receives,
+      &main->setting.socket_sends,
+    };
+
+    f_statuss_t * const statuss[] = {
+      &main->setting.status_receives,
+      &main->setting.status_sends,
+    };
+
     const bool const is_receive[] = {
       F_true,
       F_false,
@@ -218,6 +228,14 @@ extern "C" {
         main->setting.state.status = f_files_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, files[i]);
 
         macro_setting_load_handle_send_receive_error_continue_basic(f_files_increase_by);
+
+        main->setting.state.status = f_sockets_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, sockets[i]);
+
+        macro_setting_load_handle_send_receive_error_continue_basic(f_sockets_increase_by);
+
+        main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, statuss[i]);
+
+        macro_setting_load_handle_send_receive_error_continue_basic(f_statuss_increase_by);
 
         for (j = 0; j < main->program.parameters.array[parameters[i]].values.used; j += 2) {
 

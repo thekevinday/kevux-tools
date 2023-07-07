@@ -87,6 +87,36 @@ extern "C" {
   extern f_status_t kt_tacocat_print_error_parameter_value_resolve_unknown(fl_print_t * const print, const f_string_dynamic_t unknown);
 #endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
 
+/**
+ * Print error message for when an the different socket relating structure arrays do not have the same length.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param name
+ *   The name of the set of arrays that must have the same length.
+ * @param names
+ *   The length of the names array.
+ * @param files
+ *   The length of the files array.
+ * @param sockets
+ *   The length of the sockets array.
+ * @param statuss
+ *   The length of the statuss array.
+ *
+ * @return
+ *   F_none on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
+  extern f_status_t kt_tacocat_print_error_setting_socket_lengths_must_match(fl_print_t * const print, const f_string_dynamic_t name, const f_number_unsigned_t names, const f_number_unsigned_t files, const f_number_unsigned_t sockets, const f_number_unsigned_t statuss);
+#endif // _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
