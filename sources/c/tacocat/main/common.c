@@ -264,6 +264,12 @@ extern "C" {
 
                 macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_append_nulless);
               }
+
+              strings[i]->array[j].string[strings[i]->array[j].used] = 0;
+              sockets[i]->array[j].domain = f_socket_protocol_family_local_e;
+              sockets[i]->array[j].protocol = f_socket_protocol_tcp_e;
+              sockets[i]->array[j].type = f_socket_address_family_local_e;
+              sockets[i]->array[j].name = strings[i]->array[j];
             }
             else if (main->setting.flag & kt_tacocat_main_flag_resolve_classic_e) {
               memset(&host, 0, sizeof(struct hostent));
@@ -287,7 +293,7 @@ extern "C" {
               }
 
               // Two is added to support a trailing NULL and a type character.
-              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 2, &strings[i]->array[j]);
+              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
 
               macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_increase_by);
 
@@ -306,11 +312,11 @@ extern "C" {
               }
 
               // Two is added to support a trailing NULL and a type character.
-              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 2, &strings[i]->array[j]);
+              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
 
               macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_increase_by);
 
-              if (host.h_addrtype == AF_INET) {
+              if (host.h_addrtype == f_socket_address_family_inet4_e) {
                 family.type = f_network_family_ip_4_e;
                 family.address.v4 = *((struct in_addr *) host.h_addr_list[k]);
               }
@@ -334,11 +340,20 @@ extern "C" {
                 continue;
               }
 
-              // The terminating NULL, past the used length.
               strings[i]->array[j].string[strings[i]->array[j].used] = 0;
-              strings[i]->array[j].string[strings[i]->array[j].used + 1] = (family.type & f_network_family_ip_4_e)
-                ? f_string_ascii_4_s.string[0]
-                : f_string_ascii_6_s.string[0];
+              sockets[i]->array[j].protocol = f_socket_protocol_tcp_e;
+              sockets[i]->array[j].type = host.h_addrtype;
+
+              if (host.h_addrtype == f_socket_address_family_inet4_e) {
+                sockets[i]->array[j].domain = f_socket_protocol_family_inet4_e;
+                sockets[i]->array[j].address.inet4.sin_port = 0; // @todo detect and pull port number from host name if supplied.
+                sockets[i]->array[j].address.inet4.sin_addr.s_addr = INADDR_ANY;
+              }
+              else if (host.h_addrtype == f_socket_address_family_inet6_e) {
+                sockets[i]->array[j].domain = f_socket_protocol_family_inet6_e;
+                sockets[i]->array[j].address.inet6.sin6_port = 0; // @todo detect and pull port number from host name if supplied.
+                sockets[i]->array[j].address.inet6.sin6_addr = in6addr_any;
+              }
             }
             else {
               // @todo Kevux DNS resolution.

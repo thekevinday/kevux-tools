@@ -24,24 +24,29 @@ extern "C" {
  *   - large:   An allocation step used for buffers that are anticipated to have large buffers.
  *   - small:   An allocation step used for buffers that are anticipated to have small buffers.
  *
- * kt_tacocat_signal_*_d:
- *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
- *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
+ * kt_tacocat_backlog_*_d:
+ *   - max: The max backlog size to use.
  *
  * kt_tacocat_block_size_*_d:
  *   - receive: The block size in bytes to use when sending packets.
  *   - send:    The block size in bytes to use when receiving packets.
+ *
+ * kt_tacocat_signal_*_d:
+ *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
+ *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 4
   #define kt_tacocat_allocation_large_d   2048
   #define kt_tacocat_allocation_small_d   128
 
-  #define kt_tacocat_signal_check_d          20000
-  #define kt_tacocat_signal_check_failsafe_d 20000
+  #define kt_tacocat_backlog_max_d 1024
 
   #define kt_tacocat_block_size_receive_d 65535
   #define kt_tacocat_block_size_send_d    65535
+
+  #define kt_tacocat_signal_check_d          20000
+  #define kt_tacocat_signal_check_failsafe_d 20000
 #endif // _di_kt_tacocat_d_
 
 /**

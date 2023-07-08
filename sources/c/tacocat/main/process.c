@@ -30,12 +30,10 @@ extern "C" {
     // @todo Make this threaded, if threading is enabled (if threading is disabled then fork).
     //       TacocaT is intended to be simple, so be lazy and create a thread/fork for every single receive and send.
 
-    // Create socket and connect to socket (bind / listen).
+    // Create, bind, and listen to the socket.
     for (; i < main->setting.socket_receives.used; ++i) {
 
       if (kt_tacocat_signal_check(main)) return;
-
-      // @todo check to see if connection is one of "local", "inet" (ipv4), or "inet6" (ipv6) and configure socket appropriately.
 
       main->setting.status_receives.array[i] = f_socket_create(&main->setting.socket_receives.array[i]);
 
@@ -47,7 +45,33 @@ extern "C" {
         continue;
       }
 
-      main->setting.status_receives.array[i] = f_socket_listen(&main->setting.socket_receives.array[i], 100); // @todo setup a max back log define rather than hardcode 100 here (and 100 is arbitrarily chosen).
+      if (main->setting.socket_receives.array[i].domain == f_socket_protocol_family_inet4_e) {
+        main->setting.status_receives.array[i] = f_socket_bind_inet4(&main->setting.socket_receives.array[i]);
+      }
+      else if (main->setting.socket_receives.array[i].domain == f_socket_protocol_family_inet6_e) {
+        main->setting.status_receives.array[i] = f_socket_bind_inet6(&main->setting.socket_receives.array[i]);
+      }
+      else if (main->setting.socket_receives.array[i].domain == f_socket_protocol_family_local_e) {
+        main->setting.status_receives.array[i] = f_socket_bind_local(&main->setting.socket_receives.array[i]);
+      }
+      else {
+        // @todo error, not supported.
+      }
+
+      if (F_status_is_error(main->setting.status_receives.array[i])) {
+        main->setting.state.status = main->setting.status_receives.array[i];
+
+        kt_tacocat_print_error(&main->program.error, main->setting.socket_receives.array[i].domain == f_socket_protocol_family_inet4_e
+          ? macro_kt_tacocat_f(f_socket_bind_inet4)
+          : main->setting.socket_receives.array[i].domain == f_socket_protocol_family_inet6_e
+            ? macro_kt_tacocat_f(f_socket_bind_inet6)
+            : macro_kt_tacocat_f(f_socket_bind_local)
+        );
+
+        continue;
+      }
+
+      main->setting.status_receives.array[i] = f_socket_listen(&main->setting.socket_receives.array[i], kt_tacocat_backlog_max_d);
 
       if (F_status_is_error(main->setting.status_receives.array[i])) {
         main->setting.state.status = main->setting.status_receives.array[i];
