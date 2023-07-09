@@ -67,7 +67,7 @@ extern "C" {
  *
  *   This must be of type kt_tacocat_main_t.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     F_none on success.
  *
  *     F_parameter (with error bit) on parameter error.
@@ -93,6 +93,49 @@ extern "C" {
 #ifndef _di_kt_tacocat_setting_load_send_receive_
   extern void kt_tacocat_setting_load_send_receive(const f_console_arguments_t arguments, void * const main);
 #endif // _di_kt_tacocat_setting_load_send_receive_
+
+/**
+ * Process the string and extract any potential port numbers.
+ *
+ * A port number is expected to be a digit following the last ':' at the end of the string.
+ *
+ * This does not print error messages.
+ *
+ * @param main
+ *   The main program and settings data.
+ *
+ *   The main.setting.state.status can be set to either F_network_version_four or F_network_version_six when calling this function to bypass IP type detection.
+ *
+ *   This alters main.setting.state.status:
+ *     F_none on success.
+ *     F_data_not on success but there is nothing in the address string (address.used is 0).
+ *     F_number_not on success but there is no port number.
+ *
+ *     F_parameter (with error bit) on parameter error.
+ *
+ *     Errors (with error bit) from: fl_conversion_dynamic_to_unsigned_detect().
+ * @param address
+ *   The string representing the address to extract the port number from.
+ *   If a valid number is found, then this is updated to truncate the length at the colon and a NULL termination is inserted at the colon.
+ *   For IPv6, only bracket wrapped addresses are supported when using port number (like [2001:db8::1]:80).
+ *   Base notations for port numbers are supported (such as specifying hexidecimal like [2001:db8::1]:0x50 or specifying octal like 127.0.0.1:0o120)
+ *
+ *   Supported base notations:
+ *   - Hexidecimals (base 16) begin with either '0x' or '0X'.
+ *   - Duodecimals (base 12) begin with either '0d' or '0D'.
+ *   - Octals (base 8) begin with either '0o' or '0O'.
+ *   - Binaries (base 2) begin with either '0b' or '0B'.
+ *   - Decimal (base 10) is used for all other cases.
+ * @param port
+ *   The extracted port number.
+ *
+ *   When main.setting.state.status is set to either F_network_version_four or F_network_version_six when calling this function, the port represents the location within the address string that the port number begins.
+ *
+ * @see fl_conversion_dynamic_to_unsigned_detect()
+ */
+#ifndef _di_kt_tacocat_setting_load_address_port_extract_
+  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port);
+#endif // _di_kt_tacocat_setting_load_address_port_extract_
 
 #ifdef __cplusplus
 } // extern "C"

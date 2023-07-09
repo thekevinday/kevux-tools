@@ -167,11 +167,6 @@ extern "C" {
       kt_tacocat_long_send_s,
     };
 
-    f_string_dynamics_t * const strings[] = {
-      &main->setting.receives,
-      &main->setting.sends,
-    };
-
     f_files_t * const files[] = {
       &main->setting.file_receives,
       &main->setting.file_sends,
@@ -187,6 +182,11 @@ extern "C" {
       &main->setting.status_sends,
     };
 
+    f_string_dynamics_t * const strings[] = {
+      &main->setting.receives,
+      &main->setting.sends,
+    };
+
     const bool const is_receive[] = {
       F_true,
       F_false,
@@ -199,6 +199,8 @@ extern "C" {
     f_status_t failed = F_none;
     struct hostent host;
     f_network_family_ip_t family = f_network_family_ip_t_initialize;
+    f_number_unsigned_t port = 0;
+    f_string_static_t address = f_string_static_t_initialize;
 
     for (uint8_t i = 0; i < 2; ++i) {
 
@@ -223,37 +225,37 @@ extern "C" {
 
         main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, strings[i]);
 
-        macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamics_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
 
         main->setting.state.status = f_files_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, files[i]);
 
-        macro_setting_load_handle_send_receive_error_continue_basic(f_files_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_files_increase_by);
 
         main->setting.state.status = f_sockets_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, sockets[i]);
 
-        macro_setting_load_handle_send_receive_error_continue_basic(f_sockets_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_sockets_increase_by);
 
         main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, statuss[i]);
 
-        macro_setting_load_handle_send_receive_error_continue_basic(f_statuss_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_statuss_increase_by);
 
         for (j = 0; j < main->program.parameters.array[parameters[i]].values.used; j += 2) {
 
           // First parameter value represents the network address or the socket file path.
           index = main->program.parameters.array[parameters[i]].values.array[j];
+          statuss[i]->array[j] = F_none;
           strings[i]->array[j].used = 0;
 
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
 
-              // Two is added to support a trailing NULL and a type character.
               main->setting.state.status = f_string_dynamic_increase_by(main->program.parameters.arguments.array[index].used + 2, &strings[i]->array[j]);
 
-              macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_increase_by);
+              macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
 
               main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &strings[i]->array[j]);
 
-              macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_append_nulless);
+              macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
 
               // Designate this as a socket file by appending after the terminating NULL, past the used length.
               strings[i]->array[j].string[strings[i]->array[j].used] = 0;
@@ -262,7 +264,7 @@ extern "C" {
               if (is_receive[i]) {
                 main->setting.state.status = f_file_exists(strings[i]->array[j], F_true);
 
-                macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_append_nulless);
+                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
               }
 
               strings[i]->array[j].string[strings[i]->array[j].used] = 0;
@@ -274,90 +276,148 @@ extern "C" {
             else if (main->setting.flag & kt_tacocat_main_flag_resolve_classic_e) {
               memset(&host, 0, sizeof(struct hostent));
 
-              main->setting.state.status = f_network_from_ip_name(main->program.parameters.arguments.array[index], &host);
+              port = 0;
+              address = main->program.parameters.arguments.array[index];
+              f_char_t address_string[address.used];
 
-              // @todo provide network-specific error messages.
-              macro_setting_load_handle_send_receive_error_continue_basic(f_network_from_ip_name);
+              memcpy(address_string, address.string, address.used);
+              address.string = address_string;
 
-              if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
-                macro_setting_load_print_first();
+              f_network_is_ip_address(address, &port, &main->setting.state);
 
-                // @todo provide network-specific error messages for when no hosts are returned.
-                kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_network_from_ip_name));
-
-                if (F_status_is_error_not(failed)) {
-                  failed = main->setting.state.status;
-                }
-
-                continue;
+              if (F_status_is_error(main->setting.state.status)) {
+                // @todo print error message about bad port number or similar.
+                macro_setting_load_handle_send_receive_error_continue_2(f_network_is_ip_address);
               }
 
-              // Two is added to support a trailing NULL and a type character.
-              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
-
-              macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_increase_by);
-
-              // Randomly select one of the addresses when there are more than one.
-              if (host.h_addr_list[1]) {
-                k = 2;
-
-                while (host.h_addr_list[k++]);
-
-                // Real randomness or security is not needed here, so fiddle with predictable but somewhat dynamic numbers.
-                srand(main->program.pid + j + host.h_addr_list[0][0]);
-                k = rand() % (k - 1);
+              if (main->setting.state.status == F_network_version_four) {
+                host.h_addrtype = f_socket_address_family_inet4_e;
+              }
+              else if (main->setting.state.status == F_network_version_six) {
+                host.h_addrtype = f_socket_address_family_inet6_e;
               }
               else {
-                k = 0;
+                host.h_addrtype = 0;
               }
 
-              // Two is added to support a trailing NULL and a type character.
-              main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
+              kt_tacocat_setting_load_address_port_extract(main, &address, &port);
 
-              macro_setting_load_handle_send_receive_error_continue_basic(f_string_dynamic_increase_by);
+              if (F_status_is_error(main->setting.state.status)) {
+                // @todo print error message about bad port number or similar.
+                macro_setting_load_handle_send_receive_error_continue_2(kt_tacocat_setting_load_address_port_extract);
+              }
 
-              if (host.h_addrtype == f_socket_address_family_inet4_e) {
-                family.type = f_network_family_ip_4_e;
-                family.address.v4 = *((struct in_addr *) host.h_addr_list[k]);
+              // Fail forward if port number is not supported by the system.
+              if (port != (in_port_t) port) {
+                kt_tacocat_print_warning_port_number_overflow(&main->program.warning, main->program.parameters.arguments.array[index], port);
+
+                port = 0;
+              }
+
+              if (host.h_addrtype) {
+                main->setting.state.status = f_string_dynamic_append(address, &strings[i]->array[j]);
+
+                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append);
               }
               else {
-                family.type = f_network_family_ip_6_e;
-                family.address.v6 = *((struct in6_addr *) host.h_addr_list[k]);
-              }
+                // @todo move this block into its own function.
+                main->setting.state.status = f_network_from_ip_name(address, &host);
 
-              main->setting.state.status = f_network_to_ip_string(family, &strings[i]->array[j]);
+                // @todo provide network-specific error messages.
+                macro_setting_load_handle_send_receive_error_continue_2(f_network_from_ip_name);
 
-              if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
-                macro_setting_load_print_first();
+                if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
+                  main->setting.state.status = F_status_set_error(F_parameter);
 
-                // @todo provide network-specific error messages for when no hosts are returned.
-                kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_network_from_ip_name));
+                  macro_setting_load_print_first();
 
-                if (F_status_is_error_not(failed)) {
-                  failed = main->setting.state.status;
+                  // @todo provide network-specific error messages for when no hosts are returned.
+                  kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_network_from_ip_name));
+
+                  if (F_status_is_error_not(failed)) {
+                    failed = main->setting.state.status;
+                  }
+
+                  statuss[i]->array[j] = main->setting.state.status;
+
+                  continue;
                 }
 
-                continue;
+                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
+
+                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
+
+                // Randomly select one of the addresses when there are more than one.
+                if (host.h_addr_list[1]) {
+                  k = 2;
+
+                  while (host.h_addr_list[k++]);
+
+                  // Real randomness or security is not needed here, so fiddle with predictable but somewhat dynamic numbers.
+                  srand(main->program.pid + j + host.h_addr_list[0][0]);
+                  k = rand() % (k - 1);
+                }
+                else {
+                  k = 0;
+                }
+
+                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
+
+                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
+
+                if (host.h_addrtype == f_socket_address_family_inet4_e) {
+                  family.type = f_network_family_ip_4_e;
+                  family.address.v4 = *((struct in_addr *) host.h_addr_list[k]);
+                }
+                else {
+                  family.type = f_network_family_ip_6_e;
+                  family.address.v6 = *((struct in6_addr *) host.h_addr_list[k]);
+                }
+
+                main->setting.state.status = f_network_to_ip_string(family, &strings[i]->array[j]);
+
+                if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
+                  main->setting.state.status = F_status_set_error(F_parameter);
+
+                  macro_setting_load_print_first();
+
+                  // @todo provide network-specific error messages for when no hosts are returned.
+                  kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_network_from_ip_name));
+
+                  if (F_status_is_error_not(failed)) {
+                    failed = main->setting.state.status;
+                  }
+
+                  statuss[i]->array[j] = main->setting.state.status;
+
+                  continue;
+                }
+
+                strings[i]->array[j].string[strings[i]->array[j].used] = 0;
               }
 
-              strings[i]->array[j].string[strings[i]->array[j].used] = 0;
               sockets[i]->array[j].protocol = f_socket_protocol_tcp_e;
               sockets[i]->array[j].type = host.h_addrtype;
 
               if (host.h_addrtype == f_socket_address_family_inet4_e) {
                 sockets[i]->array[j].domain = f_socket_protocol_family_inet4_e;
-                sockets[i]->array[j].address.inet4.sin_port = 0; // @todo detect and pull port number from host name if supplied.
+                sockets[i]->array[j].address.inet4.sin_port = (in_port_t) port;
                 sockets[i]->array[j].address.inet4.sin_addr.s_addr = INADDR_ANY;
               }
               else if (host.h_addrtype == f_socket_address_family_inet6_e) {
                 sockets[i]->array[j].domain = f_socket_protocol_family_inet6_e;
-                sockets[i]->array[j].address.inet6.sin6_port = 0; // @todo detect and pull port number from host name if supplied.
+                sockets[i]->array[j].address.inet6.sin6_port = (in_port_t) port;
                 sockets[i]->array[j].address.inet6.sin6_addr = in6addr_any;
               }
             }
             else {
               // @todo Kevux DNS resolution.
             }
+
+            ++files[i]->used;
+            ++sockets[i]->used;
+            ++statuss[i]->used;
+            ++strings[i]->used;
           }
           else {
             main->setting.state.status = F_status_set_error(F_parameter);
@@ -369,6 +429,8 @@ extern "C" {
             if (F_status_is_error_not(failed)) {
               failed = main->setting.state.status;
             }
+
+            statuss[i]->array[j] = main->setting.state.status;
 
             continue;
           }
@@ -379,26 +441,29 @@ extern "C" {
           if (main->program.parameters.arguments.array[index].used) {
 
             // Make sure the current file is closed.
-            f_file_close(&files[i]->array[files[i]->used]);
+            f_file_close(&files[i]->array[j]);
 
             if (is_receive[i]) {
-              files[i]->array[files[i]->used].flag = F_file_flag_append_wo_d;
-              files[i]->array[files[i]->used].size_read = main->setting.block_size_send;
-              files[i]->array[files[i]->used].size_write = main->setting.block_size_send;
+              files[i]->array[j].flag = F_file_flag_append_wo_d;
+              files[i]->array[j].size_read = main->setting.block_size_send;
+              files[i]->array[j].size_write = main->setting.block_size_send;
             }
             else {
-              files[i]->array[files[i]->used].flag = F_file_flag_read_only_d;
-              files[i]->array[files[i]->used].size_read = main->setting.block_size_receive;
-              files[i]->array[files[i]->used].size_write = main->setting.block_size_receive;
+              files[i]->array[j].flag = F_file_flag_read_only_d;
+              files[i]->array[j].size_read = main->setting.block_size_receive;
+              files[i]->array[j].size_write = main->setting.block_size_receive;
             }
 
-            main->setting.state.status = f_file_open(main->program.parameters.arguments.array[index], F_file_mode_all_rw_d, &files[i]->array[files[i]->used]);
+            main->setting.state.status = f_file_open(main->program.parameters.arguments.array[index], F_file_mode_all_rw_d, &files[i]->array[j]);
 
             if (F_status_is_error(main->setting.state.status)) {
-              macro_setting_load_handle_send_receive_error_file_continue_basic(f_file_open, main->program.parameters.arguments.array[index], f_file_operation_open_s, fll_error_file_type_file_e);
-            }
-            else {
-              ++files[i]->used;
+              macro_setting_load_handle_send_receive_error_file_continue_1(f_file_open, main->program.parameters.arguments.array[index], f_file_operation_open_s, fll_error_file_type_file_e);
+
+              if (F_status_is_error_not(failed)) {
+                failed = main->setting.state.status;
+              }
+
+              statuss[i]->array[j] = main->setting.state.status;
             }
           }
           else {
@@ -411,6 +476,8 @@ extern "C" {
             if (F_status_is_error_not(failed)) {
               failed = main->setting.state.status;
             }
+
+            statuss[i]->array[j] = main->setting.state.status;
 
             continue;
           }
@@ -435,7 +502,70 @@ extern "C" {
       main->setting.state.status = failed;
     }
   }
-#endif // _di_kt_tacocat_setting_load_
+#endif // _di_kt_tacocat_setting_load_send_receive_
+
+#ifndef _di_kt_tacocat_setting_load_address_port_extract_
+  void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port) {
+
+    if (!main) return;
+
+    if (!address || !port) {
+      main->setting.state.status = F_status_set_error(F_parameter);
+
+      return;
+    }
+
+    if (!address->used) {
+      main->setting.state.status = F_data_not;
+
+      return;
+    }
+
+    f_number_unsigned_t i = 0;
+
+    if (main->setting.state.status == F_network_version_four || main->setting.state.status == F_network_version_six) {
+      if (*port) {
+        i = *port;
+        *port = 0;
+
+        const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + i, 0, address->used - i);
+
+        main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, adjusted, port);
+        if (F_status_is_error(main->setting.state.status)) return;
+
+        address->string[i] = 0;
+        address->used = i;
+
+        while (address->used && address->string[address->used] != f_string_ascii_colon_s.string[0]) --address->used;
+      }
+
+      main->setting.state.status = F_none;
+
+      return;
+    }
+
+    *port = 0;
+    i = address->used;
+
+    while (--i) {
+      if (address->string[i] == f_string_ascii_colon_s.string[0]) break;
+    } // while
+
+    if (i && i + 1 < address->used) {
+      const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + i + 1, 0, address->used - i - 1);
+
+      main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, adjusted, port);
+      if (F_status_is_error(main->setting.state.status)) return;
+
+      address->string[i] = 0;
+      address->used = i;
+      main->setting.state.status = F_none;
+    }
+    else {
+      main->setting.state.status = F_number_not;
+    }
+  }
+#endif // _di_kt_tacocat_setting_load_address_port_extract_
 
 #ifdef __cplusplus
 } // extern "C"

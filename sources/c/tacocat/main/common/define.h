@@ -55,12 +55,12 @@ extern "C" {
  * macro_setting_load_print_first:
  *   Intended to be used to simplify the code in kt_tacocat_setting_load() and make it more readable.
  *
- * macro_setting_load_handle_send_receive_error_continue_basic:
+ * macro_setting_load_handle_send_receive_error_continue_1:
  *   Intended to be used to simplify the code in kt_tacocat_setting_load_send_receive() and make it more readable.
  *   This is for the basic error that calls kt_tacocat_print_error() when printing.
  *
- * macro_setting_load_handle_send_receive_error_file_continue_basic:
- *   The same as macro_setting_load_handle_send_receive_error_continue_basic() but intended for file errors.
+ * macro_setting_load_handle_send_receive_error_file_continue_1:
+ *   The same as macro_setting_load_handle_send_receive_error_continue_1() but intended for file errors.
  */
 #ifndef _di_kt_tacocat_macros_d_
   #define macro_setting_load_print_first() \
@@ -68,7 +68,7 @@ extern "C" {
       fll_print_dynamic_raw(f_string_eol_s, main->program.message.to); \
     }
 
-  #define macro_setting_load_handle_send_receive_error_continue_basic(method) \
+  #define macro_setting_load_handle_send_receive_error_continue_1(method) \
     if (F_status_is_error(main->setting.state.status)) { \
       macro_setting_load_print_first(); \
       \
@@ -81,7 +81,22 @@ extern "C" {
       continue; \
     }
 
-  #define macro_setting_load_handle_send_receive_error_file_continue_basic(method, name, operation, type) \
+  #define macro_setting_load_handle_send_receive_error_continue_2(method) \
+    if (F_status_is_error(main->setting.state.status)) { \
+      macro_setting_load_print_first(); \
+      \
+      kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(method)); \
+      \
+      if (F_status_is_error_not(failed)) { \
+        failed = main->setting.state.status; \
+      } \
+      \
+      statuss[i]->array[j] = main->setting.state.status; \
+      \
+      continue; \
+    }
+
+  #define macro_setting_load_handle_send_receive_error_file_continue_1(method, name, operation, type) \
     if (F_status_is_error(main->setting.state.status)) { \
       macro_setting_load_print_first(); \
       \
@@ -90,6 +105,8 @@ extern "C" {
       if (F_status_is_error_not(failed)) { \
         failed = main->setting.state.status; \
       } \
+      \
+      statuss[i]->array[j] = main->setting.state.status; \
       \
       continue; \
     }

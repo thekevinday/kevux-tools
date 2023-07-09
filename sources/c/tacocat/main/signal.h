@@ -63,7 +63,7 @@ extern "C" {
  *
  *   This alters main.program.signal_received, setting it to a received signal.
  *
- *   This alters setting.status:
+ *   This alters main.setting.state.status:
  *     Errors (with error bit) from: f_signal_open()
  *     Errors (with error bit) from: f_signal_wait()
  *

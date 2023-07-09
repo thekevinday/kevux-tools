@@ -34,6 +34,7 @@ extern "C" {
     for (; i < main->setting.socket_receives.used; ++i) {
 
       if (kt_tacocat_signal_check(main)) return;
+      if (F_status_is_error(main->setting.status_receives.array[i])) continue;
 
       main->setting.status_receives.array[i] = f_socket_create(&main->setting.socket_receives.array[i]);
 
@@ -85,6 +86,7 @@ extern "C" {
     for (i = 0; i < main->setting.socket_sends.used; ++i) {
 
       if (kt_tacocat_signal_check(main)) return;
+      if (F_status_is_error(main->setting.status_sends.array[i])) continue;
 
       // @todo check to see if connection is one of "local", "inet" (ipv4), or "inet6" (ipv6) and configure socket appropriately.
 

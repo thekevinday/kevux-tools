@@ -9,6 +9,7 @@ f_utf
 f_color
 f_console
 f_compare
+f_conversion
 f_file
 f_network
 f_path
@@ -18,6 +19,7 @@ f_signal
 f_socket
 f_thread
 
+fl_conversion
 fl_print
 
 fll_error

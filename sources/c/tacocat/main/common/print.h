@@ -43,6 +43,7 @@ extern "C" {
     kt_tacocat_f_f_file_open_e,
     kt_tacocat_f_f_files_increase_by_e,
     kt_tacocat_f_f_network_from_ip_name_e,
+    kt_tacocat_f_f_network_is_ip_address_e,
     kt_tacocat_f_f_socket_bind_inet4_e,
     kt_tacocat_f_f_socket_bind_inet6_e,
     kt_tacocat_f_f_socket_bind_local_e,
@@ -53,12 +54,14 @@ extern "C" {
     kt_tacocat_f_f_sockets_increase_by_e,
     kt_tacocat_f_f_statuss_increase_by_e,
     kt_tacocat_f_f_string_append_nulless_e,
+    kt_tacocat_f_f_string_dynamic_append_e,
     kt_tacocat_f_f_string_dynamic_append_nulless_e,
     kt_tacocat_f_f_string_dynamic_increase_by_e,
     kt_tacocat_f_f_string_dynamics_increase_by_e,
     kt_tacocat_f_f_thread_create_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,
+    kt_tacocat_f_kt_tacocat_setting_load_address_port_extract_e,
   }; // enum
 #endif // _di_kt_tacocat_f_e_
 

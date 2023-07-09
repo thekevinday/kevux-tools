@@ -10,6 +10,7 @@ extern "C" {
     "f_file_open",
     "f_files_increase_by",
     "f_network_from_ip_name",
+    "f_network_is_ip_address",
     "f_socket_bind_inet4",
     "f_socket_bind_inet6",
     "f_socket_bind_local",
@@ -20,12 +21,14 @@ extern "C" {
     "f_sockets_increase_by",
     "f_statuss_increase_by",
     "f_string_append_nulless",
+    "f_string_dynamic_append",
     "f_string_dynamic_append_nulless",
     "f_string_dynamic_increase_by",
     "f_string_dynamics_increase_by",
     "f_thread_create",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",
+    "kt_tacocat_setting_load_address_port_extract",
   };
 #endif // _di_kt_tacocat_f_a_
 
