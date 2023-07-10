@@ -104,21 +104,21 @@ extern "C" {
  * The main program parameters.
  */
 #ifndef _di_kt_tacocat_parameter_s_
-  #define KT_TACOCAT_short_receive_s    "r"
-  #define KT_TACOCAT_short_resolve_s    "R"
-  #define KT_TACOCAT_short_send_s       "s"
+  #define KT_TACOCAT_short_receive_s "r"
+  #define KT_TACOCAT_short_resolve_s "R"
+  #define KT_TACOCAT_short_send_s    "s"
 
-  #define KT_TACOCAT_long_receive_s    "receive"
-  #define KT_TACOCAT_long_resolve_s    "resolve"
-  #define KT_TACOCAT_long_send_s       "send"
+  #define KT_TACOCAT_long_receive_s "receive"
+  #define KT_TACOCAT_long_resolve_s "resolve"
+  #define KT_TACOCAT_long_send_s    "send"
 
-  #define KT_TACOCAT_short_receive_s_length    1
-  #define KT_TACOCAT_short_resolve_s_length    1
-  #define KT_TACOCAT_short_send_s_length       1
+  #define KT_TACOCAT_short_receive_s_length 1
+  #define KT_TACOCAT_short_resolve_s_length 1
+  #define KT_TACOCAT_short_send_s_length    1
 
-  #define KT_TACOCAT_long_receive_s_length    7
-  #define KT_TACOCAT_long_resolve_s_length    7
-  #define KT_TACOCAT_long_send_s_length       4
+  #define KT_TACOCAT_long_receive_s_length 7
+  #define KT_TACOCAT_long_resolve_s_length 7
+  #define KT_TACOCAT_long_send_s_length    4
 
   extern const f_string_static_t kt_tacocat_short_receive_s;
   extern const f_string_static_t kt_tacocat_short_resolve_s;

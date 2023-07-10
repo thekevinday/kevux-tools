@@ -27,9 +27,10 @@ extern "C" {
  * kt_tacocat_backlog_*_d:
  *   - max: The max backlog size to use.
  *
- * kt_tacocat_block_size_*_d:
- *   - receive: The block size in bytes to use when sending packets.
- *   - send:    The block size in bytes to use when receiving packets.
+ * kt_tacocat_block_*_d:
+ *   - size:         The block size in bytes to use for either sending or receiving.
+ *   - size_receive: The block size in bytes to use when sending packets.
+ *   - size_send:    The block size in bytes to use when receiving packets.
  *
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
@@ -42,8 +43,9 @@ extern "C" {
 
   #define kt_tacocat_backlog_max_d 1024
 
-  #define kt_tacocat_block_size_receive_d 65535
-  #define kt_tacocat_block_size_send_d    65535
+  #define kt_tacocat_block_size_d         65535
+  #define kt_tacocat_block_size_receive_d kt_tacocat_block_size_d
+  #define kt_tacocat_block_size_send_d    kt_tacocat_block_size_d
 
   #define kt_tacocat_signal_check_d          20000
   #define kt_tacocat_signal_check_failsafe_d 20000
@@ -91,7 +93,7 @@ extern "C" {
         failed = main->setting.state.status; \
       } \
       \
-      statuss[i]->array[j] = main->setting.state.status; \
+      sets[i]->statuss.array[j] = main->setting.state.status; \
       \
       continue; \
     }
@@ -106,7 +108,7 @@ extern "C" {
         failed = main->setting.state.status; \
       } \
       \
-      statuss[i]->array[j] = main->setting.state.status; \
+      sets[i]->statuss.array[j] = main->setting.state.status; \
       \
       continue; \
     }

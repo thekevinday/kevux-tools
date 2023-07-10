@@ -17,6 +17,49 @@ extern "C" {
 #endif
 
 /**
+ * A set containing all socket related data sets.
+ *
+ * block_size: The size in bytes to used to represent a block when sending or receiving packets.
+ *
+ * files:   An array of files for each socket.
+ * sockets: An array of the network sockets.
+ * statuss: An array of statuses for each socket.
+ * names:   An array of names for each socket.
+ * buffers: An array of buffers for sending or receiving data between clients for each socket.
+ */
+#ifndef _di_kt_tacocat_socket_set_t_
+  typedef struct {
+    f_number_unsigned_t block_size;
+
+    f_files_t files;
+    f_sockets_t sockets;
+    f_statuss_t statuss;
+    f_string_dynamics_t names;
+    f_string_dynamics_t buffers;
+  } kt_tacocat_socket_set_t;
+
+  #define kt_tacocat_socket_set_t_initialize \
+    { \
+      kt_tacocat_block_size_d, \
+      f_files_t_initialize, \
+      f_sockets_t_initialize, \
+      f_statuss_t_initialize, \
+      f_string_dynamics_t_initialize, \
+      f_string_dynamics_t_initialize, \
+    }
+
+  #define macro_kt_tacocat_setting_t_initialize_1(block_size) \
+    { \
+      block_size, \
+      f_files_t_initialize, \
+      f_sockets_t_initialize, \
+      f_statuss_t_initialize, \
+      f_string_dynamics_t_initialize, \
+      f_string_dynamics_t_initialize, \
+    }
+#endif // _di_kt_tacocat_socket_set_t_
+
+/**
  * The main program settings.
  *
  * This is passed to the program-specific main entry point to designate program settings.
@@ -24,23 +67,11 @@ extern "C" {
  *
  * flag: Flags passed to the main function.
  *
- * block_size_receive: The size in bytes to used to represent a block when receiving packets.
- * block_size_send:    The size in bytes to used to represent a block when sending packets.
- *
  * status_thread: A status used eclusively by the threaded signal handler.
  * state:         The state data used when processing data.
  *
- * file_receives: An array of files for receiving.
- * file_sends:    An array of files for sending.
- *
- * socket_receives: An array of the network sockets for receiving.
- * socket_sends:    An array of the network sockets for sending.
- *
- * status_receives: An array of statuses for receiving.
- * status_sends:    An array of statuses for sending.
- *
- * receives: An array of buffers for receiving data receive clients.
- * sends:    An array of buffers for sending data send clients.
+ * receive: The socket set for receiving data receive clients.
+ * send:    The socket set for sending data send clients.
  *
  * buffer:   A string buffer used for caching purposes.
  */
@@ -48,23 +79,11 @@ extern "C" {
   typedef struct {
     uint64_t flag;
 
-    f_number_unsigned_t block_size_receive;
-    f_number_unsigned_t block_size_send;
-
     f_status_t status_thread;
     f_state_t state;
 
-    f_files_t file_receives;
-    f_files_t file_sends;
-
-    f_sockets_t socket_receives;
-    f_sockets_t socket_sends;
-
-    f_statuss_t status_receives;
-    f_statuss_t status_sends;
-
-    f_string_dynamics_t receives;
-    f_string_dynamics_t sends;
+    kt_tacocat_socket_set_t receive;
+    kt_tacocat_socket_set_t send;
 
     f_string_dynamic_t buffer;
   } kt_tacocat_setting_t;
@@ -72,18 +91,10 @@ extern "C" {
   #define kt_tacocat_setting_t_initialize \
     { \
       kt_tacocat_main_flag_none_e, \
-      kt_tacocat_block_size_receive_d, \
-      kt_tacocat_block_size_send_d, \
       F_none, \
       macro_f_state_t_initialize_1(kt_tacocat_allocation_large_d, kt_tacocat_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
-      f_files_t_initialize, \
-      f_files_t_initialize, \
-      f_sockets_t_initialize, \
-      f_sockets_t_initialize, \
-      f_statuss_t_initialize, \
-      f_statuss_t_initialize, \
-      f_string_dynamics_t_initialize, \
-      f_string_dynamics_t_initialize, \
+      macro_kt_tacocat_setting_t_initialize_1(kt_tacocat_block_size_receive_d), \
+      macro_kt_tacocat_setting_t_initialize_1(kt_tacocat_block_size_send_d), \
       f_string_dynamic_t_initialize, \
     }
 #endif // _di_kt_tacocat_setting_t_

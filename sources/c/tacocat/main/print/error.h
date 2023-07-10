@@ -95,15 +95,9 @@ extern "C" {
  *
  *   This does not alter print.custom.setting.state.status.
  * @param name
- *   The name of the set of arrays that must have the same length.
- * @param names
- *   The length of the names array.
- * @param files
- *   The length of the files array.
- * @param sockets
- *   The length of the sockets array.
- * @param statuss
- *   The length of the statuss array.
+ *   The name representing the socket set whose array lengths must match.
+ * @param set
+ *   The socket set.
  *
  * @return
  *   F_none on success.
@@ -114,8 +108,32 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
-  extern f_status_t kt_tacocat_print_error_setting_socket_lengths_must_match(fl_print_t * const print, const f_string_dynamic_t name, const f_number_unsigned_t names, const f_number_unsigned_t files, const f_number_unsigned_t sockets, const f_number_unsigned_t statuss);
+  extern f_status_t kt_tacocat_print_error_setting_socket_lengths_must_match(fl_print_t * const print, const f_string_dynamic_t name, const kt_tacocat_socket_set_t set);
 #endif // _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
+
+/**
+ * Print error message for when an unsupported protocol is used.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param name
+ *   The file or network name associated with the unsupported protocol.
+ * @param protocol
+ *   The protocol number representing the unsupported protocol
+ *
+ * @return
+ *   F_none on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_socket_protocol_unsupported_
+  extern f_status_t kt_tacocat_print_error_socket_protocol_unsupported(fl_print_t * const print, const f_string_dynamic_t name, const f_number_unsigned_t protocol);
+#endif // _di_kt_tacocat_print_error_socket_protocol_unsupported_
 
 #ifdef __cplusplus
 } // extern "C"

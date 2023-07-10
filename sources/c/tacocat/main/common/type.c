@@ -19,35 +19,32 @@ extern "C" {
 
     if (!setting) return F_status_set_error(F_parameter);
 
-    f_number_unsigned_t i = 0;
+    {
+      f_number_unsigned_t j = 0;
 
-    for (; i < setting->file_receives.used ; ++i) {
-      f_file_close(&setting->file_receives.array[i]);
-    } // for
+      kt_tacocat_socket_set_t * const sets[] = {
+        &setting->receive,
+        &setting->send,
+      };
 
-    for (; i < setting->file_sends.used ; ++i) {
-      f_file_close(&setting->file_sends.array[i]);
-    } // for
+      for (uint8_t i = 0; i < 2; ++i) {
 
-    for (; i < setting->socket_receives.used ; ++i) {
-      f_socket_disconnect(&setting->socket_receives.array[i], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
-    } // for
+        for (; j < sets[i]->files.used ; ++j) {
+          f_file_close(&sets[i]->files.array[j]);
+        } // for
 
-    for (; i < setting->socket_sends.used ; ++i) {
-      f_socket_disconnect(&setting->socket_sends.array[i], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
-    } // for
+        for (; j < sets[i]->sockets.used ; ++j) {
+          f_socket_disconnect(&sets[i]->sockets.array[j], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
+        } // for
 
-    f_files_resize(0, &setting->file_receives);
-    f_files_resize(0, &setting->file_sends);
+        f_files_resize(0, &sets[i]->files);
+        f_sockets_resize(0, &sets[i]->sockets);
+        f_statuss_resize(0, &sets[i]->statuss);
 
-    f_sockets_resize(0, &setting->socket_receives);
-    f_sockets_resize(0, &setting->socket_sends);
-
-    f_statuss_resize(0, &setting->status_receives);
-    f_statuss_resize(0, &setting->status_sends);
-
-    f_string_dynamics_resize(0, &setting->receives);
-    f_string_dynamics_resize(0, &setting->sends);
+        f_string_dynamics_resize(0, &sets[i]->names);
+        f_string_dynamics_resize(0, &sets[i]->buffers);
+      } // for
+    }
 
     f_string_dynamic_resize(0, &setting->buffer);
 

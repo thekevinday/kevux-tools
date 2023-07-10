@@ -167,24 +167,9 @@ extern "C" {
       kt_tacocat_long_send_s,
     };
 
-    f_files_t * const files[] = {
-      &main->setting.file_receives,
-      &main->setting.file_sends,
-    };
-
-    f_sockets_t * const sockets[] = {
-      &main->setting.socket_receives,
-      &main->setting.socket_sends,
-    };
-
-    f_statuss_t * const statuss[] = {
-      &main->setting.status_receives,
-      &main->setting.status_sends,
-    };
-
-    f_string_dynamics_t * const strings[] = {
-      &main->setting.receives,
-      &main->setting.sends,
+    kt_tacocat_socket_set_t * const sets[] = {
+      &main->setting.receive,
+      &main->setting.send,
     };
 
     const bool const is_receive[] = {
@@ -221,21 +206,26 @@ extern "C" {
           continue;
         }
 
-        strings[i]->used = 0;
+        sets[i]->names.used = 0;
+        sets[i]->buffers.used = 0;
 
-        main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, strings[i]);
+        main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->names);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
 
-        main->setting.state.status = f_files_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, files[i]);
+        main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->buffers);
+
+        macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
+
+        main->setting.state.status = f_files_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->files);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_files_increase_by);
 
-        main->setting.state.status = f_sockets_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, sockets[i]);
+        main->setting.state.status = f_sockets_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->sockets);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_sockets_increase_by);
 
-        main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, statuss[i]);
+        main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->statuss);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_statuss_increase_by);
 
@@ -243,35 +233,36 @@ extern "C" {
 
           // First parameter value represents the network address or the socket file path.
           index = main->program.parameters.array[parameters[i]].values.array[j];
-          statuss[i]->array[j] = F_none;
-          strings[i]->array[j].used = 0;
+          sets[i]->statuss.array[j] = F_none;
+          sets[i]->names.array[j].used = 0;
+          sets[i]->buffers.array[j].used = 0;
 
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
 
-              main->setting.state.status = f_string_dynamic_increase_by(main->program.parameters.arguments.array[index].used + 2, &strings[i]->array[j]);
+              main->setting.state.status = f_string_dynamic_increase_by(main->program.parameters.arguments.array[index].used + 2, &sets[i]->names.array[j]);
 
               macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
 
-              main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &strings[i]->array[j]);
+              main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &sets[i]->names.array[j]);
 
               macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
 
               // Designate this as a socket file by appending after the terminating NULL, past the used length.
-              strings[i]->array[j].string[strings[i]->array[j].used] = 0;
-              strings[i]->array[j].string[strings[i]->array[j].used + 1] = f_string_ascii_slash_forward_s.string[0];
+              sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
+              sets[i]->names.array[j].string[sets[i]->names.array[j].used + 1] = f_string_ascii_slash_forward_s.string[0];
 
               if (is_receive[i]) {
-                main->setting.state.status = f_file_exists(strings[i]->array[j], F_true);
+                main->setting.state.status = f_file_exists(sets[i]->names.array[j], F_true);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
               }
 
-              strings[i]->array[j].string[strings[i]->array[j].used] = 0;
-              sockets[i]->array[j].domain = f_socket_protocol_family_local_e;
-              sockets[i]->array[j].protocol = f_socket_protocol_tcp_e;
-              sockets[i]->array[j].type = f_socket_address_family_local_e;
-              sockets[i]->array[j].name = strings[i]->array[j];
+              sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
+              sets[i]->sockets.array[j].domain = f_socket_protocol_family_local_e;
+              sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
+              sets[i]->sockets.array[j].type = f_socket_address_family_local_e;
+              sets[i]->sockets.array[j].name = sets[i]->names.array[j];
             }
             else if (main->setting.flag & kt_tacocat_main_flag_resolve_classic_e) {
               memset(&host, 0, sizeof(struct hostent));
@@ -315,7 +306,7 @@ extern "C" {
               }
 
               if (host.h_addrtype) {
-                main->setting.state.status = f_string_dynamic_append(address, &strings[i]->array[j]);
+                main->setting.state.status = f_string_dynamic_append(address, &sets[i]->names.array[j]);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append);
               }
@@ -338,12 +329,12 @@ extern "C" {
                     failed = main->setting.state.status;
                   }
 
-                  statuss[i]->array[j] = main->setting.state.status;
+                  sets[i]->statuss.array[j] = main->setting.state.status;
 
                   continue;
                 }
 
-                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
+                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &sets[i]->names.array[j]);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
 
@@ -361,7 +352,7 @@ extern "C" {
                   k = 0;
                 }
 
-                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &strings[i]->array[j]);
+                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &sets[i]->names.array[j]);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
 
@@ -374,7 +365,7 @@ extern "C" {
                   family.address.v6 = *((struct in6_addr *) host.h_addr_list[k]);
                 }
 
-                main->setting.state.status = f_network_to_ip_string(family, &strings[i]->array[j]);
+                main->setting.state.status = f_network_to_ip_string(family, &sets[i]->names.array[j]);
 
                 if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
                   main->setting.state.status = F_status_set_error(F_parameter);
@@ -388,36 +379,37 @@ extern "C" {
                     failed = main->setting.state.status;
                   }
 
-                  statuss[i]->array[j] = main->setting.state.status;
+                  sets[i]->statuss.array[j] = main->setting.state.status;
 
                   continue;
                 }
 
-                strings[i]->array[j].string[strings[i]->array[j].used] = 0;
+                sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
               }
 
-              sockets[i]->array[j].protocol = f_socket_protocol_tcp_e;
-              sockets[i]->array[j].type = host.h_addrtype;
+              sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
+              sets[i]->sockets.array[j].type = host.h_addrtype;
 
               if (host.h_addrtype == f_socket_address_family_inet4_e) {
-                sockets[i]->array[j].domain = f_socket_protocol_family_inet4_e;
-                sockets[i]->array[j].address.inet4.sin_port = (in_port_t) port;
-                sockets[i]->array[j].address.inet4.sin_addr.s_addr = INADDR_ANY;
+                sets[i]->sockets.array[j].domain = f_socket_protocol_family_inet4_e;
+                sets[i]->sockets.array[j].address.inet4.sin_port = (in_port_t) port;
+                sets[i]->sockets.array[j].address.inet4.sin_addr.s_addr = INADDR_ANY;
               }
               else if (host.h_addrtype == f_socket_address_family_inet6_e) {
-                sockets[i]->array[j].domain = f_socket_protocol_family_inet6_e;
-                sockets[i]->array[j].address.inet6.sin6_port = (in_port_t) port;
-                sockets[i]->array[j].address.inet6.sin6_addr = in6addr_any;
+                sets[i]->sockets.array[j].domain = f_socket_protocol_family_inet6_e;
+                sets[i]->sockets.array[j].address.inet6.sin6_port = (in_port_t) port;
+                sets[i]->sockets.array[j].address.inet6.sin6_addr = in6addr_any;
               }
             }
             else {
               // @todo Kevux DNS resolution.
             }
 
-            ++files[i]->used;
-            ++sockets[i]->used;
-            ++statuss[i]->used;
-            ++strings[i]->used;
+            ++sets[i]->files.used;
+            ++sets[i]->sockets.used;
+            ++sets[i]->statuss.used;
+            ++sets[i]->names.used;
+            ++sets[i]->buffers.used;
           }
           else {
             main->setting.state.status = F_status_set_error(F_parameter);
@@ -430,7 +422,7 @@ extern "C" {
               failed = main->setting.state.status;
             }
 
-            statuss[i]->array[j] = main->setting.state.status;
+            sets[i]->statuss.array[j] = main->setting.state.status;
 
             continue;
           }
@@ -441,20 +433,13 @@ extern "C" {
           if (main->program.parameters.arguments.array[index].used) {
 
             // Make sure the current file is closed.
-            f_file_close(&files[i]->array[j]);
+            f_file_close(&sets[i]->files.array[j]);
 
-            if (is_receive[i]) {
-              files[i]->array[j].flag = F_file_flag_append_wo_d;
-              files[i]->array[j].size_read = main->setting.block_size_send;
-              files[i]->array[j].size_write = main->setting.block_size_send;
-            }
-            else {
-              files[i]->array[j].flag = F_file_flag_read_only_d;
-              files[i]->array[j].size_read = main->setting.block_size_receive;
-              files[i]->array[j].size_write = main->setting.block_size_receive;
-            }
+            sets[i]->files.array[j].flag = is_receive[i] ? F_file_flag_append_wo_d : F_file_flag_read_only_d;
+            sets[i]->files.array[j].size_read = sets[i]->block_size;
+            sets[i]->files.array[j].size_write = sets[i]->block_size;
 
-            main->setting.state.status = f_file_open(main->program.parameters.arguments.array[index], F_file_mode_all_rw_d, &files[i]->array[j]);
+            main->setting.state.status = f_file_open(main->program.parameters.arguments.array[index], F_file_mode_all_rw_d, &sets[i]->files.array[j]);
 
             if (F_status_is_error(main->setting.state.status)) {
               macro_setting_load_handle_send_receive_error_file_continue_1(f_file_open, main->program.parameters.arguments.array[index], f_file_operation_open_s, fll_error_file_type_file_e);
@@ -463,7 +448,7 @@ extern "C" {
                 failed = main->setting.state.status;
               }
 
-              statuss[i]->array[j] = main->setting.state.status;
+              sets[i]->statuss.array[j] = main->setting.state.status;
             }
           }
           else {
@@ -477,7 +462,7 @@ extern "C" {
               failed = main->setting.state.status;
             }
 
-            statuss[i]->array[j] = main->setting.state.status;
+            sets[i]->statuss.array[j] = main->setting.state.status;
 
             continue;
           }

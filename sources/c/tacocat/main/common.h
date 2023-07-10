@@ -28,7 +28,7 @@ extern "C" {
  * @param main
  *   The main program and settings data.
  *
- *   This alters setting.status:
+ *   This alters setting.state.status:
  *     F_none on success.
  *
  *     F_parameter (with error bit) on parameter error.

@@ -28,6 +28,7 @@ extern "C" {
     "f_thread_create",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",
+    "kt_tacocat_process_socket_set_error_has",
     "kt_tacocat_setting_load_address_port_extract",
   };
 #endif // _di_kt_tacocat_f_a_
