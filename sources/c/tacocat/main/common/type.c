@@ -38,6 +38,7 @@ extern "C" {
         } // for
 
         f_files_resize(0, &sets[i]->files);
+        f_polls_resize(0, &sets[i]->polls);
         f_sockets_resize(0, &sets[i]->sockets);
         f_statuss_resize(0, &sets[i]->statuss);
 

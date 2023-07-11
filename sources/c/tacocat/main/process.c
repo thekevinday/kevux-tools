@@ -176,9 +176,25 @@ extern "C" {
 
         continue;
       }
+
+      if (main->setting.receive.sockets.array[i].id == -1) {
+        main->setting.receive.polls.array[i].fd = -1;
+        main->setting.receive.polls.array[i].events = 0;
+        main->setting.receive.polls.array[i].revents = 0;
+      }
+      else {
+        main->setting.receive.polls.array[i].fd = main->setting.receive.sockets.array[i].id;
+        main->setting.receive.polls.array[i].events = f_poll_read_e | f_poll_urgent_e;
+        main->setting.receive.polls.array[i].revents = 0;
+      }
     } // for
 
     if (F_status_is_error_not(main->setting.state.status)) {
+      // @todo this is where another process should poll/wait for connections and such (in another thread/fork).
+      main->setting.state.status = f_file_poll(main->setting.receive.polls, 9000); // @todo temporarily set to 9 second(s).
+
+      // @todo handle errors, but this will be in a fork/thread.
+
       main->setting.state.status = F_none;
     }
   }

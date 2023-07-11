@@ -22,8 +22,10 @@ extern "C" {
  * block_size: The size in bytes to used to represent a block when sending or receiving packets.
  *
  * files:   An array of files for each socket.
+ * polls:  An array of sockets to poll, specifically for passing to f_file_poll().
  * sockets: An array of the network sockets.
  * statuss: An array of statuses for each socket.
+ *
  * names:   An array of names for each socket.
  * buffers: An array of buffers for sending or receiving data between clients for each socket.
  */
@@ -32,8 +34,10 @@ extern "C" {
     f_number_unsigned_t block_size;
 
     f_files_t files;
+    f_polls_t polls;
     f_sockets_t sockets;
     f_statuss_t statuss;
+
     f_string_dynamics_t names;
     f_string_dynamics_t buffers;
   } kt_tacocat_socket_set_t;
@@ -42,6 +46,7 @@ extern "C" {
     { \
       kt_tacocat_block_size_d, \
       f_files_t_initialize, \
+      f_polls_t_initialize, \
       f_sockets_t_initialize, \
       f_statuss_t_initialize, \
       f_string_dynamics_t_initialize, \
@@ -52,6 +57,7 @@ extern "C" {
     { \
       block_size, \
       f_files_t_initialize, \
+      f_polls_t_initialize, \
       f_sockets_t_initialize, \
       f_statuss_t_initialize, \
       f_string_dynamics_t_initialize, \
@@ -73,7 +79,7 @@ extern "C" {
  * receive: The socket set for receiving data receive clients.
  * send:    The socket set for sending data send clients.
  *
- * buffer:   A string buffer used for caching purposes.
+ * buffer: A string buffer used for caching purposes.
  */
 #ifndef _di_kt_tacocat_setting_t_
   typedef struct {

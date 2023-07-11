@@ -208,6 +208,7 @@ extern "C" {
 
         sets[i]->names.used = 0;
         sets[i]->buffers.used = 0;
+        sets[i]->polls.used = 0;
 
         main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->names);
 
@@ -228,6 +229,10 @@ extern "C" {
         main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->statuss);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_statuss_increase_by);
+
+        main->setting.state.status = f_polls_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->polls);
+
+        macro_setting_load_handle_send_receive_error_continue_1(f_polls_increase_by);
 
         for (j = 0; j < main->program.parameters.array[parameters[i]].values.used; j += 2) {
 
@@ -261,7 +266,7 @@ extern "C" {
               sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
               sets[i]->sockets.array[j].domain = f_socket_protocol_family_local_e;
               sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
-              sets[i]->sockets.array[j].type = f_socket_address_family_local_e;
+              sets[i]->sockets.array[j].type = f_socket_type_stream_e;
               sets[i]->sockets.array[j].name = sets[i]->names.array[j];
             }
             else if (main->setting.flag & kt_tacocat_main_flag_resolve_classic_e) {
@@ -388,7 +393,7 @@ extern "C" {
               }
 
               sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
-              sets[i]->sockets.array[j].type = host.h_addrtype;
+              sets[i]->sockets.array[j].type = f_socket_type_stream_e;
 
               if (host.h_addrtype == f_socket_address_family_inet4_e) {
                 sets[i]->sockets.array[j].domain = f_socket_protocol_family_inet4_e;
@@ -406,6 +411,7 @@ extern "C" {
             }
 
             ++sets[i]->files.used;
+            ++sets[i]->polls.used;
             ++sets[i]->sockets.used;
             ++sets[i]->statuss.used;
             ++sets[i]->names.used;
