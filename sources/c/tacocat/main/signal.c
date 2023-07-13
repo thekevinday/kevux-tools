@@ -52,9 +52,9 @@ extern "C" {
     f_signal_set_add(F_signal_termination, &main->program.signal.set);
 
     if (main->program.signal.id == -1) {
-      main->setting.status_thread = f_signal_open(&main->program.signal);
+      main->setting.status_signal = f_signal_open(&main->program.signal);
 
-      if (F_status_is_error(main->setting.status_thread)) {
+      if (F_status_is_error(main->setting.status_signal)) {
         main->program.signal_received = F_signal_abort;
 
         return;
@@ -64,9 +64,9 @@ extern "C" {
     do {
       memset(&information, 0, sizeof(siginfo_t));
 
-      main->setting.status_thread = f_signal_wait(&main->program.signal.set, &information);
+      main->setting.status_signal = f_signal_wait(&main->program.signal.set, &information);
 
-      if (F_status_is_error(main->setting.status_thread) && F_status_set_fine(main->setting.status_thread) != F_interrupt) {
+      if (F_status_is_error(main->setting.status_signal) && F_status_set_fine(main->setting.status_signal) != F_interrupt) {
         if (++failsafe >= kt_tacocat_signal_check_failsafe_d) break;
       }
 
@@ -83,13 +83,13 @@ extern "C" {
       }
 
       failsafe = 0;
-      main->setting.status_thread = F_none;
+      main->setting.status_signal = F_none;
 
     } while (!main->program.signal_received);
 
     f_signal_close(&main->program.signal);
 
-    if (F_status_is_error(main->setting.status_thread)) {
+    if (F_status_is_error(main->setting.status_signal)) {
       main->program.signal_received = F_signal_abort;
     }
   }

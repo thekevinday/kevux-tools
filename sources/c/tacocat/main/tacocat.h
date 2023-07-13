@@ -57,6 +57,8 @@
 #include <program/kevux/tools/tacocat/main/print/verbose.h>
 #include <program/kevux/tools/tacocat/main/print/warning.h>
 #include <program/kevux/tools/tacocat/main/process.h>
+#include <program/kevux/tools/tacocat/main/receive.h>
+#include <program/kevux/tools/tacocat/main/send.h>
 #include <program/kevux/tools/tacocat/main/signal.h>
 #include <program/kevux/tools/tacocat/main/thread.h>
 

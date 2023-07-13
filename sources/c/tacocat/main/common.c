@@ -162,6 +162,11 @@ extern "C" {
       kt_tacocat_parameter_send_e,
     };
 
+    const uint64_t flags[] = {
+      kt_tacocat_main_flag_receive_e,
+      kt_tacocat_main_flag_send_e,
+    };
+
     const f_string_static_t longs[] = {
       kt_tacocat_long_receive_s,
       kt_tacocat_long_send_s,
@@ -190,6 +195,8 @@ extern "C" {
     for (uint8_t i = 0; i < 2; ++i) {
 
       if (main->program.parameters.array[parameters[i]].result & f_console_result_value_e) {
+        main->setting.flag |= flags[i];
+
         if (main->program.parameters.array[parameters[i]].values.used % 2) {
           main->setting.state.status = F_status_set_error(F_parameter);
 
@@ -475,6 +482,8 @@ extern "C" {
         } // for
       }
       else if (main->program.parameters.array[parameters[i]].result & f_console_result_found_e) {
+        main->setting.flag -= main->setting.flag & flags[i];
+
         main->setting.state.status = F_status_set_error(F_parameter);
 
         macro_setting_load_print_first();
@@ -486,6 +495,9 @@ extern "C" {
         }
 
         continue;
+      }
+      else {
+        main->setting.flag -= main->setting.flag & flags[i];
       }
     } // for
 

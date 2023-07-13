@@ -73,8 +73,11 @@ extern "C" {
  *
  * flag: Flags passed to the main function.
  *
- * status_thread: A status used eclusively by the threaded signal handler.
- * state:         The state data used when processing data.
+ * status_receive: A status used eclusively by the receive thread.
+ * status_send:    A status used eclusively by the send thread.
+ * status_signal:  A status used eclusively by the threaded signal handler.
+ *
+ * state: The state data used when processing data.
  *
  * receive: The socket set for receiving data receive clients.
  * send:    The socket set for sending data send clients.
@@ -85,7 +88,10 @@ extern "C" {
   typedef struct {
     uint64_t flag;
 
-    f_status_t status_thread;
+    f_status_t status_receive;
+    f_status_t status_send;
+    f_status_t status_signal;
+
     f_state_t state;
 
     kt_tacocat_socket_set_t receive;
@@ -97,6 +103,8 @@ extern "C" {
   #define kt_tacocat_setting_t_initialize \
     { \
       kt_tacocat_main_flag_none_e, \
+      F_none, \
+      F_none, \
       F_none, \
       macro_f_state_t_initialize_1(kt_tacocat_allocation_large_d, kt_tacocat_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
       macro_kt_tacocat_setting_t_initialize_1(kt_tacocat_block_size_receive_d), \
@@ -122,17 +130,35 @@ extern "C" {
 #endif // _di_kt_tacocat_callback_t_
 
 /**
+ * The main thread settings.
+ */
+#ifndef _di_kt_tacocat_thread_t_
+  typedef struct {
+    f_thread_id_t id_receive;
+    f_thread_id_t id_send;
+  } kt_tacocat_thread_t;
+
+  #define kt_tacocat_thread_t_initialize \
+    { \
+      f_thread_id_t_initialize, \
+      f_thread_id_t_initialize, \
+    }
+#endif // _di_kt_tacocat_thread_t_
+
+/**
  * The main program data as a single structure.
  *
  * program:  The main program data.
  * setting:  The settings data.
  * callback: The program callbacks.
+ * thread:   The program thread data.
  */
 #ifndef _di_kt_tacocat_main_t_
   typedef struct {
     fll_program_data_t program;
     kt_tacocat_setting_t setting;
     kt_tacocat_callback_t callback;
+    kt_tacocat_thread_t thread;
   } kt_tacocat_main_t;
 
   #define kt_tacocat_main_t_initialize \
@@ -140,6 +166,7 @@ extern "C" {
       fll_program_data_t_initialize, \
       kt_tacocat_setting_t_initialize, \
       kt_tacocat_callback_t_initialize, \
+      kt_tacocat_thread_t_initialize, \
     }
 #endif // _di_kt_tacocat_main_t_
 
@@ -173,6 +200,23 @@ extern "C" {
 #ifndef _di_kt_tacocat_setting_delete_
   extern f_status_t kt_tacocat_setting_delete(const fll_program_data_t program, kt_tacocat_setting_t * const setting);
 #endif // _di_kt_tacocat_setting_delete_
+
+/**
+ * Delete the program main thread data.
+ *
+ * @param program
+ *   The main program data.
+ * @param thread
+ *   The program main thread data.
+ *
+ * @return
+ *   F_none on success.
+ *
+ *   F_parameter (with error bit) if a parameter is invalid.
+ */
+#ifndef _di_kt_tacocat_thread_delete_
+  extern f_status_t kt_tacocat_thread_delete(const fll_program_data_t program, kt_tacocat_thread_t * const thread);
+#endif // _di_kt_tacocat_thread_delete_
 
 #ifdef __cplusplus
 } // extern "C"

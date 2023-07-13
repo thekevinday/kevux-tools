@@ -35,6 +35,9 @@ extern "C" {
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
  *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
+ *
+ * kt_tacocat_interval_*_d:
+ *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 4
@@ -49,6 +52,8 @@ extern "C" {
 
   #define kt_tacocat_signal_check_d          20000
   #define kt_tacocat_signal_check_failsafe_d 20000
+
+  #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
 #endif // _di_kt_tacocat_d_
 
 /**

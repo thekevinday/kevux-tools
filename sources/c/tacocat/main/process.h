@@ -39,9 +39,14 @@ extern "C" {
  *     This does not set parameter error on success or any socket disconnect error.
  * @param set
  *   The socket set to disconnect all sockets of.
+ *
+ * @return
+ *   F_none on success.
+ *
+ *   F_parameter (with error bit) on invalid parameter.
  */
 #ifndef _di_kt_tacocat_process_socket_set_disconnect_
-  extern void kt_tacocat_process_socket_set_disconnect(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
+  extern f_status_t kt_tacocat_process_socket_set_disconnect(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
 #endif // _di_kt_tacocat_process_socket_set_disconnect_
 
 /**
@@ -60,9 +65,11 @@ extern "C" {
  *     If this already has the error bit set, then no changes are performed.
  * @param set
  *   The socket set to handle the errors of.
+ * @param status
+ *   The status to update with the status code from the given set.
  */
 #ifndef _di_kt_tacocat_process_socket_set_error_handle_
-  extern void kt_tacocat_process_socket_set_error_handle(kt_tacocat_main_t * const main, const kt_tacocat_socket_set_t set);
+  extern void kt_tacocat_process_socket_set_error_handle(kt_tacocat_main_t * const main, const kt_tacocat_socket_set_t set, f_status_t * const status);
 #endif // _di_kt_tacocat_process_socket_set_error_handle_
 
 /**
@@ -72,21 +79,24 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_parameter (with error bit) on parameter error.
+ *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     This is not altered on success.
  * @param parameter
  *   The parameter long name to use when printing errors.
  * @param set
  *   The socket set to handle the errors of.
+ * @param status
+ *   The status to update with the status code from the given set.
  *
  * @return
  *   F_none on no error.
  *
- *   F_parameter (with error bit) on parameter error.
+ *   F_interrupt (with error bit) if interrupt was received.
+ *   F_parameter (with error bit) if a parameter is invalid.
  */
 #ifndef _di_kt_tacocat_process_socket_set_error_has_
-  extern f_status_t kt_tacocat_process_socket_set_error_has(kt_tacocat_main_t * const main, const f_string_static_t parameter, const kt_tacocat_socket_set_t set);
+  extern f_status_t kt_tacocat_process_socket_set_error_has(kt_tacocat_main_t * const main, const f_string_static_t parameter, const kt_tacocat_socket_set_t set, f_status_t * const status);
 #endif // _di_kt_tacocat_process_socket_set_error_has_
 
 /**

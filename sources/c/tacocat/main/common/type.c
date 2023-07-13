@@ -11,6 +11,7 @@ extern "C" {
 
     fll_program_data_delete(&main->program);
     kt_tacocat_setting_delete(main->program, &main->setting);
+    kt_tacocat_thread_delete(main->program, &main->thread);
   }
 #endif // _di_kt_tacocat_main_delete_
 
@@ -52,6 +53,15 @@ extern "C" {
     return F_none;
   }
 #endif // _di_kt_tacocat_setting_delete_
+
+#ifndef _di_kt_tacocat_thread_delete_
+  f_status_t kt_tacocat_thread_delete(const fll_program_data_t program, kt_tacocat_thread_t * const thread) {
+
+    if (!thread) return F_status_set_error(F_parameter);
+
+    return F_none;
+  }
+#endif // _di_kt_tacocat_thread_delete_
 
 #ifdef __cplusplus
 } // extern "C"

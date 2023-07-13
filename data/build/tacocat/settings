@@ -37,9 +37,9 @@ build_libraries-individual_thread -lf_thread
 build_libraries-level -lfll_2 -lfll_1 -lfll_0
 build_libraries-monolithic -lfll
 
-build_sources_library main/common.c main/common/define.c main/common/enumeration.c main/common/print.c main/common/string.c main/common/type.c main/print/error.c main/print/message.c main/print/verbose.c main/print/warning.c main/process.c main/signal.c main/tacocat.c main/thread.c
+build_sources_library main/common.c main/common/define.c main/common/enumeration.c main/common/print.c main/common/string.c main/common/type.c main/print/error.c main/print/message.c main/print/verbose.c main/print/warning.c main/process.c main/receive.c main/send.c main/signal.c main/tacocat.c main/thread.c
 
-build_sources_headers main/common.h main/common/define.h main/common/enumeration.h main/common/print.h main/common/string.h main/common/type.h main/print/error.h main/print/message.h main/print/verbose.h main/print/warning.h main/process.h main/signal.h main/tacocat.h main/thread.h
+build_sources_headers main/common.h main/common/define.h main/common/enumeration.h main/common/print.h main/common/string.h main/common/type.h main/print/error.h main/print/message.h main/print/verbose.h main/print/warning.h main/process.h main/receive.h main/send.h main/signal.h main/tacocat.h main/thread.h
 
 build_sources_program main/main.c
 

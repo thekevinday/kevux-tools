@@ -31,7 +31,7 @@ extern "C" {
  *   This alters setting.state.status:
  *     F_none on success.
  *
- *     F_parameter (with error bit) on parameter error.
+ *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     Errors (with error bit) from: f_console_parameter_process().
  *     Errors (with error bit) from: f_string_dynamic_append_nulless().
@@ -70,7 +70,7 @@ extern "C" {
  *   This alters main.setting.state.status:
  *     F_none on success.
  *
- *     F_parameter (with error bit) on parameter error.
+ *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     Errors (with error bit) from: f_file_exists().
  *     Errors (with error bit) from: f_file_open().
@@ -111,7 +111,7 @@ extern "C" {
  *     F_data_not on success but there is nothing in the address string (address.used is 0).
  *     F_number_not on success but there is no port number.
  *
- *     F_parameter (with error bit) on parameter error.
+ *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     Errors (with error bit) from: fl_conversion_dynamic_to_unsigned_detect().
  * @param address
