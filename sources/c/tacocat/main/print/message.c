@@ -19,9 +19,10 @@ extern "C" {
 
     f_print_dynamic_raw(f_string_eol_s, print->to);
 
-    fll_program_print_help_option(print, kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Specify an address or socket file to listen to and a file to write to.");
-    fll_program_print_help_option(print, kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Specify a custom DNS resolution methodology.");
-    fll_program_print_help_option(print, kt_tacocat_short_send_s, kt_tacocat_long_send_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "   Specify an address or socket file send transmit to and a file to read from.");
+    fll_program_print_help_option(print, kt_tacocat_short_interval_s, kt_tacocat_long_interval_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Specify a custom poll interval in milliseconds to use.");
+    fll_program_print_help_option(print, kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, " Specify an address or socket file to listen to and a file to write to.");
+    fll_program_print_help_option(print, kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, " Specify a custom DNS resolution methodology.");
+    fll_program_print_help_option(print, kt_tacocat_short_send_s, kt_tacocat_long_send_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Specify an address or socket file send transmit to and a file to read from.");
 
     f_print_dynamic_raw(f_string_eol_s, print->to);
 

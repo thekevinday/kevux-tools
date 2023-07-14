@@ -77,6 +77,7 @@ extern "C" {
     kt_tacocat_parameter_line_first_no_e,
     kt_tacocat_parameter_line_last_no_e,
 
+    kt_tacocat_parameter_interval_e,
     kt_tacocat_parameter_receive_e,
     kt_tacocat_parameter_resolve_e,
     kt_tacocat_parameter_send_e,
@@ -86,12 +87,13 @@ extern "C" {
     { \
       macro_fll_program_console_parameter_standard_initialize, \
       \
+      macro_f_console_parameter_t_initialize_3(kt_tacocat_short_interval_s, kt_tacocat_long_interval_s, 1, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, 2, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, 1, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_send_s, kt_tacocat_long_send_s, 2, f_console_flag_normal_e), \
     }
 
-  #define kt_tacocat_parameter_total_d 16
+  #define kt_tacocat_parameter_total_d 17
 #endif // _di_kt_tacocat_parameter_e_
 
 /**

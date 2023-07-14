@@ -71,7 +71,8 @@ extern "C" {
  * This is passed to the program-specific main entry point to designate program settings.
  * These program settings are often processed from the program arguments (often called the command line arguments).
  *
- * flag: Flags passed to the main function.
+ * flag:     Flags passed to the main function.
+ * interval: The poll interval to use.
  *
  * status_receive: A status used eclusively by the receive thread.
  * status_send:    A status used eclusively by the send thread.
@@ -87,6 +88,7 @@ extern "C" {
 #ifndef _di_kt_tacocat_setting_t_
   typedef struct {
     uint64_t flag;
+    uint64_t interval;
 
     f_status_t status_receive;
     f_status_t status_send;
@@ -103,6 +105,7 @@ extern "C" {
   #define kt_tacocat_setting_t_initialize \
     { \
       kt_tacocat_main_flag_none_e, \
+      kt_tacocat_interval_poll_d, \
       F_none, \
       F_none, \
       F_none, \

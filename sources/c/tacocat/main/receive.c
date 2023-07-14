@@ -17,7 +17,7 @@ extern "C" {
 
     if (F_status_is_error_not(main->setting.status_receive)) {
       do {
-        main->setting.status_receive = f_file_poll(main->setting.receive.polls, kt_tacocat_interval_poll_d);
+        main->setting.status_receive = f_file_poll(main->setting.receive.polls, main->setting.interval);
 
         if (main->program.signal_received) {
           main->setting.status_receive = F_status_set_error(F_interrupt);

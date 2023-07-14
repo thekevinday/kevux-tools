@@ -139,6 +139,40 @@ extern "C" {
       #endif // _kt_resolve_default_kevux_
     }
 
+    if (main->program.parameters.array[kt_tacocat_parameter_interval_e].result & f_console_result_value_e) {
+      index = main->program.parameters.array[kt_tacocat_parameter_interval_e].values.array[main->program.parameters.array[kt_tacocat_parameter_interval_e].values.used - 1];
+
+      f_number_unsigned_t number = 0;
+
+      main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, main->program.parameters.arguments.array[index], &number);
+
+      if (F_status_is_error(main->setting.state.status)) {
+        macro_setting_load_print_first();
+        kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(fl_conversion_dynamic_to_unsigned_detect));
+
+        return;
+      }
+
+      if (number == 0 || main->setting.state.status == F_number_negative) {
+        main->setting.state.status = F_status_set_error(F_parameter);
+
+        fll_program_print_error_parameter_integer_less_than(&main->program.error, f_console_symbol_long_normal_s, kt_tacocat_long_interval_s, main->program.parameters.arguments.array[index], f_string_ascii_1_s);
+
+        return;
+      }
+
+      main->setting.interval = number;
+    }
+    else if (main->program.parameters.array[kt_tacocat_parameter_interval_e].result & f_console_result_found_e) {
+      main->setting.state.status = F_status_set_error(F_parameter);
+
+      macro_setting_load_print_first();
+
+      fll_program_print_error_parameter_missing_value(&main->program.error, f_console_symbol_long_normal_s, kt_tacocat_long_interval_s);
+
+      return;
+    }
+
     // Only process these when needed to avoid unnecessary operations.
     if (main->callback.setting_load_send_receive && !(main->setting.flag & (kt_tacocat_main_flag_copyright_e | kt_tacocat_main_flag_version_e |kt_tacocat_main_flag_help_e))) {
       main->callback.setting_load_send_receive(arguments, (void *) main);

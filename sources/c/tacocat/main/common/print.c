@@ -27,6 +27,7 @@ extern "C" {
     "f_string_dynamic_increase_by",
     "f_string_dynamics_increase_by",
     "f_thread_create",
+    "fl_conversion_dynamic_to_unsigned_detect",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",
     "kt_tacocat_process_socket_set_error_has",

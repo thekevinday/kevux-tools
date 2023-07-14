@@ -29,10 +29,12 @@ extern "C" {
 #endif // _di_kt_tacocat_s_
 
 #ifndef _di_kt_tacocat_parameter_s_
+  const f_string_static_t kt_tacocat_short_interval_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_short_interval_s, 0, KT_TACOCAT_short_interval_s_length);
   const f_string_static_t kt_tacocat_short_receive_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_short_receive_s, 0, KT_TACOCAT_short_receive_s_length);
   const f_string_static_t kt_tacocat_short_resolve_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_short_resolve_s, 0, KT_TACOCAT_short_resolve_s_length);
   const f_string_static_t kt_tacocat_short_send_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_short_send_s, 0, KT_TACOCAT_short_send_s_length);
 
+  const f_string_static_t kt_tacocat_long_interval_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_long_interval_s, 0, KT_TACOCAT_long_interval_s_length);
   const f_string_static_t kt_tacocat_long_receive_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_long_receive_s, 0, KT_TACOCAT_long_receive_s_length);
   const f_string_static_t kt_tacocat_long_resolve_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_long_resolve_s, 0, KT_TACOCAT_long_resolve_s_length);
   const f_string_static_t kt_tacocat_long_send_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_long_send_s, 0, KT_TACOCAT_long_send_s_length);
