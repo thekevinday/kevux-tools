@@ -60,6 +60,7 @@ extern "C" {
     kt_tacocat_f_f_string_dynamic_increase_by_e,
     kt_tacocat_f_f_string_dynamics_increase_by_e,
     kt_tacocat_f_f_thread_create_e,
+    kt_tacocat_f_f_uint16s_increase_by_e,
     kt_tacocat_f_fl_conversion_dynamic_to_unsigned_detect_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,

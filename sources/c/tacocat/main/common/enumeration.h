@@ -42,7 +42,7 @@ extern "C" {
  *   The Kevux method also supports local DNS entries ie (~/.resolution/dns/kevux.conf or ~/.resolution/host/kevux.conf).
  *   @todo The Kevux method will be implemented in a library (project resolution and libresolution), re-introducing and expanding on the Turtle Kevux resolv.conf extensions that Kevin hacked into uClibc several years back.
  */
-#ifndef _di_kt_tacocat_flag_e_
+#ifndef _di_kt_tacocat_main_flag_e_
   enum {
     kt_tacocat_main_flag_none_e            = 0x0,
     kt_tacocat_main_flag_copyright_e       = 0x1,
@@ -56,7 +56,7 @@ extern "C" {
     kt_tacocat_main_flag_send_e            = 0x100,
     kt_tacocat_main_flag_version_e         = 0x200,
   }; // enum
-#endif // _di_kt_tacocat_flag_e_
+#endif // _di_kt_tacocat_main_flag_e_
 
 /**
  * The main program parameters.
@@ -121,6 +121,22 @@ extern "C" {
     kt_tacocat_print_flag_warning_e = 0x40,
   }; // enum
 #endif // _di_kt_tacocat_print_flag_e_
+
+/**
+ * Individual socket-specific flags.
+ *
+ * kt_tacocat_socket_flag_*_e:
+ *   - none:          No flags set.
+ *   - block_control: The control block is fully read.
+ *   - block_payload: The payload block is fully read.
+ */
+#ifndef _di_kt_tacocat_socket_flag_e_
+  enum {
+    kt_tacocat_socket_flag_none_e          = 0x0,
+    kt_tacocat_socket_flag_block_control_e = 0x1,
+    kt_tacocat_socket_flag_block_payload_e = 0x2,
+  }; // enum
+#endif // _di_kt_tacocat_socket_flag_e_
 
 #ifdef __cplusplus
 } // extern "C"

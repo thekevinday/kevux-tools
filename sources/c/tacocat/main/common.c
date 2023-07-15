@@ -247,9 +247,14 @@ extern "C" {
           continue;
         }
 
+        sets[i]->flags.used = 0;
         sets[i]->names.used = 0;
         sets[i]->buffers.used = 0;
         sets[i]->polls.used = 0;
+
+        main->setting.state.status = f_uint16s_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->flags);
+
+        macro_setting_load_handle_send_receive_error_continue_1(f_uint16s_increase_by);
 
         main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->names);
 
@@ -280,6 +285,7 @@ extern "C" {
           // First parameter value represents the network address or the socket file path.
           index = main->program.parameters.array[parameters[i]].values.array[j];
           sets[i]->statuss.array[j] = F_none;
+          sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
           sets[i]->names.array[j].used = 0;
           sets[i]->buffers.array[j].used = 0;
 

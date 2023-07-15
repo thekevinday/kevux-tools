@@ -27,6 +27,7 @@ extern "C" {
     "f_string_dynamic_increase_by",
     "f_string_dynamics_increase_by",
     "f_thread_create",
+    "f_uint16s_increase_by",
     "fl_conversion_dynamic_to_unsigned_detect",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",

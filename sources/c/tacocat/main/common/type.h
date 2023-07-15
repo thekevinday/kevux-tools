@@ -21,8 +21,9 @@ extern "C" {
  *
  * block_size: The size in bytes to used to represent a block when sending or receiving packets.
  *
+ * flags:   An array of flags for each socket.
  * files:   An array of files for each socket.
- * polls:  An array of sockets to poll, specifically for passing to f_file_poll().
+ * polls:   An array of sockets to poll, specifically for passing to f_file_poll().
  * sockets: An array of the network sockets.
  * statuss: An array of statuses for each socket.
  *
@@ -33,6 +34,7 @@ extern "C" {
   typedef struct {
     f_number_unsigned_t block_size;
 
+    f_uint16s_t flags;
     f_files_t files;
     f_polls_t polls;
     f_sockets_t sockets;
@@ -45,6 +47,7 @@ extern "C" {
   #define kt_tacocat_socket_set_t_initialize \
     { \
       kt_tacocat_block_size_d, \
+      f_uint16s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \
@@ -56,6 +59,7 @@ extern "C" {
   #define macro_kt_tacocat_setting_t_initialize_1(block_size) \
     { \
       block_size, \
+      f_uint16s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \
@@ -74,9 +78,9 @@ extern "C" {
  * flag:     Flags passed to the main function.
  * interval: The poll interval to use.
  *
- * status_receive: A status used eclusively by the receive thread.
- * status_send:    A status used eclusively by the send thread.
- * status_signal:  A status used eclusively by the threaded signal handler.
+ * status_receive: A status used exclusively by the receive thread.
+ * status_send:    A status used exclusively by the send thread.
+ * status_signal:  A status used exclusively by the threaded signal handler.
  *
  * state: The state data used when processing data.
  *

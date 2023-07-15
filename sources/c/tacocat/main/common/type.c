@@ -38,6 +38,7 @@ extern "C" {
           f_socket_disconnect(&sets[i]->sockets.array[j], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
         } // for
 
+        f_uint16s_resize(0, &sets[i]->flags);
         f_files_resize(0, &sets[i]->files);
         f_polls_resize(0, &sets[i]->polls);
         f_sockets_resize(0, &sets[i]->sockets);
