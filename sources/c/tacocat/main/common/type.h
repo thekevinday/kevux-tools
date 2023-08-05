@@ -29,6 +29,7 @@ extern "C" {
  *
  * names:   An array of names for each socket.
  * buffers: An array of buffers for sending or receiving data between clients for each socket.
+ * packets: An array of simple packet ranges representing the parts of the packet for each socket for use during processing.
  */
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {
@@ -42,6 +43,7 @@ extern "C" {
 
     f_string_dynamics_t names;
     f_string_dynamics_t buffers;
+    f_fss_simple_packet_ranges_t packets;
   } kt_tacocat_socket_set_t;
 
   #define kt_tacocat_socket_set_t_initialize \
@@ -54,6 +56,7 @@ extern "C" {
       f_statuss_t_initialize, \
       f_string_dynamics_t_initialize, \
       f_string_dynamics_t_initialize, \
+      f_fss_simple_packet_ranges_t_initialize, \
     }
 
   #define macro_kt_tacocat_setting_t_initialize_1(block_size) \
@@ -66,6 +69,7 @@ extern "C" {
       f_statuss_t_initialize, \
       f_string_dynamics_t_initialize, \
       f_string_dynamics_t_initialize, \
+      f_fss_simple_packet_ranges_t_initialize, \
     }
 #endif // _di_kt_tacocat_socket_set_t_
 

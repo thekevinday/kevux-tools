@@ -28,6 +28,7 @@
 #include <fll/level_0/compare.h>
 #include <fll/level_0/console.h>
 #include <fll/level_0/file.h>
+#include <fll/level_0/fss.h>
 #include <fll/level_0/network.h>
 #include <fll/level_0/path.h>
 #include <fll/level_0/pipe.h>

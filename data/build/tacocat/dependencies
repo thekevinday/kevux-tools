@@ -11,6 +11,7 @@ f_console
 f_compare
 f_conversion
 f_file
+f_fss
 f_network
 f_path
 f_pipe

@@ -66,6 +66,35 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_file_
 
 /**
+ * Print file related error or warning messages.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param function
+ *   The name of the function where the error happened.
+ *   Set to 0 to disable.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ * @param status
+ *   The status code representing the error.
+ *
+ * @return
+ *   F_none on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_
+  f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status);
+#endif // _di_kt_tacocat_print_error_on_
+
+/**
  * Print error message for when an unknown value for the resolve parameter is provided.
  *
  * @param print

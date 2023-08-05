@@ -32,12 +32,16 @@ extern "C" {
  *   - size_receive: The block size in bytes to use when sending packets.
  *   - size_send:    The block size in bytes to use when receiving packets.
  *
+ * kt_tacocat_interval_*_d:
+ *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
+ *
+ * kt_tacocat_packet_*_d:
+ *   - peek: The size to peek into the packet to get the initial information.
+ *   - read: The size to read at a time when processing the packet.
+ *
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
  *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
- *
- * kt_tacocat_interval_*_d:
- *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 4
@@ -50,10 +54,13 @@ extern "C" {
   #define kt_tacocat_block_size_receive_d kt_tacocat_block_size_d
   #define kt_tacocat_block_size_send_d    kt_tacocat_block_size_d
 
+  #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
+
+  #define kt_tacocat_packet_peek_d F_fss_simple_packet_block_header_size_d
+  #define kt_tacocat_packet_read_d 8192
+
   #define kt_tacocat_signal_check_d          20000
   #define kt_tacocat_signal_check_failsafe_d 20000
-
-  #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
 #endif // _di_kt_tacocat_d_
 
 /**

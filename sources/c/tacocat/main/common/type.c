@@ -30,11 +30,11 @@ extern "C" {
 
       for (uint8_t i = 0; i < 2; ++i) {
 
-        for (; j < sets[i]->files.used ; ++j) {
+        for (j = 0; j < sets[i]->files.used ; ++j) {
           f_file_close(&sets[i]->files.array[j]);
         } // for
 
-        for (; j < sets[i]->sockets.used ; ++j) {
+        for (j = 0; j < sets[i]->sockets.used ; ++j) {
           f_socket_disconnect(&sets[i]->sockets.array[j], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
         } // for
 
@@ -46,6 +46,7 @@ extern "C" {
 
         f_string_dynamics_resize(0, &sets[i]->names);
         f_string_dynamics_resize(0, &sets[i]->buffers);
+        f_fss_simple_packet_ranges_resize(0, &sets[i]->packets);
       } // for
     }
 

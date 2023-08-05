@@ -28,6 +28,28 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_error_file_
 
+#ifndef _di_kt_tacocat_print_error_on_
+  f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status) {
+
+    if (!print || !print->custom) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QNetwork error on%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format("%[%Q%]", print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format("%[%Q%]", print->to, print->set->notable, network, print->set->notable);
+    fl_print_format(" %['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    fll_error_print(print, F_status_set_fine(status), function, F_true);
+
+    return F_none;
+  }
+#endif // _di_kt_tacocat_print_error_
+
 #ifndef _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
   f_status_t kt_tacocat_print_error_parameter_value_resolve_unknown(fl_print_t * const print, const f_string_dynamic_t unknown) {
 

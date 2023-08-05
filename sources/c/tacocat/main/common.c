@@ -211,7 +211,7 @@ extern "C" {
       &main->setting.send,
     };
 
-    const bool const is_receive[] = {
+    const bool is_receive[] = {
       F_true,
       F_false,
     };
@@ -224,6 +224,7 @@ extern "C" {
     struct hostent host;
     f_network_family_ip_t family = f_network_family_ip_t_initialize;
     f_number_unsigned_t port = 0;
+    f_number_unsigned_t total = 0;
     f_string_static_t address = f_string_static_t_initialize;
 
     for (uint8_t i = 0; i < 2; ++i) {
@@ -250,33 +251,43 @@ extern "C" {
         sets[i]->flags.used = 0;
         sets[i]->names.used = 0;
         sets[i]->buffers.used = 0;
+        sets[i]->packets.used = 0;
+        sets[i]->files.used = 0;
+        sets[i]->sockets.used = 0;
+        sets[i]->statuss.used = 0;
         sets[i]->polls.used = 0;
 
-        main->setting.state.status = f_uint16s_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->flags);
+        total = main->program.parameters.array[parameters[i]].values.used / 2;
+
+        main->setting.state.status = f_uint16s_increase_by(total, &sets[i]->flags);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_uint16s_increase_by);
 
-        main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->names);
+        main->setting.state.status = f_string_dynamics_increase_by(total, &sets[i]->names);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
 
-        main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->buffers);
+        main->setting.state.status = f_string_dynamics_increase_by(total, &sets[i]->buffers);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
 
-        main->setting.state.status = f_files_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->files);
+        main->setting.state.status = f_fss_simple_packet_ranges_increase_by(total, &sets[i]->packets);
+
+        macro_setting_load_handle_send_receive_error_continue_1(f_fss_simple_packet_ranges_increase_by);
+
+        main->setting.state.status = f_files_increase_by(total, &sets[i]->files);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_files_increase_by);
 
-        main->setting.state.status = f_sockets_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->sockets);
+        main->setting.state.status = f_sockets_increase_by(total, &sets[i]->sockets);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_sockets_increase_by);
 
-        main->setting.state.status = f_statuss_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->statuss);
+        main->setting.state.status = f_statuss_increase_by(total, &sets[i]->statuss);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_statuss_increase_by);
 
-        main->setting.state.status = f_polls_increase_by(main->program.parameters.array[parameters[i]].values.used / 2, &sets[i]->polls);
+        main->setting.state.status = f_polls_increase_by(total, &sets[i]->polls);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_polls_increase_by);
 
@@ -288,6 +299,12 @@ extern "C" {
           sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
           sets[i]->names.array[j].used = 0;
           sets[i]->buffers.array[j].used = 0;
+          sets[i]->packets.array[j].control.start = 1;
+          sets[i]->packets.array[j].control.stop = 0;
+          sets[i]->packets.array[j].size.start = 1;
+          sets[i]->packets.array[j].size.stop = 0;
+          sets[i]->packets.array[j].payload.start = 1;
+          sets[i]->packets.array[j].payload.stop = 0;
 
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
@@ -463,6 +480,7 @@ extern "C" {
             ++sets[i]->statuss.used;
             ++sets[i]->names.used;
             ++sets[i]->buffers.used;
+            ++sets[i]->packets.used;
           }
           else {
             main->setting.state.status = F_status_set_error(F_parameter);
@@ -609,6 +627,7 @@ extern "C" {
     }
   }
 #endif // _di_kt_tacocat_setting_load_address_port_extract_
+
 
 #ifdef __cplusplus
 } // extern "C"
