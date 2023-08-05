@@ -13,6 +13,7 @@ extern "C" {
     "f_network_from_ip_name",
     "f_network_is_ip_address",
     "f_polls_increase_by",
+    "f_socket_accept",
     "f_socket_bind_inet4",
     "f_socket_bind_inet6",
     "f_socket_bind_local",

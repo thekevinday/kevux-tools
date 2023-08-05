@@ -26,19 +26,29 @@ extern "C" {
           return 0;
         }
 
-        for (i = 0; i < main->setting.receive.polls.used; ++i) {
+        // Skip if status is an error or is F_time_out.
+        if (main->setting.status_receive == F_none) {
 
-          if (main->setting.receive.polls.array[i].fd == -1) continue;
+          for (i = 0; i < main->setting.receive.polls.used; ++i) {
 
-          // @todo figure out what f_poll_urgent_e can be.
-          if (main->setting.receive.polls.array[i].revents & (f_poll_read_e | f_poll_urgent_e)) {
-            kt_tacocat_receive_process(main, i);
-            if (F_status_is_error(main->setting.state.status)) continue;
-          }
-        } // for
+            if (main->setting.receive.polls.array[i].fd == -1) continue;
 
-        // @todo handle errors
-        //if (F_status_is_error(main->setting.receive.statuss.array[i])) ... // @todo more work needed to clear error bit when a new read is ready.
+            // @todo figure out what f_poll_urgent_e can be.
+            if (main->setting.receive.polls.array[i].revents & (f_poll_read_e | f_poll_urgent_e)) {
+              kt_tacocat_receive_process(main, i);
+
+              main->setting.receive.polls.array[i].revents = 0;
+
+              if (F_status_is_error(main->setting.state.status)) continue;
+            }
+          } // for
+
+          // @todo handle errors
+          //if (F_status_is_error(main->setting.receive.statuss.array[i])) ... // @todo more work needed to clear error bit when a new read is ready.
+        }
+        else {
+          // @todo handle error or F_time_out on main->setting.status_receive.
+        }
 
       } while (F_status_is_error_not(main->setting.status_receive));
     }
@@ -93,15 +103,21 @@ extern "C" {
 
     // This is a new packet (kt_tacocat_socket_flag_none_e).
     if (!(*flag)) {
+      *status = f_socket_accept(socket);
+
+      if (F_status_is_error(*status)) {
+        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_socket_accept), kt_tacocat_receive_s, *name, *status);
+
+        return;
+      }
+
       socket->size_read = kt_tacocat_packet_peek_d;
       *status = f_socket_read_stream(socket, f_socket_flag_peek_e, (void *) &buffer->string, &length);
 
       if (F_status_is_error(*status)) {
         kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_socket_read_stream), kt_tacocat_receive_s, *name, *status);
 
-        if (*status == F_connect_not) {
-          // @todo errors like this (or perhaps all errors) need to ensure this function is not called again until the state is reset to prevent infinitely looping on this.
-        }
+        f_file_close_id(&socket->id_data);
 
         return;
       }
@@ -126,6 +142,9 @@ extern "C" {
 
     // f_socket_flag_peek_e,
     //f_socket_read_stream
+
+    // For now just close the socket until the appropriate code gets written here.
+    f_file_close_id(&socket->id_data);
   }
 #endif // _di_kt_tacocat_receive_process_
 

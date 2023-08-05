@@ -46,6 +46,7 @@ extern "C" {
     kt_tacocat_f_f_network_from_ip_name_e,
     kt_tacocat_f_f_network_is_ip_address_e,
     kt_tacocat_f_f_polls_increase_by_e,
+    kt_tacocat_f_f_socket_accept_e,
     kt_tacocat_f_f_socket_bind_inet4_e,
     kt_tacocat_f_f_socket_bind_inet6_e,
     kt_tacocat_f_f_socket_bind_local_e,
