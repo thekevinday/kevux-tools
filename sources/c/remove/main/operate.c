@@ -31,7 +31,7 @@ extern "C" {
       }
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
   }
 #endif // _di_kt_remove_operate_file_
 
@@ -365,19 +365,19 @@ extern "C" {
 
       // Trigger the callback to make any modifications before simulating or performing the removal.
       if (main->setting.process_operate_file) {
-        main->setting.state.status = F_none;
+        main->setting.state.status = F_okay;
 
         main->setting.process_operate_file((void *) main, path, statistics, &flag);
         if (F_status_is_error(main->setting.state.status)) return flag;
 
         if (main->setting.state.status == F_done) {
-          main->setting.state.status = F_none;
+          main->setting.state.status = F_okay;
 
           return flag;
         }
       }
 
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
     }
 
     if (main->setting.flag & kt_remove_main_flag_force_e) {
@@ -411,7 +411,7 @@ extern "C" {
 
     kt_remove_print_simulate_operate_boolean(&main->program.output, kt_remove_remove_s, flag & kt_remove_flag_file_operate_remove_e);
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     return flag;
   }

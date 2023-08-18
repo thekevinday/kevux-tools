@@ -185,7 +185,7 @@ extern "C" {
         }
       } // for
 
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
     }
 
     // If the first and possibly the second digit matches.
@@ -366,7 +366,7 @@ extern "C" {
       } // for
     }
 
-    main->setting.state.status = matches ? F_none : F_status_set_error(F_known_not);
+    main->setting.state.status = matches ? F_okay : F_status_set_error(F_known_not);
   }
 #endif // _di_kt_remove_convert_date_
 
@@ -419,7 +419,7 @@ extern "C" {
         if (F_status_is_error(main->setting.state.status)) return;
       }
 
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
 
       return;
     }
@@ -444,7 +444,7 @@ extern "C" {
       date->stop_second = date->start_second;
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
   }
 #endif // _di_kt_remove_convert_date_relative_
 
@@ -475,7 +475,7 @@ extern "C" {
           return 0;
         }
 
-        main->setting.state.status = F_none;
+        main->setting.state.status = F_okay;
 
         return (uint32_t) gid;
       }
@@ -489,7 +489,7 @@ extern "C" {
       return 0;
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     return (uint32_t) number;
   }
@@ -522,7 +522,7 @@ extern "C" {
           return 0;
         }
 
-        main->setting.state.status = F_none;
+        main->setting.state.status = F_okay;
 
         return (uint32_t) uid;
       }
@@ -536,7 +536,7 @@ extern "C" {
       return 0;
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     return (uint32_t) number;
   }
@@ -568,7 +568,7 @@ extern "C" {
       return 0;
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     return mode;
   }
@@ -616,7 +616,7 @@ extern "C" {
       }
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
   }
 #endif // _di_kt_remove_convert_timezone_
 

@@ -114,10 +114,10 @@ extern "C" {
     { \
       kt_tacocat_main_flag_none_e, \
       kt_tacocat_interval_poll_d, \
-      F_none, \
-      F_none, \
-      F_none, \
-      macro_f_state_t_initialize_1(kt_tacocat_allocation_large_d, kt_tacocat_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
+      F_okay, \
+      F_okay, \
+      F_okay, \
+      macro_f_state_t_initialize_1(kt_tacocat_allocation_large_d, kt_tacocat_allocation_small_d, F_okay, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
       macro_kt_tacocat_setting_t_initialize_1(kt_tacocat_block_size_receive_d), \
       macro_kt_tacocat_setting_t_initialize_1(kt_tacocat_block_size_send_d), \
       f_string_dynamic_t_initialize, \
@@ -204,7 +204,7 @@ extern "C" {
  *   This does not alter setting.state.status.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_parameter (with error bit) if a parameter is invalid.
  */
@@ -221,7 +221,7 @@ extern "C" {
  *   The program main thread data.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_parameter (with error bit) if a parameter is invalid.
  */

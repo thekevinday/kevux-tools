@@ -24,7 +24,7 @@ extern "C" {
     kt_tacocat_process_socket_set_error_handle(main, main->setting.send, &main->setting.status_send);
 
     if (F_status_is_error_not(main->setting.status_send)) {
-      main->setting.status_send = F_none;
+      main->setting.status_send = F_okay;
     }
 
     return 0;

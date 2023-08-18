@@ -41,8 +41,9 @@ extern "C" {
   enum {
     kt_tacocat_f_f_console_parameter_process_e,
     kt_tacocat_f_f_file_open_e,
-    kt_tacocat_f_f_files_increase_by_e,
+    kt_tacocat_f_f_fss_simple_packet_identify_e,
     kt_tacocat_f_f_fss_simple_packet_ranges_increase_by_e,
+    kt_tacocat_f_f_memory_array_increase_by_e,
     kt_tacocat_f_f_network_from_ip_name_e,
     kt_tacocat_f_f_network_is_ip_address_e,
     kt_tacocat_f_f_polls_increase_by_e,
@@ -63,7 +64,6 @@ extern "C" {
     kt_tacocat_f_f_string_dynamic_increase_by_e,
     kt_tacocat_f_f_string_dynamics_increase_by_e,
     kt_tacocat_f_f_thread_create_e,
-    kt_tacocat_f_f_uint16s_increase_by_e,
     kt_tacocat_f_fl_conversion_dynamic_to_unsigned_detect_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,

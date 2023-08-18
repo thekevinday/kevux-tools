@@ -38,8 +38,8 @@ extern "C" {
           f_socket_disconnect(&sets[i]->sockets.array[j], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
         } // for
 
-        f_uint16s_resize(0, &sets[i]->flags);
-        f_files_resize(0, &sets[i]->files);
+        f_memory_array_resize(0, sizeof(uint16_t), (void **) &sets[i]->flags.array, &sets[i]->flags.used, &sets[i]->flags.size);
+        f_memory_array_resize(0, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
         f_polls_resize(0, &sets[i]->polls);
         f_sockets_resize(0, &sets[i]->sockets);
         f_statuss_resize(0, &sets[i]->statuss);
@@ -52,7 +52,7 @@ extern "C" {
 
     f_string_dynamic_resize(0, &setting->buffer);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_setting_delete_
 
@@ -61,7 +61,7 @@ extern "C" {
 
     if (!thread) return F_status_set_error(F_parameter);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_thread_delete_
 

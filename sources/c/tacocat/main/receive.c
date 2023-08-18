@@ -27,7 +27,7 @@ extern "C" {
         }
 
         // Skip if status is an error or is F_time_out.
-        if (main->setting.status_receive == F_none) {
+        if (main->setting.status_receive == F_okay) {
 
           for (i = 0; i < main->setting.receive.polls.used; ++i) {
 
@@ -58,7 +58,7 @@ extern "C" {
     kt_tacocat_process_socket_set_error_handle(main, main->setting.receive, &main->setting.status_receive);
 
     if (F_status_is_error_not(main->setting.status_receive)) {
-      main->setting.status_receive = F_none;
+      main->setting.status_receive = F_okay;
     }
 
     return 0;
@@ -131,7 +131,13 @@ extern "C" {
 
       *status = f_fss_simple_packet_identify(*buffer, packet);
 
-      return;
+      if (F_status_is_error(*status)) {
+        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_fss_simple_packet_identify), kt_tacocat_receive_s, *name, *status);
+
+        f_file_close_id(&socket->id_data);
+
+        return;
+      }
     }
 
     socket->size_read = kt_tacocat_packet_read_d;

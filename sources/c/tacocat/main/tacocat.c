@@ -19,7 +19,7 @@ extern "C" {
 
     macro_setting_load_print_first();
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     if (main->setting.flag & (kt_tacocat_main_flag_help_e | kt_tacocat_main_flag_version_e | kt_tacocat_main_flag_copyright_e)) {
       if (main->setting.flag & kt_tacocat_main_flag_help_e) {

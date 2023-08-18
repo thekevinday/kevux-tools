@@ -21,7 +21,7 @@ extern "C" {
       fll_print_dynamic_raw(f_string_eol_s, main->program.message.to);
     }
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     if (main->setting.flag & (kt_remove_main_flag_help_e | kt_remove_main_flag_version_e | kt_remove_main_flag_copyright_e)) {
       if (main->setting.flag & kt_remove_main_flag_help_e) {
@@ -100,7 +100,7 @@ extern "C" {
 
     kt_remove_print_simulate_operate(&main->program.output);
 
-    main->setting.state.status = F_none;
+    main->setting.state.status = F_okay;
 
     for (f_number_unsigned_t i = 0; i < main->setting.files.used; ++i) {
 

@@ -19,7 +19,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  */
 #ifndef _di_kt_tacocat_process_main_
   extern void kt_tacocat_process_main(kt_tacocat_main_t * const main);
@@ -41,7 +41,7 @@ extern "C" {
  *   The socket set to disconnect all sockets of.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_parameter (with error bit) on invalid parameter.
  */
@@ -58,7 +58,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success and no error is found.
+ *     F_okay on success and no error is found.
  *
  *     An status with error bit set from any socket that has a status failure.
  *
@@ -90,7 +90,7 @@ extern "C" {
  *   The status to update with the status code from the given set.
  *
  * @return
- *   F_none on no error.
+ *   F_okay on no error.
  *
  *   F_interrupt (with error bit) if interrupt was received.
  *   F_parameter (with error bit) if a parameter is invalid.
@@ -106,7 +106,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  */
 #ifndef _di_kt_tacocat_process_socket_set_receive_
   extern void kt_tacocat_process_socket_set_receive(kt_tacocat_main_t * const main);
@@ -119,7 +119,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  */
 #ifndef _di_kt_tacocat_process_socket_set_send_
   extern void kt_tacocat_process_socket_set_send(kt_tacocat_main_t * const main);

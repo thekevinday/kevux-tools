@@ -20,7 +20,7 @@ extern "C" {
       dates->used = length;
     }
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_dates_resize_
 
@@ -40,7 +40,7 @@ extern "C" {
       modes->used = length;
     }
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_modes_resize_
 

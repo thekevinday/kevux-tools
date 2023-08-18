@@ -12,7 +12,7 @@ extern "C" {
 
     fll_error_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_
 
@@ -24,7 +24,7 @@ extern "C" {
 
     fll_error_file_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true, name, operation, type);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_file_
 
@@ -46,7 +46,7 @@ extern "C" {
 
     fll_error_print(print, F_status_set_fine(status), function, F_true);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_
 
@@ -70,7 +70,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
 
@@ -98,7 +98,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
 
@@ -118,7 +118,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_socket_protocol_unsupported_
 

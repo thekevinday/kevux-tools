@@ -83,7 +83,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_true on success when performing verification and verify passed.
  *     F_false on success when performing verification and verify failed.
  *
@@ -106,7 +106,7 @@ extern "C" {
  *   This does not alter main.setting.state.status.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *   F_output_not on success, but no printing is performed.
  */
 #ifndef _di_kt_remove_process_help_
@@ -122,7 +122,7 @@ extern "C" {
  *   This must be of type kt_remove_main_t.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     Errors with (error bit set) from: kt_remove_process_normal_operate()
  *
@@ -139,7 +139,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  */
 #ifndef _di_kt_remove_process_normal_operate_
   extern void kt_remove_process_normal_operate(kt_remove_main_t * const main);

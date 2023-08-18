@@ -25,7 +25,7 @@ extern "C" {
  *   The Date Comparison array to resize.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_array_too_large (with error bit) if the combined array is too large.
  *   F_parameter (with error bit) if a parameter is invalid.
@@ -45,7 +45,7 @@ extern "C" {
  *   The Date Comparison array to resize.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_array_too_large (with error bit) if the combined array is too large.
  *   F_parameter (with error bit) if a parameter is invalid.
@@ -71,7 +71,7 @@ extern "C" {
  *   The setting.flag has kt_remove_flag_option_used_e forcibly cleared on the start of this function.
  *
  *   This alters setting.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success but nothing was provided to operate with.
  *
  *     F_parameter (with error bit) on parameter error.

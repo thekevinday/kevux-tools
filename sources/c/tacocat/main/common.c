@@ -179,7 +179,7 @@ extern "C" {
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
     }
   }
 #endif // _di_kt_tacocat_setting_load_
@@ -220,7 +220,7 @@ extern "C" {
     f_number_unsigned_t k = 0;
     f_number_unsigned_t index = 0;
     f_number_unsigned_t length = 0;
-    f_status_t failed = F_none;
+    f_status_t failed = F_okay;
     struct hostent host;
     f_network_family_ip_t family = f_network_family_ip_t_initialize;
     f_number_unsigned_t port = 0;
@@ -259,9 +259,9 @@ extern "C" {
 
         total = main->program.parameters.array[parameters[i]].values.used / 2;
 
-        main->setting.state.status = f_uint16s_increase_by(total, &sets[i]->flags);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint16_t), (void **) &sets[i]->flags.array, &sets[i]->flags.used, &sets[i]->flags.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_uint16s_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
         main->setting.state.status = f_string_dynamics_increase_by(total, &sets[i]->names);
 
@@ -275,9 +275,9 @@ extern "C" {
 
         macro_setting_load_handle_send_receive_error_continue_1(f_fss_simple_packet_ranges_increase_by);
 
-        main->setting.state.status = f_files_increase_by(total, &sets[i]->files);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_files_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
         main->setting.state.status = f_sockets_increase_by(total, &sets[i]->sockets);
 
@@ -295,7 +295,7 @@ extern "C" {
 
           // First parameter value represents the network address or the socket file path.
           index = main->program.parameters.array[parameters[i]].values.array[j];
-          sets[i]->statuss.array[j] = F_none;
+          sets[i]->statuss.array[j] = F_okay;
           sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
           sets[i]->names.array[j].used = 0;
           sets[i]->buffers.array[j].used = 0;
@@ -600,7 +600,7 @@ extern "C" {
         while (address->used && address->string[address->used] != f_string_ascii_colon_s.string[0]) --address->used;
       }
 
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
 
       return;
     }
@@ -620,7 +620,7 @@ extern "C" {
 
       address->string[i] = 0;
       address->used = i;
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
     }
     else {
       main->setting.state.status = F_number_not;

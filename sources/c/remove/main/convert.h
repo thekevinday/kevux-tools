@@ -33,7 +33,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success, but buffer is empty and there is no data to process.
  *
  *     F_buffer (with error bit) if the buffer is invalid.
@@ -82,7 +82,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success, but buffer is empty or there is no data to process.
  *
  *     F_buffer (with error bit) if the buffer is invalid.
@@ -111,7 +111,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     F_number_too_large (with error bit) if the given ID is too large.
  *
@@ -136,7 +136,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     F_number_too_large (with error bit) if the given ID is too large.
  *
@@ -161,7 +161,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     Errors (with error bit) from: f_file_mode_from_string().
  *     Errors (with error bit) from: f_file_mode_to_mode().
@@ -185,7 +185,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     F_number_overflow (with error bit) if the date after applying the timezone is too large.
  *     F_number_underflow (with error bit) if the date after applying the timezone is too small.

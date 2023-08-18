@@ -29,7 +29,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     F_parameter (with error bit) if a parameter is invalid.
  *
@@ -68,13 +68,13 @@ extern "C" {
  *   This must be of type kt_tacocat_main_t.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *
  *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     Errors (with error bit) from: f_file_exists().
  *     Errors (with error bit) from: f_file_open().
- *     Errors (with error bit) from: f_files_increase_by().
+ *     Errors (with error bit) from: f_memory_array_increase_by().
  *     Errors (with error bit) from: f_network_from_ip_name().
  *     Errors (with error bit) from: f_string_dynamic_append_nulless().
  *     Errors (with error bit) from: f_string_dynamic_increase_by().
@@ -84,7 +84,7 @@ extern "C" {
  *
  * @see f_file_exists()
  * @see f_file_open()
- * @see f_files_increase_by()
+ * @see f_memory_array_increase_by()
  * @see f_network_from_ip_name()
  * @see f_string_dynamic_append_nulless()
  * @see f_string_dynamic_increase_by()
@@ -107,7 +107,7 @@ extern "C" {
  *   The main.setting.state.status can be set to either F_network_version_four or F_network_version_six when calling this function to bypass IP type detection.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success but there is nothing in the address string (address.used is 0).
  *     F_number_not on success but there is no port number.
  *

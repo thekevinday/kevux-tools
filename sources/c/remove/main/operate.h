@@ -19,7 +19,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success but file is an empty string.
  *
  *     Errors (with error bit) from: f_string_dynamic_append().
@@ -141,7 +141,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_data_not on success but file is an empty string.
  *
  *     Errors (with error bit) from: f_file_link_read().

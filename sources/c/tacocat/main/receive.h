@@ -21,7 +21,7 @@ extern "C" {
  *   Must be of type kt_tacocat_main_t.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_child on child process exiting.
  *
  * @return
@@ -38,7 +38,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  * @param index
  *   The position within the receive arrays to process.
  *

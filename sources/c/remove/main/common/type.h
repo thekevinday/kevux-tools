@@ -154,7 +154,7 @@ extern "C" {
  *
  * process_help:         Process help (generally printing help).
  * process_normal:       Process normally (data from parameters and files).
- * process_operate_file: Process an individual file, returning F_done to designate handled, and F_none for letting parent continue handling.
+ * process_operate_file: Process an individual file, returning F_done to designate handled, and F_okay for letting parent continue handling.
  */
 #ifndef _di_kt_remove_setting_t_
   typedef struct {
@@ -186,8 +186,8 @@ extern "C" {
   #define kt_remove_setting_t_initialize \
     { \
       kt_remove_main_flag_none_e, \
-      F_none, \
-      macro_f_state_t_initialize_1(kt_remove_allocation_large_d, kt_remove_allocation_small_d, F_none, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
+      F_okay, \
+      macro_f_state_t_initialize_1(kt_remove_allocation_large_d, kt_remove_allocation_small_d, F_okay, 0, 0, &fll_program_standard_signal_handle, 0, 0, 0, 0), \
       f_string_dynamic_t_initialize, \
       f_string_dynamics_t_initialize, \
       kt_remove_dates_t_initialize, \
@@ -245,7 +245,7 @@ extern "C" {
  *   This does not alter setting.state.status.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *
  *   F_parameter (with error bit) if a parameter is invalid.
  */

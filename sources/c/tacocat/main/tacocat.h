@@ -82,7 +82,7 @@ extern "C" {
  *   The main program and settings data.
  *
  *   This alters main.setting.state.status:
- *     F_none on success.
+ *     F_okay on success.
  *     F_true on success when performing verification and verify passed.
  *     F_false on success when performing verification and verify failed.
  *

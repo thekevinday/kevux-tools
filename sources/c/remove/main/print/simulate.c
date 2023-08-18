@@ -227,7 +227,7 @@ extern "C" {
       };
 
       uint8_t p = 0;
-      f_status_t result = F_none;
+      f_status_t result = F_okay;
       f_string_static_t name_type = f_string_empty_s;
       f_number_unsigned_t match_year = 0;
       f_number_unsigned_t match_second = 0;
@@ -249,7 +249,7 @@ extern "C" {
           start_second = dates[p]->array[i].start_second % kt_remove_time_seconds_in_year_d;
 
           name_type = f_string_empty_s;
-          result = F_none;
+          result = F_okay;
 
           if (dates[p]->array[i].type == kt_remove_flag_date_today_e || dates[p]->array[i].type == kt_remove_flag_date_tomorrow_e || dates[p]->array[i].type == kt_remove_flag_date_yesterday_e) {
             stop_year = dates[p]->array[i].stop_year + (dates[p]->array[i].stop_second / kt_remove_time_seconds_in_year_d);

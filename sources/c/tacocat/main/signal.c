@@ -83,7 +83,7 @@ extern "C" {
       }
 
       failsafe = 0;
-      main->setting.status_signal = F_none;
+      main->setting.status_signal = F_okay;
 
     } while (!main->program.signal_received);
 

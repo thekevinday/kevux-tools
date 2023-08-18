@@ -56,7 +56,7 @@ extern "C" {
     #endif // _di_thread_support_
 
     if (F_status_is_error_not(main->setting.state.status)) {
-      main->setting.state.status = F_none;
+      main->setting.state.status = F_okay;
     }
   }
 #endif // _di_kt_tacocat_process_main_
@@ -66,7 +66,7 @@ extern "C" {
 
     if (!main || !set) return F_status_set_error(F_parameter);
 
-    f_status_t status = F_none;
+    f_status_t status = F_okay;
 
     for (f_number_unsigned_t i = 0; i < set->sockets.used; ++i) {
 
@@ -81,7 +81,7 @@ extern "C" {
       }
     } // for
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_process_socket_set_disconnect_
 
@@ -91,7 +91,7 @@ extern "C" {
     if (!main || !status) return;
     if (F_status_is_error(*status)) return;
 
-    *status = F_none;
+    *status = F_okay;
 
     for (f_number_unsigned_t i = 0; i < set.statuss.used; ++i) {
 
@@ -127,7 +127,7 @@ extern "C" {
       return *status;
     }
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_tacocat_process_socket_set_error_has_
 
@@ -204,7 +204,7 @@ extern "C" {
     } // for
 
     if (F_status_is_error_not(main->setting.status_receive)) {
-      main->setting.status_receive = F_none;
+      main->setting.status_receive = F_okay;
     }
   }
 #endif // _di_kt_tacocat_process_socket_set_receive_
@@ -233,7 +233,7 @@ extern "C" {
     } // for
 
     if (F_status_is_error_not(main->setting.status_send)) {
-      main->setting.status_send = F_none;
+      main->setting.status_send = F_okay;
     }
   }
 #endif // _di_kt_tacocat_process_socket_set_send_

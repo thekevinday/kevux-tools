@@ -40,7 +40,7 @@ extern "C" {
  *   The reason for the failure.
  *
  * @return
- *   F_none on success.
+ *   F_okay on success.
  *   F_output_not on success, but no printing is performed.
  */
 #ifndef _di_kt_remove_print_warning_file_reason_

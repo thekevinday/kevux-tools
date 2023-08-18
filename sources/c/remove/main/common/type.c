@@ -32,7 +32,7 @@ extern "C" {
 
     f_directory_recurse_do_delete(&setting->recurse);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_setting_delete_
 

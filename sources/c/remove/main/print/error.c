@@ -12,7 +12,7 @@ extern "C" {
 
     fll_error_print(print, F_status_set_fine(((kt_remove_main_t *) print->custom)->setting.state.status), function, F_true);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_
 
@@ -24,7 +24,7 @@ extern "C" {
 
     fll_error_file_print(print, F_status_set_fine(((kt_remove_main_t *) print->custom)->setting.state.status), function, F_true, name, operation, type);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_file_
 
@@ -44,7 +44,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_parameter_missing_value_requires_amount_
 
@@ -56,7 +56,7 @@ extern "C" {
 
     fll_print_format("%[%QNo files have been specified to be removed.%]%r", print->to, print->set->error, print->prefix, print->set->error, f_string_eol_s);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_parameter_no_files_
 
@@ -76,7 +76,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_recursion_max_
 
@@ -96,7 +96,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    return F_none;
+    return F_okay;
   }
 #endif // _di_kt_remove_print_error_parameter_unknown_value_
 
