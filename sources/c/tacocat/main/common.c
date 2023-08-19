@@ -271,25 +271,25 @@ extern "C" {
 
         macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
 
-        main->setting.state.status = f_fss_simple_packet_ranges_increase_by(total, &sets[i]->packets);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_fss_simple_packet_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_fss_simple_packet_ranges_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
         main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
 
         macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
-        main->setting.state.status = f_sockets_increase_by(total, &sets[i]->sockets);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_sockets_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
-        main->setting.state.status = f_statuss_increase_by(total, &sets[i]->statuss);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_status_t), (void **) &sets[i]->statuss.array, &sets[i]->statuss.used, &sets[i]->statuss.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_statuss_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
-        main->setting.state.status = f_polls_increase_by(total, &sets[i]->polls);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_poll_t), (void **) &sets[i]->polls.array, &sets[i]->polls.used, &sets[i]->polls.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_polls_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
         for (j = 0; j < main->program.parameters.array[parameters[i]].values.used; j += 2) {
 

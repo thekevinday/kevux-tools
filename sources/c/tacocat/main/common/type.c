@@ -40,13 +40,13 @@ extern "C" {
 
         f_memory_array_resize(0, sizeof(uint16_t), (void **) &sets[i]->flags.array, &sets[i]->flags.used, &sets[i]->flags.size);
         f_memory_array_resize(0, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
-        f_polls_resize(0, &sets[i]->polls);
-        f_sockets_resize(0, &sets[i]->sockets);
-        f_statuss_resize(0, &sets[i]->statuss);
+        f_memory_array_resize(0, sizeof(f_poll_t), (void **) &sets[i]->polls.array, &sets[i]->polls.used, &sets[i]->polls.size);
+        f_memory_array_resize(0, sizeof(f_socket_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);
+        f_memory_array_resize(0, sizeof(f_status_t), (void **) &sets[i]->statuss.array, &sets[i]->statuss.used, &sets[i]->statuss.size);
 
         f_string_dynamics_resize(0, &sets[i]->names);
         f_string_dynamics_resize(0, &sets[i]->buffers);
-        f_fss_simple_packet_ranges_resize(0, &sets[i]->packets);
+        f_memory_array_resize(0, sizeof(f_fss_simple_packet_range_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
       } // for
     }
 

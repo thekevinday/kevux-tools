@@ -27,8 +27,8 @@ extern "C" {
     kt_remove_dates_resize(0, &setting->updated);
     kt_remove_modes_resize(0, &setting->modes);
 
-    f_uint32s_resize(0, &setting->groups);
-    f_uint32s_resize(0, &setting->users);
+    f_memory_array_resize(0, sizeof(uint32_t), (void **) &setting->groups.array, &setting->groups.used, &setting->groups.size);
+    f_memory_array_resize(0, sizeof(uint32_t), (void **) &setting->users.array, &setting->users.used, &setting->users.size);
 
     f_directory_recurse_do_delete(&setting->recurse);
 

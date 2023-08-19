@@ -505,10 +505,10 @@ extern "C" {
         return;
       }
 
-      main->setting.state.status = f_uint32s_increase_by(total_arguments, &main->setting.groups);
+      main->setting.state.status = f_memory_array_increase_by(total_arguments, sizeof(uint32_t), (void **) &main->setting.groups.array, &main->setting.groups.used, &main->setting.groups.size);
 
       if (F_status_is_error(main->setting.state.status)) {
-        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_uint32s_increase_by));
+        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_memory_array_increase_by));
 
         return;
       }
@@ -705,10 +705,10 @@ extern "C" {
         return;
       }
 
-      main->setting.state.status = f_uint32s_increase_by(total_arguments, &main->setting.users);
+      main->setting.state.status = f_memory_array_increase_by(total_arguments, sizeof(uint32_t), (void **) &main->setting.users.array, &main->setting.users.used, &main->setting.users.size);
 
       if (F_status_is_error(main->setting.state.status)) {
-        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_uint32s_increase_by));
+        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_memory_array_increase_by));
 
         return;
       }
