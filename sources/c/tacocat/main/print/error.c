@@ -37,9 +37,9 @@ extern "C" {
     f_file_stream_lock(print->to);
 
     fl_print_format("%[%QNetwork error on%] ", print->to, print->set->error, print->prefix, print->set->error);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
     fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, network, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
     fl_print_format(" %['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
@@ -61,11 +61,11 @@ extern "C" {
     fl_print_format("%[%QThe parameter%] ", print->to, print->set->error, print->prefix, print->set->error);
     fl_print_format("%[%Q%Q%]", print->to, print->set->notable, f_console_symbol_long_normal_s, kt_tacocat_long_resolve_s, print->set->notable);
     fl_print_format(" %[may only be either '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, kt_tacocat_classic_s, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, kt_tacocat_classic_s, print->set->notable);
     fl_print_format("%' or '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, kt_tacocat_kevux_s, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, kt_tacocat_kevux_s, print->set->notable);
     fl_print_format(" %[' but '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, unknown, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, unknown, print->set->notable);
     fl_print_format(" %[' is given.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
@@ -83,7 +83,7 @@ extern "C" {
     f_file_stream_lock(print->to);
 
     fl_print_format("%[%QThe lengths of all%] ", print->to, print->set->error, print->prefix, print->set->error);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, name, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
     fl_print_format(" %[arrays do not have the same length, name array length is '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format("%[%ul%]", print->to, print->set->notable, set.names.used, print->set->notable);
     fl_print_format("%', the buffer array length is '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
@@ -113,7 +113,7 @@ extern "C" {
     fl_print_format("%[%QUnsupported protocol%] ", print->to, print->set->error, print->prefix, print->set->error);
     fl_print_format("%[%lu%]", print->to, print->set->notable, protocol, print->set->notable);
     fl_print_format(" %[while processing '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%Q%]", print->to, print->set->notable, name, print->set->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
     fl_print_format(" %['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);

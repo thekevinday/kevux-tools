@@ -25,8 +25,6 @@ extern "C" {
     "f_string_append_nulless",
     "f_string_dynamic_append",
     "f_string_dynamic_append_nulless",
-    "f_string_dynamic_increase_by",
-    "f_string_dynamics_increase_by",
     "f_thread_create",
     "fl_conversion_dynamic_to_unsigned_detect",
     "fll_program_parameter_process_context",

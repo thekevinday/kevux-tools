@@ -14,7 +14,7 @@ extern "C" {
     fl_print_format("%[%QThe port number '%]", print->to, print->context, print->prefix, print->context);
     fl_print_format("%[%ul%]", print->to, print->notable, port, print->notable);
     fl_print_format("%[' from the address '%]", print->to, print->context, print->context);
-    fl_print_format("%[%Q%]", print->to, print->notable, address, print->notable);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->notable, address, print->notable);
     fl_print_format("%['is too large for this system and so the port is being autodetermined.%]%r", print->to, print->context, print->context, f_string_eol_s);
 
     f_file_stream_unlock(print->to);

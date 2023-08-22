@@ -263,13 +263,13 @@ extern "C" {
 
         macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
-        main->setting.state.status = f_string_dynamics_increase_by(total, &sets[i]->names);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &sets[i]->names.array, &sets[i]->names.used, &sets[i]->names.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
-        main->setting.state.status = f_string_dynamics_increase_by(total, &sets[i]->buffers);
+        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &sets[i]->buffers.array, &sets[i]->buffers.used, &sets[i]->buffers.size);
 
-        macro_setting_load_handle_send_receive_error_continue_1(f_string_dynamics_increase_by);
+        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
 
         main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_fss_simple_packet_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
 
@@ -309,9 +309,9 @@ extern "C" {
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
 
-              main->setting.state.status = f_string_dynamic_increase_by(main->program.parameters.arguments.array[index].used + 2, &sets[i]->names.array[j]);
+              main->setting.state.status = f_memory_array_increase_by(main->program.parameters.arguments.array[index].used + 2, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
 
-              macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
+              macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
               main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &sets[i]->names.array[j]);
 
@@ -403,9 +403,9 @@ extern "C" {
                   continue;
                 }
 
-                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &sets[i]->names.array[j]);
+                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
 
-                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
+                macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
                 // Randomly select one of the addresses when there are more than one.
                 if (host.h_addr_list[1]) {
@@ -421,9 +421,9 @@ extern "C" {
                   k = 0;
                 }
 
-                main->setting.state.status = f_string_dynamic_increase_by(INET6_ADDRSTRLEN + 1, &sets[i]->names.array[j]);
+                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
 
-                macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_increase_by);
+                macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
                 if (host.h_addrtype == f_socket_address_family_inet4_e) {
                   family.type = f_network_family_ip_4_e;

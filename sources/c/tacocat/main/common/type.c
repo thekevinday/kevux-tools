@@ -44,13 +44,13 @@ extern "C" {
         f_memory_array_resize(0, sizeof(f_socket_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);
         f_memory_array_resize(0, sizeof(f_status_t), (void **) &sets[i]->statuss.array, &sets[i]->statuss.used, &sets[i]->statuss.size);
 
-        f_string_dynamics_resize(0, &sets[i]->names);
-        f_string_dynamics_resize(0, &sets[i]->buffers);
+        f_memory_arrays_resize(0, sizeof(f_string_dynamic_t), (void **) &sets[i]->names.array, &sets[i]->names.used, &sets[i]->names.size, &f_string_dynamics_delete_callback);
+        f_memory_arrays_resize(0, sizeof(f_string_dynamic_t), (void **) &sets[i]->buffers.array, &sets[i]->buffers.used, &sets[i]->buffers.size, &f_string_dynamics_delete_callback);
         f_memory_array_resize(0, sizeof(f_fss_simple_packet_range_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
       } // for
     }
 
-    f_string_dynamic_resize(0, &setting->buffer);
+    f_memory_array_resize(0, sizeof(f_char_t), (void **) &setting->buffer.string, &setting->buffer.used, &setting->buffer.size);
 
     return F_okay;
   }

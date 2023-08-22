@@ -77,8 +77,6 @@ extern "C" {
  *     Errors (with error bit) from: f_memory_array_increase_by().
  *     Errors (with error bit) from: f_network_from_ip_name().
  *     Errors (with error bit) from: f_string_dynamic_append_nulless().
- *     Errors (with error bit) from: f_string_dynamic_increase_by().
- *     Errors (with error bit) from: f_string_dynamics_increase_by().
  *
  *     Errors (with error bit) from: main.callback.setting_load_send_receive().
  *
@@ -87,8 +85,6 @@ extern "C" {
  * @see f_memory_array_increase_by()
  * @see f_network_from_ip_name()
  * @see f_string_dynamic_append_nulless()
- * @see f_string_dynamic_increase_by()
- * @see f_string_dynamics_increase_by()
  */
 #ifndef _di_kt_tacocat_setting_load_send_receive_
   extern void kt_tacocat_setting_load_send_receive(const f_console_arguments_t arguments, void * const main);

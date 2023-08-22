@@ -78,10 +78,10 @@ extern "C" {
 
     //if (poll->revents & f_poll_urgent_e) { // handle out of band, via f_socket_flag_out_of_band_e?
 
-    *status = f_string_dynamic_increase_by(socket->size_read, buffer);
+    *status = f_memory_array_increase_by(socket->size_read, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
 
     if (F_status_is_error(*status)) {
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_string_dynamic_increase_by), kt_tacocat_receive_s, *name, *status);
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_increase_by), kt_tacocat_receive_s, *name, *status);
 
       return;
     }
@@ -93,10 +93,10 @@ extern "C" {
       buffer->used = 0;
     }
 
-    *status = f_string_dynamic_increase_by(socket->size_read, buffer);
+    *status = f_memory_array_increase_by(socket->size_read, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
 
     if (F_status_is_error(*status)) {
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_string_dynamic_increase_by), kt_tacocat_receive_s, *name, *status);
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_increase_by), kt_tacocat_receive_s, *name, *status);
 
       return;
     }
