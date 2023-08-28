@@ -8,7 +8,7 @@ settings:
   environment LANG LC_ALL LC_COLLATE LC_CTYPE LC_FASTMSG LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME LOCPATH NLSPATH
 
 main:
-  build remove/settings
+  build settings
 
 install:
   shell ./install.sh parameter:'work' parameter:'verbosity' parameter:'color'
