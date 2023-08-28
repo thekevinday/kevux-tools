@@ -851,10 +851,10 @@ extern "C" {
 
     // Load all remaining files as static strings (setting size to 0).
     if (main->program.parameters.remaining.used) {
-      main->setting.state.status = f_string_dynamics_increase_by(main->program.parameters.remaining.used, &main->setting.files);
+      main->setting.state.status = f_memory_array_increase_by(main->program.parameters.remaining.used, sizeof(uint32_t), (void **) &main->setting.files.array, &main->setting.files.used, &main->setting.files.size);
 
       if (F_status_is_error(main->setting.state.status)) {
-        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_string_dynamics_increase_by));
+        kt_remove_print_error(&main->program.error, macro_kt_remove_f(f_memory_array_increase_by));
 
         return;
       }

@@ -13,7 +13,6 @@ extern "C" {
     "f_file_remove",
     "f_memory_array_increase_by",
     "f_memory_array_resize",
-    "f_string_dynamics_increase_by",
     "f_thread_create",
     "f_utf_is_digit",
     "f_utf_is_whitespace",

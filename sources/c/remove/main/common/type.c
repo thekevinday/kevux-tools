@@ -19,8 +19,8 @@ extern "C" {
 
     if (!setting) return F_status_set_error(F_parameter);
 
-    f_string_dynamic_resize(0, &setting->buffer);
-    f_string_dynamics_resize(0, &setting->files);
+    f_memory_array_resize(0, sizeof(f_char_t), (void **) &setting->buffer.string, &setting->buffer.used, &setting->buffer.size);
+    f_memory_arrays_resize(0, sizeof(f_string_dynamic_t), (void **) &setting->files.array, &setting->files.used, &setting->files.size, &f_string_dynamics_delete_callback);
 
     kt_remove_dates_resize(0, &setting->accessed);
     kt_remove_dates_resize(0, &setting->changed);

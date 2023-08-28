@@ -46,7 +46,6 @@ extern "C" {
     kt_remove_f_f_file_remove_e,
     kt_remove_f_f_memory_array_increase_by_e,
     kt_remove_f_f_memory_array_resize_e,
-    kt_remove_f_f_string_dynamics_increase_by_e,
     kt_remove_f_f_thread_create_e,
     kt_remove_f_f_utf_is_digit_e,
     kt_remove_f_f_utf_is_whitespace_e,
