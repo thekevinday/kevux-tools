@@ -64,6 +64,7 @@ extern "C" {
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,
     kt_tacocat_f_kt_tacocat_process_socket_set_error_has_e,
     kt_tacocat_f_kt_tacocat_setting_load_address_port_extract_e,
+    kt_tacocat_f_kt_tacocat_setting_load_send_receive_allocate_e,
   }; // enum
 #endif // _di_kt_tacocat_f_e_
 

@@ -38,7 +38,7 @@ extern "C" {
       return;
     }
 
-   {
+    {
       f_uint16s_t choices = f_uint16s_t_initialize;
 
       // Identify and prioritize "color context" parameters.
@@ -218,13 +218,13 @@ extern "C" {
 
     f_number_unsigned_t j = 0;
     f_number_unsigned_t k = 0;
+    f_number_unsigned_t p = 0;
     f_number_unsigned_t index = 0;
     f_number_unsigned_t length = 0;
     f_status_t failed = F_okay;
     struct hostent host;
     f_network_family_ip_t family = f_network_family_ip_t_initialize;
     f_number_unsigned_t port = 0;
-    f_number_unsigned_t total = 0;
     f_string_static_t address = f_string_static_t_initialize;
 
     for (uint8_t i = 0; i < 2; ++i) {
@@ -248,53 +248,17 @@ extern "C" {
           continue;
         }
 
-        sets[i]->flags.used = 0;
-        sets[i]->names.used = 0;
-        sets[i]->buffers.used = 0;
-        sets[i]->packets.used = 0;
-        sets[i]->files.used = 0;
-        sets[i]->sockets.used = 0;
-        sets[i]->statuss.used = 0;
-        sets[i]->polls.used = 0;
+        kt_tacocat_setting_load_send_receive_allocate(main, main->program.parameters.array[parameters[i]].values.used / 2, sets[i]);
 
-        total = main->program.parameters.array[parameters[i]].values.used / 2;
+        macro_setting_load_handle_send_receive_error_continue_1(kt_tacocat_setting_load_send_receive_allocate);
 
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint16_t), (void **) &sets[i]->flags.array, &sets[i]->flags.used, &sets[i]->flags.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &sets[i]->names.array, &sets[i]->names.used, &sets[i]->names.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &sets[i]->buffers.array, &sets[i]->buffers.used, &sets[i]->buffers.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_fss_simple_packet_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_status_t), (void **) &sets[i]->statuss.array, &sets[i]->statuss.used, &sets[i]->statuss.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_poll_t), (void **) &sets[i]->polls.array, &sets[i]->polls.used, &sets[i]->polls.size);
-
-        macro_setting_load_handle_send_receive_error_continue_1(f_memory_array_increase_by);
-
-        for (j = 0; j < main->program.parameters.array[parameters[i]].values.used; j += 2) {
+        for (p = 0; p < main->program.parameters.array[parameters[i]].values.used; p += 2) {
 
           // First parameter value represents the network address or the socket file path.
-          index = main->program.parameters.array[parameters[i]].values.array[j];
+          index = main->program.parameters.array[parameters[i]].values.array[p];
+
+          j = sets[i]->statuss.used;
+
           sets[i]->statuss.array[j] = F_okay;
           sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
           sets[i]->names.array[j].used = 0;
@@ -474,13 +438,14 @@ extern "C" {
               // @todo Kevux DNS resolution.
             }
 
+            ++sets[i]->buffers.used;
             ++sets[i]->files.used;
+            ++sets[i]->flags.used;
+            ++sets[i]->names.used;
+            ++sets[i]->packets.used;
             ++sets[i]->polls.used;
             ++sets[i]->sockets.used;
             ++sets[i]->statuss.used;
-            ++sets[i]->names.used;
-            ++sets[i]->buffers.used;
-            ++sets[i]->packets.used;
           }
           else {
             main->setting.state.status = F_status_set_error(F_parameter);
@@ -499,7 +464,7 @@ extern "C" {
           }
 
           // The second parameter value represents the local file to read from or write to.
-          index = main->program.parameters.array[parameters[i]].values.array[j + 1];
+          index = main->program.parameters.array[parameters[i]].values.array[p + 1];
 
           if (main->program.parameters.arguments.array[index].used) {
 
@@ -565,6 +530,62 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_setting_load_send_receive_
 
+#ifndef _di_kt_tacocat_setting_load_send_receive_allocate_
+  void kt_tacocat_setting_load_send_receive_allocate(kt_tacocat_main_t * const main, const f_number_unsigned_t total, kt_tacocat_socket_set_t * const set) {
+
+    if (!main) return;
+
+    set->buffers.used = 0;
+    set->files.used = 0;
+    set->flags.used = 0;
+    set->names.used = 0;
+    set->packets.used = 0;
+    set->polls.used = 0;
+    set->sockets.used = 0;
+    set->statuss.used = 0;
+
+    if (!set) {
+      main->setting.state.status = F_status_set_error(F_parameter);
+
+      return;
+    }
+
+    main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &set->buffers.array, &set->buffers.used, &set->buffers.size);
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_file_t), (void **) &set->files.array, &set->files.used, &set->files.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint16_t), (void **) &set->flags.array, &set->flags.used, &set->flags.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_poll_t), (void **) &set->polls.array, &set->polls.used, &set->polls.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &set->names.array, &set->names.used, &set->names.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_fss_simple_packet_range_t), (void **) &set->packets.array, &set->packets.used, &set->packets.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_socket_t), (void **) &set->sockets.array, &set->sockets.used, &set->sockets.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_status_t), (void **) &set->statuss.array, &set->statuss.used, &set->statuss.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = F_okay;
+    }
+  }
+#endif // _di_kt_tacocat_setting_load_send_receive_allocate_
+
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
   void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port) {
 
@@ -627,7 +648,6 @@ extern "C" {
     }
   }
 #endif // _di_kt_tacocat_setting_load_address_port_extract_
-
 
 #ifdef __cplusplus
 } // extern "C"

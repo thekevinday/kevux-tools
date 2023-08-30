@@ -91,6 +91,29 @@ extern "C" {
 #endif // _di_kt_tacocat_setting_load_send_receive_
 
 /**
+ * Perform the allocation for the standard program setting load process for the send and receive parameters.
+ *
+ * @param main
+ *   The main program and settings data.
+ *
+ *   This alters main.setting.state.status:
+ *     F_okay on success.
+ *
+ *     F_parameter (with error bit) if a parameter is invalid.
+ *
+ *     Errors (with error bit) from: f_memory_array_increase_by().
+ * @param total
+ *   The total arrays to allocated.
+ * @param set
+ *   The socket set to be allocated.
+ *
+ * @see f_memory_array_increase_by()
+ */
+#ifndef _di_kt_tacocat_setting_load_send_receive_allocate_
+  extern void kt_tacocat_setting_load_send_receive_allocate(kt_tacocat_main_t * const main, const f_number_unsigned_t total, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_setting_load_send_receive_allocate_
+
+/**
  * Process the string and extract any potential port numbers.
  *
  * A port number is expected to be a digit following the last ':' at the end of the string.

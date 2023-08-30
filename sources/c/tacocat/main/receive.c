@@ -28,7 +28,6 @@ extern "C" {
 
         // Skip if status is an error or is F_time_out.
         if (main->setting.status_receive == F_okay) {
-
           for (i = 0; i < main->setting.receive.polls.used; ++i) {
 
             if (main->setting.receive.polls.array[i].fd == -1) continue;
@@ -69,8 +68,8 @@ extern "C" {
   void kt_tacocat_receive_process(kt_tacocat_main_t * const main, const f_number_unsigned_t index) {
 
     uint16_t * const flag = &main->setting.receive.flags.array[index];
-    f_socket_t * const socket = &main->setting.receive.sockets.array[index];
     f_poll_t * const poll = &main->setting.receive.polls.array[index];
+    f_socket_t * const socket = &main->setting.receive.sockets.array[index];
     f_status_t * const status = &main->setting.receive.statuss.array[index];
     f_string_dynamic_t * const name = &main->setting.receive.names.array[index];
     f_string_dynamic_t * const buffer = &main->setting.receive.buffers.array[index];
@@ -78,19 +77,12 @@ extern "C" {
 
     //if (poll->revents & f_poll_urgent_e) { // handle out of band, via f_socket_flag_out_of_band_e?
 
-    *status = f_memory_array_increase_by(socket->size_read, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
-
-    if (F_status_is_error(*status)) {
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_increase_by), kt_tacocat_receive_s, *name, *status);
-
-      return;
-    }
-
     size_t length = 0;
 
     // This is a new packet (kt_tacocat_socket_flag_none_e).
     if (!(*flag)) {
       buffer->used = 0;
+      socket->size_read = kt_tacocat_packet_read_d;
     }
 
     *status = f_memory_array_increase_by(socket->size_read, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
@@ -111,8 +103,7 @@ extern "C" {
         return;
       }
 
-      socket->size_read = kt_tacocat_packet_peek_d;
-      *status = f_socket_read_stream(socket, f_socket_flag_peek_e, (void *) &buffer->string, &length);
+      *status = f_socket_read_stream(socket, f_socket_flag_peek_e, (void *) buffer->string, &length);
 
       if (F_status_is_error(*status)) {
         kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_socket_read_stream), kt_tacocat_receive_s, *name, *status);

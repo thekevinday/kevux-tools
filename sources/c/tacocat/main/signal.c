@@ -7,8 +7,7 @@ extern "C" {
 #if !defined(_di_kt_tacocat_signal_check_) && defined(_di_thread_support_)
   f_status_t kt_tacocat_signal_check(kt_tacocat_main_t * const main) {
 
-    if (!main) return F_false;
-    if (main->program.signal.id == -1) return F_false;
+    if (!main || main->program.signal.id == -1) return F_false;
 
     if (!((++main->program.signal_check) % kt_tacocat_signal_check_d)) {
       if (fll_program_standard_signal_received(&main->program)) return F_true;
@@ -23,8 +22,7 @@ extern "C" {
 #if !defined(_di_kt_tacocat_signal_check_) && !defined(_di_thread_support_)
   f_status_t kt_tacocat_signal_check(kt_tacocat_main_t * const main) {
 
-    if (!main) return F_false;
-    if (main->program.signal.id == -1) return F_false;
+    if (!main || main->program.signal.id == -1) return F_false;
     if (main->program.signal_received) return F_true;
 
     return F_false;

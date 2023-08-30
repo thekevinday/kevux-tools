@@ -43,7 +43,6 @@ extern "C" {
         f_memory_array_resize(0, sizeof(f_poll_t), (void **) &sets[i]->polls.array, &sets[i]->polls.used, &sets[i]->polls.size);
         f_memory_array_resize(0, sizeof(f_socket_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);
         f_memory_array_resize(0, sizeof(f_status_t), (void **) &sets[i]->statuss.array, &sets[i]->statuss.used, &sets[i]->statuss.size);
-
         f_memory_arrays_resize(0, sizeof(f_string_dynamic_t), (void **) &sets[i]->names.array, &sets[i]->names.used, &sets[i]->names.size, &f_string_dynamics_delete_callback);
         f_memory_arrays_resize(0, sizeof(f_string_dynamic_t), (void **) &sets[i]->buffers.array, &sets[i]->buffers.used, &sets[i]->buffers.size, &f_string_dynamics_delete_callback);
         f_memory_array_resize(0, sizeof(f_fss_simple_packet_range_t), (void **) &sets[i]->packets.array, &sets[i]->packets.used, &sets[i]->packets.size);
