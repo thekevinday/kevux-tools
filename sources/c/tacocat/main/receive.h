@@ -39,6 +39,9 @@ extern "C" {
  *
  *   This alters main.setting.state.status:
  *     F_okay on success.
+ *
+ *     F_packet_too_large (with error bit) on total packet size is too large.
+ *     F_payload_too_large (with error bit) on total payload size is too large.
  * @param index
  *   The position within the receive arrays to process.
  *

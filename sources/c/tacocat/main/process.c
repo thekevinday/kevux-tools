@@ -181,7 +181,7 @@ extern "C" {
         continue;
       }
 
-      main->setting.receive.statuss.array[i] = f_socket_listen(&main->setting.receive.sockets.array[i], kt_tacocat_backlog_max_d);
+      main->setting.receive.statuss.array[i] = f_socket_listen(&main->setting.receive.sockets.array[i], kt_tacocat_max_backlog_d);
 
       if (F_status_is_error(main->setting.receive.statuss.array[i])) {
         main->setting.status_receive = main->setting.receive.statuss.array[i];

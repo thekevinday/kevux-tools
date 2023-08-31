@@ -19,7 +19,8 @@ extern "C" {
 /**
  * A set containing all socket related data sets.
  *
- * block_size: The size in bytes to used to represent a block when sending or receiving packets.
+ * size_block:  The size in bytes to used to represent a block when sending or receiving packets.
+ * max_buffer:  The maximum size in bytes to used to represent a block when sending or receiving packets.
  *
  * flags:   An array of flags for each socket.
  * files:   An array of files for each socket.
@@ -33,7 +34,7 @@ extern "C" {
  */
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {
-    f_number_unsigned_t block_size;
+    f_number_unsigned_t size_block;
 
     f_uint16s_t flags;
     f_files_t files;
@@ -59,9 +60,9 @@ extern "C" {
       f_fss_simple_packet_ranges_t_initialize, \
     }
 
-  #define macro_kt_tacocat_setting_t_initialize_1(block_size) \
+  #define macro_kt_tacocat_setting_t_initialize_1(size_block) \
     { \
-      block_size, \
+      size_block, \
       f_uint16s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
@@ -79,8 +80,9 @@ extern "C" {
  * This is passed to the program-specific main entry point to designate program settings.
  * These program settings are often processed from the program arguments (often called the command line arguments).
  *
- * flag:     Flags passed to the main function.
- * interval: The poll interval to use.
+ * flag:       Flags passed to the main function.
+ * interval:   The poll interval to use.
+ * max_buffer: The maximum buffer size to use on receive.
  *
  * status_receive: A status used exclusively by the receive thread.
  * status_send:    A status used exclusively by the send thread.
@@ -97,6 +99,7 @@ extern "C" {
   typedef struct {
     uint64_t flag;
     uint64_t interval;
+    f_number_unsigned_t max_buffer;
 
     f_status_t status_receive;
     f_status_t status_send;
@@ -112,8 +115,9 @@ extern "C" {
 
   #define kt_tacocat_setting_t_initialize \
     { \
-      kt_tacocat_main_flag_none_e, \
+      kt_tacocat_main_flag_max_buffer_e, \
       kt_tacocat_interval_poll_d, \
+      kt_tacocat_max_buffer_d, \
       F_okay, \
       F_okay, \
       F_okay, \

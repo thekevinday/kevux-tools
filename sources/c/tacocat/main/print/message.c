@@ -19,14 +19,18 @@ extern "C" {
 
     f_print_dynamic_raw(f_string_eol_s, print->to);
 
-    fll_program_print_help_option(print, kt_tacocat_short_interval_s, kt_tacocat_long_interval_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Specify a custom poll interval in milliseconds to use.");
-    fll_program_print_help_option(print, kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, " Specify an address or socket file to listen to and a file to write to.");
-    fll_program_print_help_option(print, kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, " Specify a custom DNS resolution methodology.");
-    fll_program_print_help_option(print, kt_tacocat_short_send_s, kt_tacocat_long_send_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "    Specify an address or socket file send transmit to and a file to read from.");
+    fll_program_print_help_option(print, kt_tacocat_short_interval_s, kt_tacocat_long_interval_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "  Specify a custom poll interval in milliseconds to use.");
+    fll_program_print_help_option(print, kt_tacocat_short_max_buffer_s, kt_tacocat_long_max_buffer_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "Specify a maximum buffer size to allow (in bytes) when receiving packets.");
+    fll_program_print_help_option(print, kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "   Specify an address or socket file to listen to and a file to write to.");
+    fll_program_print_help_option(print, kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "   Specify a custom DNS resolution methodology.");
+    fll_program_print_help_option(print, kt_tacocat_short_send_s, kt_tacocat_long_send_s, f_console_symbol_short_normal_s, f_console_symbol_long_normal_s, "      Specify an address or socket file send transmit to and a file to read from.");
 
     f_print_dynamic_raw(f_string_eol_s, print->to);
 
     fll_program_print_help_usage(print, kt_tacocat_program_name_s, f_string_empty_s);
+
+    fl_print_format("%r  The parameter '%[%r%r%]' may be set to ", print->to, f_string_eol_s, context.set.notable, f_console_symbol_long_normal_s, kt_tacocat_long_max_buffer_s, context.set.notable);
+    fl_print_format("%[-1%] to disable the maximum buffer size limit on receive.%r%r", print->to, context.set.notable, context.set.notable, f_string_eol_s, f_string_eol_s);
 
     fl_print_format("%r  The parameters '%[%r%r%]', ", print->to, f_string_eol_s, context.set.notable, f_console_symbol_long_normal_s, kt_tacocat_long_receive_s, context.set.notable);
     fl_print_format("'%[%r%r%]' ", print->to, context.set.notable, f_console_symbol_long_normal_s, kt_tacocat_long_send_s, context.set.notable);

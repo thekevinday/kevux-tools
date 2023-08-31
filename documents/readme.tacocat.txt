@@ -18,6 +18,8 @@ TacocaT Readme Documentation:
 
   The bold:"tacocat" program has the following arguments\:
 
+  The code:"--interval" (code:"-I") parameter designates a custom poll interval (in milliseconds) to use.
+  The code:"--max_buffer" (code:"-M") parameter designates a maximum buffer size to allow (in bytes) when receiving packets.
   The code:"--receive" (code:"-r") parameter is an address or socket file to listen to.
   The code:"--resolve" (code:"-R") parameter designates a DNS:"Domain Name Resolver" mode, such as code:"classic" or code:"kevux".
   The code:"--send" (code:"-s") parameter is an address or socket file to transmit to.

@@ -24,6 +24,7 @@ extern "C" {
  *   - copyright:       Print copyright.
  *   - print_first:     When set, print new line to message output on program begin after loading settings.
  *   - print_last:      When set, print new line to message output on program end.
+ *   - max_buffer:      When set, a maximum buffer on receive is enforced.
  *   - receive:         The address or socket to receive from is specified.
  *   - resolve_classic: Follow the classic Domain Name Resolution method.
  *   - resolve_kevux:   Follow the Kevux Domain Name Resolution method.
@@ -47,14 +48,15 @@ extern "C" {
     kt_tacocat_main_flag_none_e            = 0x0,
     kt_tacocat_main_flag_copyright_e       = 0x1,
     kt_tacocat_main_flag_help_e            = 0x2,
-    kt_tacocat_main_flag_print_first_e     = 0x4,
-    kt_tacocat_main_flag_print_last_e      = 0x8,
-    kt_tacocat_main_flag_receive_e         = 0x10,
-    kt_tacocat_main_flag_resolve_classic_e = 0x20,
-    kt_tacocat_main_flag_resolve_kevux_e   = 0x40,
-    kt_tacocat_main_flag_resolve_e         = 0x80,
-    kt_tacocat_main_flag_send_e            = 0x100,
-    kt_tacocat_main_flag_version_e         = 0x200,
+    kt_tacocat_main_flag_max_buffer_e      = 0x4,
+    kt_tacocat_main_flag_print_first_e     = 0x8,
+    kt_tacocat_main_flag_print_last_e      = 0x10,
+    kt_tacocat_main_flag_receive_e         = 0x20,
+    kt_tacocat_main_flag_resolve_classic_e = 0x40,
+    kt_tacocat_main_flag_resolve_kevux_e   = 0x80,
+    kt_tacocat_main_flag_resolve_e         = 0x100,
+    kt_tacocat_main_flag_send_e            = 0x200,
+    kt_tacocat_main_flag_version_e         = 0x400,
   }; // enum
 #endif // _di_kt_tacocat_main_flag_e_
 
@@ -78,6 +80,7 @@ extern "C" {
     kt_tacocat_parameter_line_last_no_e,
 
     kt_tacocat_parameter_interval_e,
+    kt_tacocat_parameter_max_buffer_e,
     kt_tacocat_parameter_receive_e,
     kt_tacocat_parameter_resolve_e,
     kt_tacocat_parameter_send_e,
@@ -88,12 +91,13 @@ extern "C" {
       macro_fll_program_console_parameter_standard_initialize, \
       \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_interval_s, kt_tacocat_long_interval_s, 1, f_console_flag_normal_e), \
+      macro_f_console_parameter_t_initialize_3(kt_tacocat_short_max_buffer_s, kt_tacocat_long_max_buffer_s, 1, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_receive_s, kt_tacocat_long_receive_s, 2, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_resolve_s, kt_tacocat_long_resolve_s, 1, f_console_flag_normal_e), \
       macro_f_console_parameter_t_initialize_3(kt_tacocat_short_send_s, kt_tacocat_long_send_s, 2, f_console_flag_normal_e), \
     }
 
-  #define kt_tacocat_parameter_total_d 17
+  #define kt_tacocat_parameter_total_d 18
 #endif // _di_kt_tacocat_parameter_e_
 
 /**

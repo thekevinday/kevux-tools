@@ -24,9 +24,6 @@ extern "C" {
  *   - large:   An allocation step used for buffers that are anticipated to have large buffers.
  *   - small:   An allocation step used for buffers that are anticipated to have small buffers.
  *
- * kt_tacocat_backlog_*_d:
- *   - max: The max backlog size to use.
- *
  * kt_tacocat_block_*_d:
  *   - size:         The block size in bytes to use for either sending or receiving.
  *   - size_receive: The block size in bytes to use when sending packets.
@@ -34,6 +31,11 @@ extern "C" {
  *
  * kt_tacocat_interval_*_d:
  *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
+ *
+ * kt_tacocat_max_*_d:
+ *   - backlog:  The max backlog in bytes size to use.
+ *   - buffer:   The max buffer in bytes size to use when receiving packets.
+ *   - maintain: The max size in bytes to maintain a particular buffer.
  *
  * kt_tacocat_packet_*_d:
  *   - peek: The size to peek into the packet to get the initial information.
@@ -44,23 +46,25 @@ extern "C" {
  *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
  */
 #ifndef _di_kt_tacocat_d_
-  #define kt_tacocat_allocation_console_d 4
-  #define kt_tacocat_allocation_large_d   2048
-  #define kt_tacocat_allocation_small_d   128
+  #define kt_tacocat_allocation_console_d 0x4
+  #define kt_tacocat_allocation_large_d   0x800
+  #define kt_tacocat_allocation_small_d   0x80
 
-  #define kt_tacocat_backlog_max_d 1024
-
-  #define kt_tacocat_block_size_d         65535
+  #define kt_tacocat_block_size_d         0xffff
   #define kt_tacocat_block_size_receive_d kt_tacocat_block_size_d
   #define kt_tacocat_block_size_send_d    kt_tacocat_block_size_d
 
   #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
 
-  #define kt_tacocat_packet_peek_d F_fss_simple_packet_block_header_size_d
-  #define kt_tacocat_packet_read_d 8192
+  #define kt_tacocat_max_backlog_d  0x400
+  #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
+  #define kt_tacocat_max_maintain_d 0x100000   // 0x10^5 (Which is 1 Megabyte in base 16 (1 Megaxyte (MX)).
 
-  #define kt_tacocat_signal_check_d          20000
-  #define kt_tacocat_signal_check_failsafe_d 20000
+  #define kt_tacocat_packet_peek_d F_fss_simple_packet_block_header_size_d
+  #define kt_tacocat_packet_read_d 0x2000
+
+  #define kt_tacocat_signal_check_d          0x4e20
+  #define kt_tacocat_signal_check_failsafe_d 0x4e20
 #endif // _di_kt_tacocat_d_
 
 /**

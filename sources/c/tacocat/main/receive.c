@@ -85,6 +85,30 @@ extern "C" {
       socket->size_read = kt_tacocat_packet_read_d;
     }
 
+    // @todo this check should also be performed after reading the FSS Packet Header against the FSS Payload length value.
+    if (main->setting.flag & kt_tacocat_main_flag_max_buffer_e) {
+      if ((buffer->used + socket->size_read) > main->setting.max_buffer) {
+        buffer->used = 0;
+
+        if (buffer->size > kt_tacocat_max_maintain_d) {
+          *status = f_memory_array_resize(kt_tacocat_max_maintain_d, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
+
+          if (F_status_is_error(*status)) {
+            kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, *name, *status);
+
+            return;
+          }
+        }
+
+        // @todo for all unrecoverable errors, make sure to drop/flush the packet to prevent processing and then reset the status code (otherwise an infinite error loop will occur, which is the current behavior).
+        *status = F_status_set_error(F_packet_too_large);
+
+        kt_tacocat_print_error_on_buffer_too_large(&main->program.error, kt_tacocat_receive_s, *name);
+
+        return;
+      }
+    }
+
     *status = f_memory_array_increase_by(socket->size_read, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
 
     if (F_status_is_error(*status)) {
@@ -142,6 +166,17 @@ extern "C" {
 
     // For now just close the socket until the appropriate code gets written here.
     f_file_close_id(&socket->id_data);
+
+    // @todo perform this check only when fully finished processing all of the packet parts.
+    if (buffer->size > kt_tacocat_max_maintain_d) {
+      buffer->used = 0;
+
+      *status = f_memory_array_resize(kt_tacocat_max_maintain_d, sizeof(f_char_t), (void **) &buffer->string, &buffer->used, &buffer->size);
+
+      if (F_status_is_error(*status)) {
+        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, *name, *status);
+      }
+    }
   }
 #endif // _di_kt_tacocat_receive_process_
 

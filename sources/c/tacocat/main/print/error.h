@@ -95,6 +95,30 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_
 
 /**
+ * Print file related error or warning messages for when buffer is too large to accept additional packet blocks.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
+  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
+#endif // _di_kt_tacocat_print_error_on_buffer_too_large_
+
+/**
  * Print error message for when an unknown value for the resolve parameter is provided.
  *
  * @param print

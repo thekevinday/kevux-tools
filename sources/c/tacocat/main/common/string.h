@@ -72,29 +72,32 @@ extern "C" {
  * kt_tacocat_*_s: Arbitrary strings.
  */
 #ifndef _di_kt_tacocat_s_
-  #define KT_TACOCAT_classic_s           "classic"
-  #define KT_TACOCAT_kevux_s             "kevux"
-  #define KT_TACOCAT_file_s              "file"
-  #define KT_TACOCAT_network_s           "network"
-  #define KT_TACOCAT_network_or_socket_s "network / socket"
-  #define KT_TACOCAT_receive_s           "receive"
-  #define KT_TACOCAT_send_s              "send"
-  #define KT_TACOCAT_socket_s            "socket"
-  #define KT_TACOCAT_tacocat_s           "tacocat"
-  #define KT_TACOCAT_two_s               "two"
+  #define KT_TACOCAT_classic_s            "classic"
+  #define KT_TACOCAT_digit_negative_one_s "-1"
+  #define KT_TACOCAT_kevux_s              "kevux"
+  #define KT_TACOCAT_file_s               "file"
+  #define KT_TACOCAT_network_s            "network"
+  #define KT_TACOCAT_network_or_socket_s  "network / socket"
+  #define KT_TACOCAT_receive_s            "receive"
+  #define KT_TACOCAT_send_s               "send"
+  #define KT_TACOCAT_socket_s             "socket"
+  #define KT_TACOCAT_tacocat_s            "tacocat"
+  #define KT_TACOCAT_two_s                "two"
 
-  #define KT_TACOCAT_classic_s_length           7
-  #define KT_TACOCAT_kevux_s_length             5
-  #define KT_TACOCAT_file_s_length              4
-  #define KT_TACOCAT_network_s_length           7
-  #define KT_TACOCAT_network_or_socket_s_length 16
-  #define KT_TACOCAT_receive_s_length           7
-  #define KT_TACOCAT_send_s_length              4
-  #define KT_TACOCAT_socket_s_length            6
-  #define KT_TACOCAT_tacocat_s_length           7
-  #define KT_TACOCAT_two_s_length               3
+  #define KT_TACOCAT_classic_s_length            7
+  #define KT_TACOCAT_digit_negative_one_s_length 2
+  #define KT_TACOCAT_kevux_s_length              5
+  #define KT_TACOCAT_file_s_length               4
+  #define KT_TACOCAT_network_s_length            7
+  #define KT_TACOCAT_network_or_socket_s_length  16
+  #define KT_TACOCAT_receive_s_length            7
+  #define KT_TACOCAT_send_s_length               4
+  #define KT_TACOCAT_socket_s_length             6
+  #define KT_TACOCAT_tacocat_s_length            7
+  #define KT_TACOCAT_two_s_length                3
 
   extern const f_string_static_t kt_tacocat_classic_s;
+  extern const f_string_static_t kt_tacocat_digit_negative_one_s;
   extern const f_string_static_t kt_tacocat_kevux_s;
   extern const f_string_static_t kt_tacocat_file_s;
   extern const f_string_static_t kt_tacocat_network_s;
@@ -110,32 +113,38 @@ extern "C" {
  * The main program parameters.
  */
 #ifndef _di_kt_tacocat_parameter_s_
-  #define KT_TACOCAT_short_interval_s "I"
-  #define KT_TACOCAT_short_receive_s  "r"
-  #define KT_TACOCAT_short_resolve_s  "R"
-  #define KT_TACOCAT_short_send_s     "s"
+  #define KT_TACOCAT_short_interval_s   "I"
+  #define KT_TACOCAT_short_max_buffer_s "M"
+  #define KT_TACOCAT_short_receive_s    "r"
+  #define KT_TACOCAT_short_resolve_s    "R"
+  #define KT_TACOCAT_short_send_s       "s"
 
-  #define KT_TACOCAT_long_interval_s "interval"
-  #define KT_TACOCAT_long_receive_s  "receive"
-  #define KT_TACOCAT_long_resolve_s  "resolve"
-  #define KT_TACOCAT_long_send_s     "send"
+  #define KT_TACOCAT_long_interval_s   "interval"
+  #define KT_TACOCAT_long_max_buffer_s "max_buffer"
+  #define KT_TACOCAT_long_receive_s    "receive"
+  #define KT_TACOCAT_long_resolve_s    "resolve"
+  #define KT_TACOCAT_long_send_s       "send"
 
-  #define KT_TACOCAT_short_interval_s_length 1
-  #define KT_TACOCAT_short_receive_s_length  1
-  #define KT_TACOCAT_short_resolve_s_length  1
-  #define KT_TACOCAT_short_send_s_length     1
+  #define KT_TACOCAT_short_interval_s_length   1
+  #define KT_TACOCAT_short_max_buffer_s_length 1
+  #define KT_TACOCAT_short_receive_s_length    1
+  #define KT_TACOCAT_short_resolve_s_length    1
+  #define KT_TACOCAT_short_send_s_length       1
 
-  #define KT_TACOCAT_long_interval_s_length 8
-  #define KT_TACOCAT_long_receive_s_length  7
-  #define KT_TACOCAT_long_resolve_s_length  7
-  #define KT_TACOCAT_long_send_s_length     4
+  #define KT_TACOCAT_long_interval_s_length   8
+  #define KT_TACOCAT_long_max_buffer_s_length 10
+  #define KT_TACOCAT_long_receive_s_length    7
+  #define KT_TACOCAT_long_resolve_s_length    7
+  #define KT_TACOCAT_long_send_s_length       4
 
   extern const f_string_static_t kt_tacocat_short_interval_s;
+  extern const f_string_static_t kt_tacocat_short_max_buffer_s;
   extern const f_string_static_t kt_tacocat_short_receive_s;
   extern const f_string_static_t kt_tacocat_short_resolve_s;
   extern const f_string_static_t kt_tacocat_short_send_s;
 
   extern const f_string_static_t kt_tacocat_long_interval_s;
+  extern const f_string_static_t kt_tacocat_long_max_buffer_s;
   extern const f_string_static_t kt_tacocat_long_receive_s;
   extern const f_string_static_t kt_tacocat_long_resolve_s;
   extern const f_string_static_t kt_tacocat_long_send_s;
