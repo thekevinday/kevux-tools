@@ -351,6 +351,7 @@ extern "C" {
               port = 0;
               address = main->program.parameters.arguments.array[index];
               f_char_t address_string[address.used];
+              f_string_range_t port_range = f_string_range_t_initialize;
 
               memcpy(address_string, address.string, address.used);
               address.string = address_string;
@@ -372,11 +373,25 @@ extern "C" {
                 host.h_addrtype = 0;
               }
 
-              kt_tacocat_setting_load_address_port_extract(main, &address, &port);
+              kt_tacocat_setting_load_address_port_extract(main, &address, &port, &port_range);
 
               if (F_status_is_error(main->setting.state.status)) {
-                // @todo print error message about bad port number or similar.
-                macro_setting_load_handle_send_receive_error_continue_2(kt_tacocat_setting_load_address_port_extract);
+                macro_setting_load_print_first();
+
+                if (port_range.start > port_range.stop) {
+                  kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(kt_tacocat_setting_load_address_port_extract));
+                }
+                else {
+                  kt_tacocat_print_error_port_number_invalid(&main->program.error, address, port_range);
+                }
+
+                if (F_status_is_error_not(failed)) {
+                  failed = main->setting.state.status;
+                }
+
+                sets[i]->statuss.array[j] = main->setting.state.status;
+
+                continue;
               }
 
               // Fail forward if port number is not supported by the system.
@@ -473,12 +488,12 @@ extern "C" {
 
               if (host.h_addrtype == f_socket_address_family_inet4_e) {
                 sets[i]->sockets.array[j].domain = f_socket_protocol_family_inet4_e;
-                sets[i]->sockets.array[j].address.inet4.sin_port = (in_port_t) port;
+                sets[i]->sockets.array[j].address.inet4.sin_port = htons((in_port_t) port);
                 sets[i]->sockets.array[j].address.inet4.sin_addr.s_addr = INADDR_ANY;
               }
               else if (host.h_addrtype == f_socket_address_family_inet6_e) {
                 sets[i]->sockets.array[j].domain = f_socket_protocol_family_inet6_e;
-                sets[i]->sockets.array[j].address.inet6.sin6_port = (in_port_t) port;
+                sets[i]->sockets.array[j].address.inet6.sin6_port = htons((in_port_t) port);
                 sets[i]->sockets.array[j].address.inet6.sin6_addr = in6addr_any;
               }
             }
@@ -635,11 +650,11 @@ extern "C" {
 #endif // _di_kt_tacocat_setting_load_send_receive_allocate_
 
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
-  void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port) {
+  void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port, f_string_range_t * const port_range) {
 
     if (!main) return;
 
-    if (!address || !port) {
+    if (!address || !port || !port_range) {
       main->setting.state.status = F_status_set_error(F_parameter);
 
       return;
@@ -651,20 +666,22 @@ extern "C" {
       return;
     }
 
-    f_number_unsigned_t i = 0;
+    port_range->stop = address->used;
 
     if (main->setting.state.status == F_network_version_four || main->setting.state.status == F_network_version_six) {
+      port_range->start = 0;
+
       if (*port) {
-        i = *port;
+        port_range->start = *port;
         *port = 0;
 
-        const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + i, 0, address->used - i);
+        const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + port_range->start, 0, address->used - port_range->start);
 
         main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, adjusted, port);
         if (F_status_is_error(main->setting.state.status)) return;
 
-        address->string[i] = 0;
-        address->used = i;
+        address->string[port_range->start] = 0;
+        address->used = port_range->start;
 
         while (address->used && address->string[address->used] != f_string_ascii_colon_s.string[0]) --address->used;
       }
@@ -675,20 +692,20 @@ extern "C" {
     }
 
     *port = 0;
-    i = address->used;
+    port_range->start = address->used;
 
-    while (--i) {
-      if (address->string[i] == f_string_ascii_colon_s.string[0]) break;
+    while (--port_range->start) {
+      if (address->string[port_range->start] == f_string_ascii_colon_s.string[0]) break;
     } // while
 
-    if (i && i + 1 < address->used) {
-      const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + i + 1, 0, address->used - i - 1);
+    if (port_range->start && ++port_range->start < address->used) {
+      const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + port_range->start, 0, address->used - port_range->start);
 
       main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, adjusted, port);
       if (F_status_is_error(main->setting.state.status)) return;
 
-      address->string[i] = 0;
-      address->used = i;
+      address->string[--port_range->start] = 0;
+      address->used = port_range->start;
       main->setting.state.status = F_okay;
     }
     else {

@@ -147,13 +147,16 @@ extern "C" {
  *   - Decimal (base 10) is used for all other cases.
  * @param port
  *   The extracted port number.
+ * @param port_range
+ *   The range in the string representing the extracted port number.
+ *   This is primarily intended for printing errors.
  *
  *   When main.setting.state.status is set to either F_network_version_four or F_network_version_six when calling this function, the port represents the location within the address string that the port number begins.
  *
  * @see fl_conversion_dynamic_to_unsigned_detect()
  */
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
-  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port);
+  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port, f_string_range_t * const port_range);
 #endif // _di_kt_tacocat_setting_load_address_port_extract_
 
 #ifdef __cplusplus

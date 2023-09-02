@@ -141,6 +141,30 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
 
 /**
+ * Print error about invalid port number in address.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param address
+ *   The entire address string, including the port number.
+ * @param port_range
+ *   The range within the address string representing the port.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_port_number_invalid_
+  extern f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_t port_range);
+#endif // _di_kt_tacocat_print_error_port_number_invalid_
+
+/**
  * Print error message for when an the different socket relating structure arrays do not have the same length.
  *
  * @param print
