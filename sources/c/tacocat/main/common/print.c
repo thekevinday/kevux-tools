@@ -7,6 +7,7 @@ extern "C" {
 #ifndef _di_kt_tacocat_f_a_
   const f_string_t kt_tacocat_f_a[] = {
     "f_console_parameter_process",
+    "f_file_close_id",
     "f_file_open",
     "f_fss_simple_packet_identify",
     "f_memory_array_increase_by",
@@ -21,11 +22,13 @@ extern "C" {
     "f_socket_create",
     "f_socket_disconnect",
     "f_socket_listen",
+    "f_socket_option_set",
     "f_socket_read_stream",
     "f_string_append_nulless",
     "f_string_dynamic_append",
     "f_string_dynamic_append_nulless",
     "f_thread_create",
+    "fl_conversion_dynamic_partial_to_unsigned_detect",
     "fl_conversion_dynamic_to_unsigned_detect",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",

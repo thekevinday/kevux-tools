@@ -35,6 +35,7 @@
 #include <fll/level_0/print.h>
 #include <fll/level_0/signal.h>
 #include <fll/level_0/socket.h>
+#include <fll/level_0/time.h>
 #include <fll/level_0/thread.h>
 
 // FLL-1 includes.

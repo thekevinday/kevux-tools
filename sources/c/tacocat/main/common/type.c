@@ -35,10 +35,15 @@ extern "C" {
         } // for
 
         for (j = 0; j < sets[i]->sockets.used ; ++j) {
+
+          f_file_close_id(&sets[i]->sockets.array[j].id_data);
+
           f_socket_disconnect(&sets[i]->sockets.array[j], program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
         } // for
 
         f_memory_array_resize(0, sizeof(uint16_t), (void **) &sets[i]->flags.array, &sets[i]->flags.used, &sets[i]->flags.size);
+        f_memory_array_resize(0, sizeof(uint16_t), (void **) &sets[i]->retrys.array, &sets[i]->retrys.used, &sets[i]->retrys.size);
+        f_memory_array_resize(0, sizeof(uint32_t), (void **) &sets[i]->totals.array, &sets[i]->totals.used, &sets[i]->totals.size);
         f_memory_array_resize(0, sizeof(f_file_t), (void **) &sets[i]->files.array, &sets[i]->files.used, &sets[i]->files.size);
         f_memory_array_resize(0, sizeof(f_poll_t), (void **) &sets[i]->polls.array, &sets[i]->polls.used, &sets[i]->polls.size);
         f_memory_array_resize(0, sizeof(f_socket_t), (void **) &sets[i]->sockets.array, &sets[i]->sockets.used, &sets[i]->sockets.size);

@@ -188,7 +188,7 @@ extern "C" {
       }
 
       if (number == 0) {
-        kt_tacocat_print_warning_parameter_integer_is(&main->program.warning, f_console_symbol_long_normal_s, kt_tacocat_long_max_buffer_s, f_string_ascii_0_s);
+        kt_tacocat_print_warning_parameter_integer_less_than(&main->program.warning, f_console_symbol_long_normal_s, kt_tacocat_long_max_buffer_s, main->program.parameters.arguments.array[index]);
 
         main->setting.max_buffer = 0;
         main->setting.flag |= kt_tacocat_main_flag_max_buffer_e;
@@ -309,6 +309,8 @@ extern "C" {
 
           sets[i]->statuss.array[j] = F_okay;
           sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
+          sets[i]->retrys.array[j] = 0;
+          sets[i]->totals.array[j] = 0;
           sets[i]->names.array[j].used = 0;
           sets[i]->buffers.array[j].used = 0;
           sets[i]->packets.array[j].control.start = 1;
@@ -604,8 +606,10 @@ extern "C" {
     set->names.used = 0;
     set->packets.used = 0;
     set->polls.used = 0;
+    set->retrys.used = 0;
     set->sockets.used = 0;
     set->statuss.used = 0;
+    set->totals.used = 0;
 
     if (!set) {
       main->setting.state.status = F_status_set_error(F_parameter);
@@ -628,6 +632,10 @@ extern "C" {
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint16_t), (void **) &set->retrys.array, &set->retrys.used, &set->retrys.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
       main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &set->names.array, &set->names.used, &set->names.size);
     }
 
@@ -641,6 +649,10 @@ extern "C" {
 
     if (F_status_is_error_not(main->setting.state.status)) {
       main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_status_t), (void **) &set->statuss.array, &set->statuss.used, &set->statuss.size);
+    }
+
+    if (F_status_is_error_not(main->setting.state.status)) {
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint32_t), (void **) &set->totals.array, &set->totals.used, &set->totals.size);
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {

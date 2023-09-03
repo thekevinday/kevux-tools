@@ -72,12 +72,20 @@ extern "C" {
 
       if (kt_tacocat_signal_check(main)) return F_status_set_error(F_interrupt);
 
+      status = f_file_close_id(&set->sockets.array[i].id_data);
+
+      if (F_status_is_error_not(set->statuss.array[i]) && F_status_is_error(status)) {
+        set->statuss.array[i] = status;
+
+        kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_file_close_id), status);
+      }
+
       status = f_socket_disconnect(&set->sockets.array[i], f_socket_close_read_write_e);
 
       if (F_status_is_error_not(set->statuss.array[i]) && F_status_is_error(status)) {
         set->statuss.array[i] = status;
 
-        kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_socket_disconnect));
+        kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_disconnect), status);
       }
     } // for
 
@@ -114,7 +122,7 @@ extern "C" {
         *status = F_status_set_error(F_parameter);
       }
 
-      kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(kt_tacocat_process_socket_set_error_has));
+      kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(kt_tacocat_process_socket_set_error_has), *status);
 
       return F_status_set_error(F_parameter);
     }
@@ -136,6 +144,8 @@ extern "C" {
 
     if (!main || F_status_is_error(main->setting.status_receive)) return;
 
+    int value_socket = 0;
+
     for (f_number_unsigned_t i = 0; i < main->setting.receive.sockets.used; ++i) {
 
       if (kt_tacocat_signal_check(main)) return;
@@ -146,37 +156,93 @@ extern "C" {
       if (F_status_is_error(main->setting.receive.statuss.array[i])) {
         main->setting.status_receive = main->setting.receive.statuss.array[i];
 
-        kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_socket_create));
+        kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_create), main->setting.status_receive);
 
         continue;
       }
 
-      if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet4_e) {
-        main->setting.receive.statuss.array[i] = f_socket_bind_inet4(&main->setting.receive.sockets.array[i]);
-      }
-      else if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet6_e) {
-        main->setting.receive.statuss.array[i] = f_socket_bind_inet6(&main->setting.receive.sockets.array[i]);
-      }
-      else if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_local_e) {
-        main->setting.receive.statuss.array[i] = f_socket_bind_local(&main->setting.receive.sockets.array[i]);
-      }
-      else {
-        main->setting.status_receive = F_status_set_error(F_parameter);
+      // Make the socket re-usable.
+      {
+        value_socket = 1;
 
-        kt_tacocat_print_error_socket_protocol_unsupported(&main->program.error, main->setting.receive.names.array[i], main->setting.receive.sockets.array[i].domain);
+        main->setting.receive.statuss.array[i] = f_socket_option_set(&main->setting.receive.sockets.array[i], SOL_SOCKET, f_socket_option_address_reuse_e | f_socket_option_port_reuse_e, &value_socket, sizeof(int));
 
-        return;
+        if (F_status_is_error(main->setting.receive.statuss.array[i])) {
+          main->setting.status_receive = main->setting.receive.statuss.array[i];
+
+          kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_option_set), main->setting.status_receive);
+
+          continue;
+        }
       }
+
+      for (main->setting.receive.retrys.array[i] = 0; main->setting.receive.retrys.array[i] < kt_tacocat_startup_retry_max_d; ++main->setting.receive.retrys.array[i]) {
+
+        if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet4_e) {
+          main->setting.receive.statuss.array[i] = f_socket_bind_inet4(&main->setting.receive.sockets.array[i]);
+        }
+        else if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet6_e) {
+          main->setting.receive.statuss.array[i] = f_socket_bind_inet6(&main->setting.receive.sockets.array[i]);
+        }
+        else if (main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_local_e) {
+          main->setting.receive.statuss.array[i] = f_socket_bind_local(&main->setting.receive.sockets.array[i]);
+        }
+        else {
+          main->setting.status_receive = F_status_set_error(F_parameter);
+
+          kt_tacocat_print_error_socket_protocol_unsupported(&main->program.error, main->setting.receive.names.array[i], main->setting.receive.sockets.array[i].domain);
+
+          return;
+        }
+
+        if (F_status_set_fine(main->setting.receive.statuss.array[i]) == F_busy_address) {
+          if (main->setting.receive.retrys.array[i] < kt_tacocat_startup_retry_max_d) {
+            kt_tacocat_print_warning_on_busy(&main->program.warning, kt_tacocat_receive_s, main->setting.receive.names.array[i], main->setting.receive.retrys.array[i] + 1);
+
+            struct timespec time = { 0 };
+
+            main->setting.receive.statuss.array[i] = f_time_spec_millisecond(kt_tacocat_startup_retry_delay_second_d, kt_tacocat_startup_retry_delay_millisecond_d, &time);
+
+            if (F_status_is_error_not(main->setting.receive.statuss.array[i])) {
+              nanosleep(&time, 0);
+            }
+
+            if (main->program.signal_received) {
+              main->setting.status_receive = F_status_set_error(F_interrupt);
+
+              return;
+            }
+
+            main->setting.receive.statuss.array[i] = F_status_set_error(F_busy_address);
+
+            continue;
+          }
+        }
+
+        break;
+      } // for
+
+      if (F_status_is_error_not(main->setting.receive.statuss.array[i]) && main->setting.receive.retrys.array[i] < kt_tacocat_startup_retry_max_d) {
+        main->setting.receive.statuss.array[i] = F_okay;
+      }
+
+      main->setting.receive.retrys.array[i] = 0;
 
       if (F_status_is_error(main->setting.receive.statuss.array[i])) {
         main->setting.status_receive = main->setting.receive.statuss.array[i];
 
-        kt_tacocat_print_error(&main->program.error, main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet4_e
-          ? macro_kt_tacocat_f(f_socket_bind_inet4)
-          : main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet6_e
-            ? macro_kt_tacocat_f(f_socket_bind_inet6)
-            : macro_kt_tacocat_f(f_socket_bind_local)
-        );
+        if (F_status_set_fine(main->setting.status_receive) == F_busy_address) {
+          kt_tacocat_print_error_on_busy(&main->program.error, kt_tacocat_receive_s, main->setting.receive.names.array[i]);
+        }
+        else {
+          kt_tacocat_print_error_status(&main->program.error, main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet4_e
+            ? macro_kt_tacocat_f(f_socket_bind_inet4)
+            : main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet6_e
+              ? macro_kt_tacocat_f(f_socket_bind_inet6)
+              : macro_kt_tacocat_f(f_socket_bind_local),
+            main->setting.status_receive
+          );
+        }
 
         continue;
       }
@@ -186,7 +252,7 @@ extern "C" {
       if (F_status_is_error(main->setting.receive.statuss.array[i])) {
         main->setting.status_receive = main->setting.receive.statuss.array[i];
 
-        kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_socket_listen));
+        kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_listen), main->setting.status_receive);
 
         continue;
       }
@@ -224,7 +290,7 @@ extern "C" {
       if (F_status_is_error(main->setting.send.statuss.array[i])) {
         main->setting.status_send = main->setting.send.statuss.array[i];
 
-        kt_tacocat_print_error(&main->program.error, macro_kt_tacocat_f(f_socket_create));
+        kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_create), main->setting.status_send);
 
         continue;
       }

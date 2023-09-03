@@ -23,6 +23,8 @@ extern "C" {
  * max_buffer:  The maximum size in bytes to used to represent a block when sending or receiving packets.
  *
  * flags:   An array of flags for each socket.
+ * retrys:  An array of the current number of retries performed for the given network packet.
+ * totals:  An array of the total network stream size accoding to the processed packet.
  * files:   An array of files for each socket.
  * polls:   An array of sockets to poll, specifically for passing to f_file_poll().
  * sockets: An array of the network sockets.
@@ -37,6 +39,8 @@ extern "C" {
     f_number_unsigned_t size_block;
 
     f_uint16s_t flags;
+    f_uint16s_t retrys;
+    f_uint32s_t totals;
     f_files_t files;
     f_polls_t polls;
     f_sockets_t sockets;
@@ -51,6 +55,8 @@ extern "C" {
     { \
       kt_tacocat_block_size_d, \
       f_uint16s_t_initialize, \
+      f_uint16s_t_initialize, \
+      f_uint32s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \
@@ -64,6 +70,8 @@ extern "C" {
     { \
       size_block, \
       f_uint16s_t_initialize, \
+      f_uint16s_t_initialize, \
+      f_uint32s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \
@@ -129,6 +137,22 @@ extern "C" {
 #endif // _di_kt_tacocat_setting_t_
 
 /**
+ * The TacocaT caches.
+ *
+ * peek: A static cache intended to be used for performing a peek on a given network stream.
+ */
+#ifndef _di_kt_tacocat_cache_t_
+  typedef struct {
+    f_char_t peek[kt_tacocat_cache_size_peek_d];
+  } kt_tacocat_cache_t;
+
+  #define kt_tacocat_cache_t_initialize \
+    { \
+      { 0 }, \
+    }
+#endif // _di_kt_tacocat_cache_t_
+
+/**
  * The TacocaT callbacks.
  *
  * setting_load_send_receive: Process loading the settings regarding send and receive, handling DNS resolution and file opening as needed.
@@ -174,6 +198,7 @@ extern "C" {
     kt_tacocat_setting_t setting;
     kt_tacocat_callback_t callback;
     kt_tacocat_thread_t thread;
+    kt_tacocat_cache_t cache;
   } kt_tacocat_main_t;
 
   #define kt_tacocat_main_t_initialize \
@@ -182,6 +207,7 @@ extern "C" {
       kt_tacocat_setting_t_initialize, \
       kt_tacocat_callback_t_initialize, \
       kt_tacocat_thread_t_initialize, \
+      kt_tacocat_cache_t_initialize, \
     }
 #endif // _di_kt_tacocat_main_t_
 

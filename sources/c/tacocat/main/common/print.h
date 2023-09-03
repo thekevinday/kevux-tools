@@ -40,6 +40,7 @@ extern "C" {
 #ifndef _di_kt_tacocat_f_e_
   enum {
     kt_tacocat_f_f_console_parameter_process_e,
+    kt_tacocat_f_f_file_close_id_e,
     kt_tacocat_f_f_file_open_e,
     kt_tacocat_f_f_fss_simple_packet_identify_e,
     kt_tacocat_f_f_memory_array_increase_by_e,
@@ -54,11 +55,13 @@ extern "C" {
     kt_tacocat_f_f_socket_create_e,
     kt_tacocat_f_f_socket_disconnect_e,
     kt_tacocat_f_f_socket_listen_e,
+    kt_tacocat_f_f_socket_option_set_e,
     kt_tacocat_f_f_socket_read_stream_e,
     kt_tacocat_f_f_string_append_nulless_e,
     kt_tacocat_f_f_string_dynamic_append_e,
     kt_tacocat_f_f_string_dynamic_append_nulless_e,
     kt_tacocat_f_f_thread_create_e,
+    kt_tacocat_f_fl_conversion_dynamic_partial_to_unsigned_detect_e,
     kt_tacocat_f_fl_conversion_dynamic_to_unsigned_detect_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,

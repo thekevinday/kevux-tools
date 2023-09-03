@@ -19,6 +19,7 @@ f_print
 f_signal
 f_socket
 f_thread
+f_time
 
 fl_conversion
 fl_print

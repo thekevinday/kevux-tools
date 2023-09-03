@@ -29,6 +29,9 @@ extern "C" {
  *   - size_receive: The block size in bytes to use when sending packets.
  *   - size_send:    The block size in bytes to use when receiving packets.
  *
+ * kt_tacocat_cache_*_d:
+ *   - peek: The size in bytes representing the size of the peek cache (should be set to at least "kt_tacocat_block_size_receive_d + 1" and must be greater than zero).
+ *
  * kt_tacocat_interval_*_d:
  *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
  *
@@ -44,15 +47,22 @@ extern "C" {
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
  *   - check_failsafe: When using threads, how many consecutive failures to check signal before aborting (as a recursion failsafe).
+ *
+ * kt_tacocat_startup_*_d:
+ *   - retry_delay_second:      The delay in seconds to wait between each retry.
+ *   - retry_delay_millisecond: The delay in milliseconds to wait between each retry.
+ *   - retry_max:               During start up, the maximum number of retries to perform when trying to establish the initial connection before giving up.
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 0x4
   #define kt_tacocat_allocation_large_d   0x800
   #define kt_tacocat_allocation_small_d   0x80
 
-  #define kt_tacocat_block_size_d         0xffff
-  #define kt_tacocat_block_size_receive_d kt_tacocat_block_size_d
-  #define kt_tacocat_block_size_send_d    kt_tacocat_block_size_d
+  #define kt_tacocat_block_size_d          0xffff
+  #define kt_tacocat_block_size_receive_d  kt_tacocat_block_size_d
+  #define kt_tacocat_block_size_send_d     kt_tacocat_block_size_d
+
+  #define kt_tacocat_cache_size_peek_d (kt_tacocat_block_size_receive_d + 1)
 
   #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
 
@@ -65,6 +75,10 @@ extern "C" {
 
   #define kt_tacocat_signal_check_d          0x4e20
   #define kt_tacocat_signal_check_failsafe_d 0x4e20
+
+  #define kt_tacocat_startup_retry_delay_second_d      3
+  #define kt_tacocat_startup_retry_delay_millisecond_d 0
+  #define kt_tacocat_startup_retry_max_d               24
 #endif // _di_kt_tacocat_d_
 
 /**
@@ -79,6 +93,14 @@ extern "C" {
  *
  * macro_setting_load_handle_send_receive_error_file_continue_1:
  *   The same as macro_setting_load_handle_send_receive_error_continue_1() but intended for file errors.
+ *
+ * macro_kt_receive_process_handle_error_exit_1:
+ *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_block_begin_e.
+ *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
+ *
+ * macro_kt_receive_process_handle_error_exit_2:
+ *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_block_begin_e.
+ *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
  */
 #ifndef _di_kt_tacocat_macros_d_
   #define macro_setting_load_print_first() \
@@ -128,6 +150,36 @@ extern "C" {
       \
       continue; \
     }
+
+  // @todo handle error, perform memory clearing and possibly send try again message to client but for now, just close the connection gracefully.
+  #define macro_kt_receive_process_handle_error_exit_1(main, method, name, status, flag, id_data) \
+    if (F_status_is_error(*status)) { \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, *name, *status); \
+      \
+      if (id_data) { \
+        f_file_close_id(id_data); \
+      } \
+      \
+      *flag -= kt_tacocat_socket_flag_block_begin_e; \
+      \
+      return; \
+    }
+
+    // @todo handle error, perform memory clearing and possibly send try again message to client but for now, just close the connection gracefully.
+    #define macro_kt_receive_process_handle_error_exit_2(main, method, name, status, flag, id_data) \
+      if (F_status_is_error(*status)) { \
+        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, *name, *status); \
+        \
+        if (id_data) { \
+          f_file_close_id(id_data); \
+        } \
+        \
+        *flag -= *flag & kt_tacocat_socket_flag_block_begin_e; \
+        *flag -= *flag & kt_tacocat_socket_flag_block_control_e; \
+        *flag -= *flag & kt_tacocat_socket_flag_block_payload_e; \
+        \
+        return; \
+      }
 #endif // _di_kt_tacocat_macro_d_
 
 #ifdef __cplusplus

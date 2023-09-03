@@ -22,7 +22,11 @@ extern "C" {
  * @param print
  *   The output structure to print to.
  *
+ *   This requires print.custom to be fake_main_t.
+ *
  *   This does not alter print.custom.setting.state.status.
+ * @param function
+ *   A string representing the function that has an error.
  *
  * @return
  *   F_okay on success.
@@ -37,10 +41,36 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_
 
 /**
+ * Print generic error message regarding a function failing in some way using the given status.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param function
+ *   A string representing the function that has an error.
+ * @param status
+ *   The status code representing the error being reported.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_print()
+ */
+#ifndef _di_kt_tacocat_print_error_status_
+  extern f_status_t kt_tacocat_print_error_status(fl_print_t * const print, const f_string_t function, const f_status_t status);
+#endif // _di_kt_tacocat_print_error_status_
+
+/**
  * Print file related error or warning messages.
  *
  * @param print
  *   The output structure to print to.
+ *
+ *   This requires print.custom to be fake_main_t.
  *
  *   This does not alter print.custom.setting.state.status.
  * @param function
@@ -66,7 +96,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_file_
 
 /**
- * Print file related error or warning messages.
+ * Print network-related error message regarding a function failing in some way using the given status.
  *
  * @param print
  *   The output structure to print to.
@@ -91,11 +121,11 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_on_
-  f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status);
+  extern f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status);
 #endif // _di_kt_tacocat_print_error_on_
 
 /**
- * Print file related error or warning messages for when buffer is too large to accept additional packet blocks.
+ * Print network-related error message for when buffer is too large to accept additional packet blocks.
  *
  * @param print
  *   The output structure to print to.
@@ -115,8 +145,60 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
+  extern f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
 #endif // _di_kt_tacocat_print_error_on_buffer_too_large_
+
+/**
+ * Print network-related error message for when the connection is busy.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_busy_
+  extern f_status_t kt_tacocat_print_error_on_busy(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
+#endif // _di_kt_tacocat_print_error_on_busy_
+
+/**
+ * Print network-related error message for when the connection is busy.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ * @param size_expect
+ *   The expected packet size.
+ * @param size_got
+ *   The packet size that is received.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_packet_too_small_
+  extern f_status_t kt_tacocat_print_error_on_packet_too_small(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got);
+#endif // _di_kt_tacocat_print_error_on_packet_too_small_
 
 /**
  * Print error message for when an unknown value for the resolve parameter is provided.
@@ -145,6 +227,8 @@ extern "C" {
  *
  * @param print
  *   The output structure to print to.
+ *
+ *   This requires print.custom to be fake_main_t.
  *
  *   This does not alter print.custom.setting.state.status.
  * @param address
