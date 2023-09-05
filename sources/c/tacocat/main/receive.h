@@ -32,7 +32,7 @@ extern "C" {
 #endif // _di_kt_tacocat_receive_
 
 /**
- * Process the buffer, retrieving the data and writing to the file.
+ * Process the network socket, retrieving the data and writing to the file.
  *
  * @param main
  *   The main program and settings data.
@@ -50,6 +50,26 @@ extern "C" {
 #ifndef _di_kt_tacocat_receive_process_
   extern void kt_tacocat_receive_process(kt_tacocat_main_t * const main, const f_number_unsigned_t index);
 #endif // _di_kt_tacocat_receive_process_
+
+/**
+ * Process the network socket, retrieving and processing the Control and Size header information.
+ *
+ * @param main
+ *   The main program and settings data.
+ *
+ *   This alters main.setting.state.status:
+ *     F_okay on success.
+ *
+ *     F_packet_too_large (with error bit) on total packet size is too large.
+ *     F_payload_too_large (with error bit) on total payload size is too large.
+ * @param index
+ *   The position within the receive arrays to process.
+ *
+ * @see f_socket_read_stream()
+ */
+#ifndef _di_kt_tacocat_receive_process_control_
+  extern void kt_tacocat_receive_process_control(kt_tacocat_main_t * const main, const f_number_unsigned_t index);
+#endif // _di_kt_tacocat_receive_process_control_
 
 #ifdef __cplusplus
 } // extern "C"

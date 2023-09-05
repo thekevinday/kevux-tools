@@ -127,7 +127,7 @@ extern "C" {
       return F_status_set_error(F_parameter);
     }
 
-    if (set.sockets.used != set.files.used || set.sockets.used != set.files.used || set.sockets.used != set.statuss.used || set.sockets.used != set.names.used || set.sockets.used != set.buffers.used) {
+    if (set.sockets.used != set.files.used || set.sockets.used != set.files.used || set.sockets.used != set.statuss.used || set.sockets.used != set.networks.used || set.sockets.used != set.buffers.used) {
       *status = F_status_set_error(F_parameter);
 
       kt_tacocat_print_error_setting_socket_lengths_must_match(&main->program.error, parameter, set);
@@ -150,6 +150,9 @@ extern "C" {
 
       if (kt_tacocat_signal_check(main)) return;
       if (F_status_is_error(main->setting.receive.statuss.array[i])) continue;
+
+      main->setting.receive.sockets.array[i].id = -1;
+      main->setting.receive.sockets.array[i].id_data = -1;
 
       main->setting.receive.statuss.array[i] = f_socket_create(&main->setting.receive.sockets.array[i]);
 
@@ -190,14 +193,14 @@ extern "C" {
         else {
           main->setting.status_receive = F_status_set_error(F_parameter);
 
-          kt_tacocat_print_error_socket_protocol_unsupported(&main->program.error, main->setting.receive.names.array[i], main->setting.receive.sockets.array[i].domain);
+          kt_tacocat_print_error_socket_protocol_unsupported(&main->program.error, main->setting.receive.networks.array[i], main->setting.receive.sockets.array[i].domain);
 
           return;
         }
 
         if (F_status_set_fine(main->setting.receive.statuss.array[i]) == F_busy_address) {
           if (main->setting.receive.retrys.array[i] < kt_tacocat_startup_retry_max_d) {
-            kt_tacocat_print_warning_on_busy(&main->program.warning, kt_tacocat_receive_s, main->setting.receive.names.array[i], main->setting.receive.retrys.array[i] + 1);
+            kt_tacocat_print_warning_on_busy(&main->program.warning, kt_tacocat_receive_s, main->setting.receive.networks.array[i], main->setting.receive.retrys.array[i] + 1);
 
             struct timespec time = { 0 };
 
@@ -232,7 +235,7 @@ extern "C" {
         main->setting.status_receive = main->setting.receive.statuss.array[i];
 
         if (F_status_set_fine(main->setting.status_receive) == F_busy_address) {
-          kt_tacocat_print_error_on_busy(&main->program.error, kt_tacocat_receive_s, main->setting.receive.names.array[i]);
+          kt_tacocat_print_error_on_busy(&main->program.error, kt_tacocat_receive_s, main->setting.receive.networks.array[i]);
         }
         else {
           kt_tacocat_print_error_status(&main->program.error, main->setting.receive.sockets.array[i].domain == f_socket_protocol_family_inet4_e

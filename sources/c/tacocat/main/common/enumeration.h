@@ -131,16 +131,14 @@ extern "C" {
  *
  * kt_tacocat_socket_flag_*_e:
  *   - none:          No flags set.
- *   - block_begin:   The control block is ready to be read (but has not been fully ready yet).
- *   - block_control: The control block is fully read.
- *   - block_payload: The payload block is fully read.
+ *   - block_control: Reading and processing the Control block and Size block.
+ *   - block_payload: Reading and processing the Payload block.
  */
 #ifndef _di_kt_tacocat_socket_flag_e_
   enum {
     kt_tacocat_socket_flag_none_e          = 0x0,
-    kt_tacocat_socket_flag_block_begin_e   = 0x1,
-    kt_tacocat_socket_flag_block_control_e = 0x2,
-    kt_tacocat_socket_flag_block_payload_e = 0x4,
+    kt_tacocat_socket_flag_block_control_e = 0x1,
+    kt_tacocat_socket_flag_block_payload_e = 0x2,
   }; // enum
 #endif // _di_kt_tacocat_socket_flag_e_
 

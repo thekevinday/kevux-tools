@@ -24,15 +24,14 @@ extern "C" {
  *
  * flags:   An array of flags for each socket.
  * retrys:  An array of the current number of retries performed for the given network packet.
- * totals:  An array of the total network stream size accoding to the processed packet.
  * files:   An array of files for each socket.
  * polls:   An array of sockets to poll, specifically for passing to f_file_poll().
  * sockets: An array of the network sockets.
  * statuss: An array of statuses for each socket.
  *
- * names:   An array of names for each socket.
- * buffers: An array of buffers for sending or receiving data between clients for each socket.
- * packets: An array of simple packet ranges representing the parts of the packet for each socket for use during processing.
+ * networks: An array of networks for each socket.
+ * buffers:  An array of buffers for sending or receiving data between clients for each socket.
+ * packets:  An array of simple packet ranges representing the parts of the packet for each socket for use during processing.
  */
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {
@@ -40,13 +39,12 @@ extern "C" {
 
     f_uint16s_t flags;
     f_uint16s_t retrys;
-    f_uint32s_t totals;
     f_files_t files;
     f_polls_t polls;
     f_sockets_t sockets;
     f_statuss_t statuss;
 
-    f_string_dynamics_t names;
+    f_string_dynamics_t networks;
     f_string_dynamics_t buffers;
     f_fss_simple_packet_ranges_t packets;
   } kt_tacocat_socket_set_t;
@@ -56,7 +54,6 @@ extern "C" {
       kt_tacocat_block_size_d, \
       f_uint16s_t_initialize, \
       f_uint16s_t_initialize, \
-      f_uint32s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \
@@ -71,7 +68,6 @@ extern "C" {
       size_block, \
       f_uint16s_t_initialize, \
       f_uint16s_t_initialize, \
-      f_uint32s_t_initialize, \
       f_files_t_initialize, \
       f_polls_t_initialize, \
       f_sockets_t_initialize, \

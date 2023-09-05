@@ -135,6 +135,10 @@ extern "C" {
  *   The network connection direction, which should either be "receive" or "send".
  * @param network
  *   The name of the network in which the error is related.
+ * @param size_max
+ *   The maximum buffer size.
+ * @param size_got
+ *   The provided buffer size.
  *
  * @return
  *   F_okay on success.
@@ -145,7 +149,7 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  extern f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
+  extern f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got);
 #endif // _di_kt_tacocat_print_error_on_buffer_too_large_
 
 /**
@@ -171,6 +175,36 @@ extern "C" {
 #ifndef _di_kt_tacocat_print_error_on_busy_
   extern f_status_t kt_tacocat_print_error_on_busy(fl_print_t * const print, f_string_static_t on, const f_string_static_t network);
 #endif // _di_kt_tacocat_print_error_on_busy_
+/**
+ * Print network-related error message regarding the writing the network data to a file.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param function
+ *   The name of the function where the error happened.
+ *   Set to 0 to disable.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ * @param status
+ *   The status code representing the error.
+ * @param name
+ *   The name of the file or directory.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_file_
+  extern f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name);
+#endif // _di_kt_tacocat_print_error_on_file_
 
 /**
  * Print network-related error message for when the connection is busy.
@@ -184,9 +218,9 @@ extern "C" {
  * @param network
  *   The name of the network in which the error is related.
  * @param size_expect
- *   The expected packet size.
+ *   The expected buffer size.
  * @param size_got
- *   The packet size that is received.
+ *   The provided buffer size.
  *
  * @return
  *   F_okay on success.

@@ -310,42 +310,39 @@ extern "C" {
           sets[i]->statuss.array[j] = F_okay;
           sets[i]->flags.array[j] = kt_tacocat_socket_flag_none_e;
           sets[i]->retrys.array[j] = 0;
-          sets[i]->totals.array[j] = 0;
-          sets[i]->names.array[j].used = 0;
+          sets[i]->networks.array[j].used = 0;
           sets[i]->buffers.array[j].used = 0;
-          sets[i]->packets.array[j].control.start = 1;
-          sets[i]->packets.array[j].control.stop = 0;
-          sets[i]->packets.array[j].size.start = 1;
-          sets[i]->packets.array[j].size.stop = 0;
+          sets[i]->packets.array[j].control = 0;
+          sets[i]->packets.array[j].size = 0;
           sets[i]->packets.array[j].payload.start = 1;
           sets[i]->packets.array[j].payload.stop = 0;
 
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
 
-              main->setting.state.status = f_memory_array_increase_by(main->program.parameters.arguments.array[index].used + 2, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
+              main->setting.state.status = f_memory_array_increase_by(main->program.parameters.arguments.array[index].used + 2, sizeof(f_char_t), (void **) &sets[i]->networks.array[j].string, &sets[i]->networks.array[j].used, &sets[i]->networks.array[j].size);
 
               macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
-              main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &sets[i]->names.array[j]);
+              main->setting.state.status = f_string_dynamic_append_nulless(main->program.parameters.arguments.array[index], &sets[i]->networks.array[j]);
 
               macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
 
               // Designate this as a socket file by appending after the terminating NULL, past the used length.
-              sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
-              sets[i]->names.array[j].string[sets[i]->names.array[j].used + 1] = f_string_ascii_slash_forward_s.string[0];
+              sets[i]->networks.array[j].string[sets[i]->networks.array[j].used] = 0;
+              sets[i]->networks.array[j].string[sets[i]->networks.array[j].used + 1] = f_string_ascii_slash_forward_s.string[0];
 
               if (is_receive[i]) {
-                main->setting.state.status = f_file_exists(sets[i]->names.array[j], F_true);
+                main->setting.state.status = f_file_exists(sets[i]->networks.array[j], F_true);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
               }
 
-              sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
+              sets[i]->networks.array[j].string[sets[i]->networks.array[j].used] = 0;
               sets[i]->sockets.array[j].domain = f_socket_protocol_family_local_e;
               sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
               sets[i]->sockets.array[j].type = f_socket_type_stream_e;
-              sets[i]->sockets.array[j].name = sets[i]->names.array[j];
+              sets[i]->sockets.array[j].name = sets[i]->networks.array[j];
             }
             else if (main->setting.flag & kt_tacocat_main_flag_resolve_classic_e) {
               memset(&host, 0, sizeof(struct hostent));
@@ -404,7 +401,7 @@ extern "C" {
               }
 
               if (host.h_addrtype) {
-                main->setting.state.status = f_string_dynamic_append(address, &sets[i]->names.array[j]);
+                main->setting.state.status = f_string_dynamic_append(address, &sets[i]->networks.array[j]);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append);
               }
@@ -432,7 +429,7 @@ extern "C" {
                   continue;
                 }
 
-                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
+                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->networks.array[j].string, &sets[i]->networks.array[j].used, &sets[i]->networks.array[j].size);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
@@ -450,7 +447,7 @@ extern "C" {
                   k = 0;
                 }
 
-                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->names.array[j].string, &sets[i]->names.array[j].used, &sets[i]->names.array[j].size);
+                main->setting.state.status = f_memory_array_increase_by(INET6_ADDRSTRLEN + 1, sizeof(f_char_t), (void **) &sets[i]->networks.array[j].string, &sets[i]->networks.array[j].used, &sets[i]->networks.array[j].size);
 
                 macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
@@ -463,7 +460,7 @@ extern "C" {
                   family.address.v6 = *((struct in6_addr *) host.h_addr_list[k]);
                 }
 
-                main->setting.state.status = f_network_to_ip_string(family, &sets[i]->names.array[j]);
+                main->setting.state.status = f_network_to_ip_string(family, &sets[i]->networks.array[j]);
 
                 if (main->setting.state.status == F_data_not || !host.h_addr_list || !host.h_addr_list[0]) {
                   main->setting.state.status = F_status_set_error(F_parameter);
@@ -482,7 +479,7 @@ extern "C" {
                   continue;
                 }
 
-                sets[i]->names.array[j].string[sets[i]->names.array[j].used] = 0;
+                sets[i]->networks.array[j].string[sets[i]->networks.array[j].used] = 0;
               }
 
               sets[i]->sockets.array[j].protocol = f_socket_protocol_tcp_e;
@@ -506,7 +503,7 @@ extern "C" {
             ++sets[i]->buffers.used;
             ++sets[i]->files.used;
             ++sets[i]->flags.used;
-            ++sets[i]->names.used;
+            ++sets[i]->networks.used;
             ++sets[i]->packets.used;
             ++sets[i]->polls.used;
             ++sets[i]->sockets.used;
@@ -603,13 +600,12 @@ extern "C" {
     set->buffers.used = 0;
     set->files.used = 0;
     set->flags.used = 0;
-    set->names.used = 0;
+    set->networks.used = 0;
     set->packets.used = 0;
     set->polls.used = 0;
     set->retrys.used = 0;
     set->sockets.used = 0;
     set->statuss.used = 0;
-    set->totals.used = 0;
 
     if (!set) {
       main->setting.state.status = F_status_set_error(F_parameter);
@@ -636,7 +632,7 @@ extern "C" {
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {
-      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &set->names.array, &set->names.used, &set->names.size);
+      main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_string_dynamic_t), (void **) &set->networks.array, &set->networks.used, &set->networks.size);
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {
@@ -649,10 +645,6 @@ extern "C" {
 
     if (F_status_is_error_not(main->setting.state.status)) {
       main->setting.state.status = f_memory_array_increase_by(total, sizeof(f_status_t), (void **) &set->statuss.array, &set->statuss.used, &set->statuss.size);
-    }
-
-    if (F_status_is_error_not(main->setting.state.status)) {
-      main->setting.state.status = f_memory_array_increase_by(total, sizeof(uint32_t), (void **) &set->totals.array, &set->totals.used, &set->totals.size);
     }
 
     if (F_status_is_error_not(main->setting.state.status)) {

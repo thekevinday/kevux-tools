@@ -63,7 +63,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_
 
 #ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network) {
+  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -74,7 +74,11 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
     fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format("%[', the maximum size is%] ", print->to, print->set->error, print->set->error);
+    fl_print_format("%[%ul%]", print->to, print->set->notable, size_expect, print->set->notable);
+    fl_print_format("%[, and the provided size is%] ", print->to, print->set->error, print->set->error);
+    fl_print_format("%[%ul%]", print->to, print->set->notable, size_got, print->set->notable);
+    fl_print_format(f_string_format_sentence_end_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -101,6 +105,28 @@ extern "C" {
     return F_okay;
   }
 #endif // _di_kt_tacocat_print_error_on_busy_
+
+#ifndef _di_kt_tacocat_print_error_on_file_
+  f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name) {
+
+    if (!print || !print->custom) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QNetwork on%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+    fl_print_format("%[' failed to write to file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
+    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    fll_error_file_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true, name, f_file_operation_write_s, fll_error_file_type_file_e);
+  }
+#endif // _di_kt_tacocat_print_error_on_file_
 
 #ifndef _di_kt_tacocat_print_error_on_packet_too_small_
   f_status_t kt_tacocat_print_error_on_packet_too_small(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
@@ -183,7 +209,7 @@ extern "C" {
     fl_print_format("%[%QThe lengths of all%] ", print->to, print->set->error, print->prefix, print->set->error);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
     fl_print_format(" %[arrays do not have the same length, name array length is '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format("%[%ul%]", print->to, print->set->notable, set.names.used, print->set->notable);
+    fl_print_format("%[%ul%]", print->to, print->set->notable, set.networks.used, print->set->notable);
     fl_print_format("%', the buffer array length is '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format("%[%ul%]", print->to, print->set->notable, set.buffers.used, print->set->notable);
     fl_print_format("%', the file array length is '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
