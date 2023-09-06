@@ -26,9 +26,7 @@ extern "C" {
 #endif // _di_kt_tacocat_process_main_
 
 /**
- * Perform the disconnect for the socket given socket set.
- *
- * This handles errors and prints appropriate messages.
+ * Disconnect the socket set and close open file.
  *
  * @param main
  *   The main program and settings data.
@@ -38,16 +36,16 @@ extern "C" {
  *
  *     This does not set parameter error on success or any socket disconnect error.
  * @param set
- *   The socket set to disconnect all sockets of.
+ *   The socket set to disconnect all parts of.
  *
  * @return
  *   F_okay on success.
  *
  *   F_parameter (with error bit) on invalid parameter.
  */
-#ifndef _di_kt_tacocat_process_socket_set_disconnect_
-  extern f_status_t kt_tacocat_process_socket_set_disconnect(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
-#endif // _di_kt_tacocat_process_socket_set_disconnect_
+#ifndef _di_kt_tacocat_process_socket_sets_disconnect_
+  extern f_status_t kt_tacocat_process_socket_sets_disconnect(kt_tacocat_main_t * const main, kt_tacocat_socket_sets_t * const sets);
+#endif // _di_kt_tacocat_process_socket_sets_disconnect_
 
 /**
  * Traverse the sockets, grabbing the first error and setting the main.setting.state.status appropriately.
@@ -63,14 +61,14 @@ extern "C" {
  *     An status with error bit set from any socket that has a status failure.
  *
  *     If this already has the error bit set, then no changes are performed.
- * @param set
- *   The socket set to handle the errors of.
+ * @param sets
+ *   The socket sets to handle the errors of.
  * @param status
  *   The status to update with the status code from the given set.
  */
-#ifndef _di_kt_tacocat_process_socket_set_error_handle_
-  extern void kt_tacocat_process_socket_set_error_handle(kt_tacocat_main_t * const main, const kt_tacocat_socket_set_t set, f_status_t * const status);
-#endif // _di_kt_tacocat_process_socket_set_error_handle_
+#ifndef _di_kt_tacocat_process_socket_sets_error_handle_
+  extern void kt_tacocat_process_socket_sets_error_handle(kt_tacocat_main_t * const main, const kt_tacocat_socket_sets_t sets, f_status_t * const status);
+#endif // _di_kt_tacocat_process_socket_sets_error_handle_
 
 /**
  * Check the socket set and handle and print error if the array lengths do not match.
@@ -96,7 +94,7 @@ extern "C" {
  *   F_parameter (with error bit) if a parameter is invalid.
  */
 #ifndef _di_kt_tacocat_process_socket_set_error_has_
-  extern f_status_t kt_tacocat_process_socket_set_error_has(kt_tacocat_main_t * const main, const f_string_static_t parameter, const kt_tacocat_socket_set_t set, f_status_t * const status);
+  extern f_status_t kt_tacocat_process_socket_set_error_has(kt_tacocat_main_t * const main, const f_string_static_t parameter, const kt_tacocat_socket_sets_t set, f_status_t * const status);
 #endif // _di_kt_tacocat_process_socket_set_error_has_
 
 /**

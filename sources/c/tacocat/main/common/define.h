@@ -130,7 +130,7 @@ extern "C" {
         failed = main->setting.state.status; \
       } \
       \
-      sets[i]->statuss.array[j] = main->setting.state.status; \
+      sets[i]->array[j].status = main->setting.state.status; \
       \
       continue; \
     }
@@ -145,14 +145,14 @@ extern "C" {
         failed = main->setting.state.status; \
       } \
       \
-      sets[i]->statuss.array[j] = main->setting.state.status; \
+      sets[i]->array[j].status = main->setting.state.status; \
       \
       continue; \
     }
 
   #define macro_kt_receive_process_handle_error_exit_1(main, method, name, status, flag, id_data) \
-    if (F_status_is_error(*status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, *name, *status); \
+    if (F_status_is_error(status)) { \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, name, status); \
       \
       if (id_data) { \
         f_file_close_id(id_data); \
@@ -165,10 +165,10 @@ extern "C" {
     }
 
   #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, name, status, flag) \
-    if (F_status_is_error(*status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, *name, *status); \
+    if (F_status_is_error(status)) { \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, name, status); \
       \
-      *flag -= kt_tacocat_socket_flag_block_control_e; \
+      flag -= kt_tacocat_socket_flag_block_control_e; \
       \
       return; \
     }

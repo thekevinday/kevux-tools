@@ -283,30 +283,6 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_port_number_invalid_
 
 /**
- * Print error message for when an the different socket relating structure arrays do not have the same length.
- *
- * @param print
- *   The output structure to print to.
- *
- *   This does not alter print.custom.setting.state.status.
- * @param name
- *   The name representing the socket set whose array lengths must match.
- * @param set
- *   The socket set.
- *
- * @return
- *   F_okay on success.
- *   F_output_not on success, but no printing is performed.
- *
- *   F_output_not (with error bit) if setting is NULL.
- *
- * @see fll_error_file_print()
- */
-#ifndef _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
-  extern f_status_t kt_tacocat_print_error_setting_socket_lengths_must_match(fl_print_t * const print, const f_string_dynamic_t name, const kt_tacocat_socket_set_t set);
-#endif // _di_kt_tacocat_print_error_setting_socket_lengths_must_match_
-
-/**
  * Print error message for when an unsupported protocol is used.
  *
  * @param print

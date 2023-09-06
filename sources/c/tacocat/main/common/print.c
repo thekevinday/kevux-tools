@@ -35,7 +35,6 @@ extern "C" {
     "fll_program_parameter_process_verbosity",
     "kt_tacocat_process_socket_set_error_has",
     "kt_tacocat_setting_load_address_port_extract",
-    "kt_tacocat_setting_load_send_receive_allocate",
   };
 #endif // _di_kt_tacocat_f_a_
 
