@@ -65,18 +65,32 @@ extern "C" {
     kt_tacocat_socket_set_t * const set = &main->setting.receive.array[index];
 
     // This is a new packet (kt_tacocat_socket_flag_none_e).
-    if (!(main->setting.receive.array[index].flag)) {
-      main->setting.receive.array[index].flag = kt_tacocat_socket_flag_block_control_e;
-      main->setting.receive.array[index].retry = 0;
+    if (!(set->flag)) {
+      kt_tacocat_print_message_receive_operation_received(&main->program.message, *set);
+
+      set->flag = kt_tacocat_socket_flag_block_control_e;
+      set->retry = 0;
       set->buffer.used = 0;
       set->socket.size_read = kt_tacocat_packet_read_d;
+
+      set->status = f_file_open(set->name, F_file_mode_all_rw_d, &set->file);
+
+      if (F_status_is_error(set->status)) {
+        kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_open_s);
+      }
     }
 
     // Load the header of the new packet.
-    if (main->setting.receive.array[index].flag & kt_tacocat_socket_flag_block_control_e) {
+    if (set->flag & kt_tacocat_socket_flag_block_control_e) {
       kt_tacocat_receive_process_control(main, index);
 
-      if (F_status_is_error(set->status) || set->buffer.used < kt_tacocat_packet_peek_d) {
+      if (set->buffer.used < kt_tacocat_packet_peek_d) {
+        f_file_close_id(&set->socket.id_data);
+
+        return;
+      }
+
+      if (set->buffer.used < kt_tacocat_packet_peek_d) {
         f_file_close_id(&set->socket.id_data);
 
         return;
@@ -88,24 +102,23 @@ extern "C" {
 
       // Make sure the buffer is large enough for payload processing block reads.
       set->status = f_memory_array_increase_by(set->socket.size_read, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, main->setting.receive.array[index].flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag, &set->socket.id_data);
     }
 
-    if (main->setting.receive.array[index].flag & kt_tacocat_socket_flag_block_payload_e) {
+    if (set->flag & kt_tacocat_socket_flag_block_payload_e) {
       size_t length_read = 0;
 
       set->status = f_socket_read_stream(&set->socket, 0, (void *) set->buffer.string, &length_read);
-      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, main->setting.receive.array[index].flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->flag, &set->socket.id_data);
 
       if (length_read) {
         set->buffer.used = length_read;
 
-        set->status = f_file_write(main->setting.receive.array[index].file, set->buffer, 0);
+        set->status = f_file_write(set->file, set->buffer, 0);
 
         // Keep going on error, but in the future more advanced error handling/recovery is needed to make this more robust.
         if (F_status_is_error(set->status)) {
-          // @fixme The file name is not being saved, need to add the file name. For now just adding "set->socket.name" as a placeholder.
-          kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_write), kt_tacocat_receive_s, set->network, set->status, set->socket.name);
+          kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_write), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_write_s);
         }
 
         // Reset buffer used and increment counter.
@@ -114,15 +127,16 @@ extern "C" {
 
         f_file_close_id(&set->socket.id_data);
 
-        if (set->packet.payload.stop < set->packet.size) return;
+        if (set->packet.payload.stop + 1 < set->packet.size) return;
       }
-
-      main->setting.receive.array[index].flag -= kt_tacocat_socket_flag_block_payload_e;
     }
 
     // Done processing the Packet.
+    kt_tacocat_print_message_receive_operation_complete(&main->program.message, *set);
+
     f_file_close_id(&set->socket.id_data);
-    main->setting.receive.array[index].flag = 0;
+    f_file_close(&set->file);
+    set->flag = 0;
 
     if (set->buffer.size > kt_tacocat_max_maintain_d) {
       set->buffer.used = 0;
@@ -239,6 +253,8 @@ extern "C" {
     // The payload range "stop" is used to represent the total amount of bytes processed so far (uncluding the header).
     set->packet.payload.start = 0;
     set->packet.payload.stop = set->buffer.used - 1;
+
+    kt_tacocat_print_message_receive_operation_control_size(&main->program.message, *set);
   }
 #endif // _di_kt_tacocat_receive_process_control_
 

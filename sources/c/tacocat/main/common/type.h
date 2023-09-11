@@ -21,17 +21,17 @@ extern "C" {
  *
  * size_block: The size in bytes to used to represent a block when sending or receiving packets.
  *
- * flag:   An array of flags for each socket.
- * retry:  An array of the current number of retries performed for the given network packet.
- * file:   An array of files for each socket.
- * socket: An array of the network sockets.
- * status: An array of statuses for each socket.
+ * flag:   A set of flags.
+ * retry:  The current number of retries performed.
+ * file:   The file structure.
+ * socket: Socket structure.
+ * status: The status of the socket operations.
  *
- * buffer:  An array of buffers for sending or receiving data between clients for each socket.
- * client:  An array representing a single client address for some network connection.
- * name:    An array of file names associated with each file in the files array.
- * network: An array of networks for each socket.
- * packet:  An array of simple packet ranges representing the parts of the packet for each socket for use during processing.
+ * buffer:  A buffer for sending or receiving data between clients.
+ * client:  A single client address for some network connection.
+ * name:    A file name for reading from or writing to.
+ * network: A network name for the socket.
+ * packet:  The simple packet range representing the parts of the packet for use during processing.
  */
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {

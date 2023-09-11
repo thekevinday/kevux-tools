@@ -428,7 +428,6 @@ extern "C" {
                 macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append);
               }
               else {
-                // @todo move this block into its own function.
                 main->setting.state.status = f_network_from_ip_name(address, &host);
 
                 // @todo provide network-specific error messages.
@@ -558,7 +557,7 @@ extern "C" {
             sets[i]->array[j].name.used = main->program.parameters.arguments.array[index].used;
             sets[i]->array[j].name.size = 0;
 
-            // @fixme only open the file when reading/writing and then close it at the end. This open is fine if it is used as a check on startup, but in this case immediately close it.
+            // Make sure the file exists and can be read and can be written to, then close when done.
             main->setting.state.status = f_file_open(sets[i]->array[j].name, F_file_mode_all_rw_d, &sets[i]->array[j].file);
 
             if (F_status_is_error(main->setting.state.status)) {
@@ -569,6 +568,11 @@ extern "C" {
               }
 
               sets[i]->array[j].status = main->setting.state.status;
+            }
+            else {
+              main->setting.state.status = f_file_close(&sets[i]->array[j].file);
+
+              macro_setting_load_handle_send_receive_error_file_continue_1(f_file_open, sets[i]->array[j].name, f_file_operation_close_s, fll_error_file_type_file_e);
             }
           }
           else {
@@ -590,7 +594,6 @@ extern "C" {
       }
       else if (main->program.parameters.array[parameters[i]].result & f_console_result_found_e) {
         main->setting.flag -= main->setting.flag & flags[i];
-
         main->setting.state.status = F_status_set_error(F_parameter);
 
         macro_setting_load_print_first();

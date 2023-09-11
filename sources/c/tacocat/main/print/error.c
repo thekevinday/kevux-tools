@@ -70,7 +70,7 @@ extern "C" {
 
     f_file_stream_lock(print->to);
 
-    fl_print_format("%[%QNetwork packets too large for%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format("%[%QNetwork packet is too large for%] ", print->to, print->set->error, print->prefix, print->set->error);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
     fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
@@ -107,7 +107,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_busy_
 
 #ifndef _di_kt_tacocat_print_error_on_file_
-  f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name) {
+  f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation) {
 
     if (!print || !print->custom) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -124,7 +124,7 @@ extern "C" {
 
     f_file_stream_unlock(print->to);
 
-    fll_error_file_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true, name, f_file_operation_write_s, fll_error_file_type_file_e);
+    fll_error_file_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true, name, operation, fll_error_file_type_file_e);
   }
 #endif // _di_kt_tacocat_print_error_on_file_
 

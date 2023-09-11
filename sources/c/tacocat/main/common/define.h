@@ -158,8 +158,7 @@ extern "C" {
         f_file_close_id(id_data); \
       } \
       \
-      flag -= flag & kt_tacocat_socket_flag_block_control_e; \
-      flag -= flag & kt_tacocat_socket_flag_block_payload_e; \
+      flag = 0; \
       \
       return; \
     }
@@ -168,7 +167,7 @@ extern "C" {
     if (F_status_is_error(status)) { \
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, name, status); \
       \
-      flag -= kt_tacocat_socket_flag_block_control_e; \
+      flag = 0; \
       \
       return; \
     }

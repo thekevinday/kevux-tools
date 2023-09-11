@@ -193,6 +193,8 @@ extern "C" {
  *   The status code representing the error.
  * @param name
  *   The name of the file or directory.
+ * @param operation
+ *   The file operation that fails, such as 'open' or 'write'.
  *
  * @return
  *   F_okay on success.
@@ -203,7 +205,7 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_on_file_
-  extern f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name);
+  extern f_status_t kt_tacocat_print_error_on_file(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation);
 #endif // _di_kt_tacocat_print_error_on_file_
 
 /**

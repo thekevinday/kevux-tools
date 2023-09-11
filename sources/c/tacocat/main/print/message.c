@@ -59,6 +59,61 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_message_help_
 
+#ifndef _di_kt_tacocat_print_message_receive_operation_complete_
+  f_status_t kt_tacocat_print_message_receive_operation_complete(fl_print_t * const print, const kt_tacocat_socket_set_t set) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_normal_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("Packet from ", print->to);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set.network, print->set->notable);
+    fl_print_format(" is complete.%r", print->to, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+  }
+#endif // _di_kt_tacocat_print_message_receive_operation_complete_
+
+#ifndef _di_kt_tacocat_print_message_receive_operation_control_size_
+  f_status_t kt_tacocat_print_message_receive_operation_control_size(fl_print_t * const print, const kt_tacocat_socket_set_t set) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_normal_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("Packet from ", print->to);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set.network, print->set->notable);
+    fl_print_format(" is %[%ul%] Bytes.%r", print->to, print->set->notable, set.packet.size, print->set->notable, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+  }
+#endif // _di_kt_tacocat_print_message_receive_operation_control_size_
+
+#ifndef _di_kt_tacocat_print_message_receive_operation_received_
+  f_status_t kt_tacocat_print_message_receive_operation_received(fl_print_t * const print, const kt_tacocat_socket_set_t set) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_normal_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%rReceived packet from ", print->to, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set.network, print->set->notable);
+
+    if (print->verbosity > f_console_verbosity_normal_e) {
+      fl_print_format(" (appending to file '", print->to);
+      fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set.name, print->set->notable);
+      fl_print_format("')", print->to);
+    }
+
+    fl_print_format(".%r", print->to, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+  }
+#endif // _di_kt_tacocat_print_message_receive_operation_received_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
