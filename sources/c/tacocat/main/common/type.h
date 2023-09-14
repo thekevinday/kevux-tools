@@ -20,6 +20,7 @@ extern "C" {
  * A set of all socket related properties.
  *
  * size_block: The size in bytes to used to represent a block when sending or receiving packets.
+ * size_done:  The size in bytes that are done being processed (generally used by send/write).
  *
  * flag:   A set of flags.
  * retry:  The current number of retries performed.
@@ -36,6 +37,7 @@ extern "C" {
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {
     f_number_unsigned_t size_block;
+    size_t size_done;
 
     uint16_t flag;
     uint16_t retry;
@@ -55,6 +57,7 @@ extern "C" {
       kt_tacocat_block_size_d, \
       0, \
       0, \
+      0, \
       f_file_t_initialize, \
       f_socket_t_initialize, \
       f_status_t_initialize, \
@@ -68,6 +71,7 @@ extern "C" {
   #define macro_kt_tacocat_socket_set_t_initialize_1(size_block) \
     { \
       size_block, \
+      0, \
       0, \
       0, \
       f_file_t_initialize, \

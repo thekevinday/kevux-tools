@@ -95,11 +95,13 @@ extern "C" {
  *   The same as macro_setting_load_handle_send_receive_error_continue_1() but intended for file errors.
  *
  * macro_kt_receive_process_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_block_control_e.
+ *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_receive_block_control_e.
  *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
  *
  * macro_kt_receive_process_begin_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_block_control_e.
+ *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_receive_block_control_e.
+ *
+ * @todo document macro_kt_send_process_handle_error_exit_1.
  */
 #ifndef _di_kt_tacocat_macros_d_
   #define macro_setting_load_print_first() \
@@ -170,6 +172,13 @@ extern "C" {
       flag = 0; \
       \
       return; \
+    }
+
+  #define macro_kt_send_process_handle_error_exit_1(main, method, name, status, flag) \
+    if (F_status_is_error(status)) { \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_send_s, name, status); \
+      \
+      return F_done_not; \
     }
 #endif // _di_kt_tacocat_macro_d_
 

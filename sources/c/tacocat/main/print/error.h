@@ -65,7 +65,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_status_
 
 /**
- * Print file related error or warning messages.
+ * Print file related error messages.
  *
  * @param print
  *   The output structure to print to.

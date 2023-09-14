@@ -274,6 +274,11 @@ extern "C" {
       kt_tacocat_block_size_send_d,
     };
 
+    const mode_t file_modes[] = {
+      F_file_mode_all_rw_d,
+      F_file_mode_all_r_d,
+    };
+
     f_number_unsigned_t j = 0;
     f_number_unsigned_t k = 0;
     f_number_unsigned_t p = 0;
@@ -329,7 +334,7 @@ extern "C" {
           sets[i]->array[j].size_block = default_block_size[i];
           sets[i]->array[j].buffer.used = 0;
           sets[i]->array[j].client.used = 0;
-          sets[i]->array[j].flag = kt_tacocat_socket_flag_none_e;
+          sets[i]->array[j].flag = 0;
           sets[i]->array[j].name.used = 0;
           sets[i]->array[j].network.used = 0;
           sets[i]->array[j].packet.control = 0;
@@ -557,8 +562,8 @@ extern "C" {
             sets[i]->array[j].name.used = main->program.parameters.arguments.array[index].used;
             sets[i]->array[j].name.size = 0;
 
-            // Make sure the file exists and can be read and can be written to, then close when done.
-            main->setting.state.status = f_file_open(sets[i]->array[j].name, F_file_mode_all_rw_d, &sets[i]->array[j].file);
+            // Make sure the file exists and can be read and/or can be written to, then close when done.
+            main->setting.state.status = f_file_open(sets[i]->array[j].name, file_modes[i], &sets[i]->array[j].file);
 
             if (F_status_is_error(main->setting.state.status)) {
               macro_setting_load_handle_send_receive_error_file_continue_1(f_file_open, sets[i]->array[j].name, f_file_operation_open_s, fll_error_file_type_file_e);

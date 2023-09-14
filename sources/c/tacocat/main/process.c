@@ -222,6 +222,8 @@ extern "C" {
 
     if (!main || F_status_is_error(main->setting.status_send)) return;
 
+    int value_socket = 0;
+
     for (f_number_unsigned_t i = 0; i < main->setting.send.used; ++i) {
 
       if (kt_tacocat_signal_check(main)) return;
@@ -237,7 +239,90 @@ extern "C" {
         continue;
       }
 
-      // @todo f_socket_bind().
+      // Make the socket re-usable.
+      {
+        value_socket = 1;
+
+        main->setting.send.array[i].status = f_socket_option_set(&main->setting.send.array[i].socket, SOL_SOCKET, f_socket_option_address_reuse_e | f_socket_option_port_reuse_e, &value_socket, sizeof(int));
+
+        if (F_status_is_error(main->setting.send.array[i].status)) {
+          main->setting.status_send = main->setting.send.array[i].status;
+
+          kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_option_set), main->setting.status_send);
+
+          continue;
+        }
+      }
+
+      for (main->setting.send.array[i].retry = 0; main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d; ++main->setting.send.array[i].retry) {
+
+        if (main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet4_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet6_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_local_e) {
+          main->setting.send.array[i].status = f_socket_connect(main->setting.send.array[i].socket);
+        }
+        else {
+          main->setting.status_send = F_status_set_error(F_parameter);
+
+          kt_tacocat_print_error_socket_protocol_unsupported(&main->program.error, main->setting.send.array[i].network, main->setting.send.array[i].socket.domain);
+
+          return;
+        }
+
+        if (F_status_set_fine(main->setting.send.array[i].status) == F_busy_address) {
+          if (main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d) {
+            kt_tacocat_print_warning_on_busy(&main->program.warning, kt_tacocat_send_s, main->setting.send.array[i].network, main->setting.send.array[i].retry + 1);
+
+            struct timespec time = { 0 };
+
+            main->setting.send.array[i].status = f_time_spec_millisecond(kt_tacocat_startup_retry_delay_second_d, kt_tacocat_startup_retry_delay_millisecond_d, &time);
+
+            if (F_status_is_error_not(main->setting.send.array[i].status)) {
+              nanosleep(&time, 0);
+            }
+
+            if (main->program.signal_received) {
+              main->setting.status_send = F_status_set_error(F_interrupt);
+
+              return;
+            }
+
+            main->setting.send.array[i].status = F_status_set_error(F_busy_address);
+
+            continue;
+          }
+        }
+
+        break;
+      } // for
+
+      if (F_status_is_error_not(main->setting.send.array[i].status) && main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d) {
+        main->setting.send.array[i].status = F_okay;
+      }
+
+      main->setting.send.array[i].retry = 0;
+
+      if (F_status_is_error(main->setting.send.array[i].status)) {
+        main->setting.status_send = main->setting.send.array[i].status;
+
+        if (F_status_set_fine(main->setting.status_send) == F_busy_address) {
+          kt_tacocat_print_error_on_busy(&main->program.error, kt_tacocat_send_s, main->setting.send.array[i].network);
+        }
+        else {
+          kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_connect), main->setting.status_send);
+        }
+
+        continue;
+      }
+
+      if (main->setting.send.array[i].socket.id == -1) {
+        main->setting.send_polls.array[i].fd = -1;
+        main->setting.send_polls.array[i].events = 0;
+        main->setting.send_polls.array[i].revents = 0;
+      }
+      else {
+        main->setting.send_polls.array[i].fd = main->setting.send.array[i].socket.id;
+        main->setting.send_polls.array[i].events = f_poll_write_e;
+        main->setting.send_polls.array[i].revents = 0;
+      }
     } // for
 
     if (F_status_is_error_not(main->setting.status_send)) {

@@ -33,7 +33,7 @@ extern "C" {
             if (main->setting.receive_polls.array[i].fd == -1) continue;
 
             if (main->setting.receive_polls.array[i].revents & (f_poll_read_e)) {
-              kt_tacocat_receive_process(main, i);
+              kt_tacocat_receive_process(main, &main->setting.receive.array[i]);
 
               main->setting.receive_polls.array[i].revents = 0;
 
@@ -58,17 +58,15 @@ extern "C" {
 #endif // _di_kt_tacocat_receive_
 
 #ifndef _di_kt_tacocat_receive_process_
-  void kt_tacocat_receive_process(kt_tacocat_main_t * const main, const f_number_unsigned_t index) {
+  void kt_tacocat_receive_process(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
 
-    if (!main) return;
+    if (!main || !set) return;
 
-    kt_tacocat_socket_set_t * const set = &main->setting.receive.array[index];
-
-    // This is a new packet (kt_tacocat_socket_flag_none_e).
+    // This is a new packet (kt_tacocat_socket_flag_receive_none_e).
     if (!(set->flag)) {
       kt_tacocat_print_message_receive_operation_received(&main->program.message, *set);
 
-      set->flag = kt_tacocat_socket_flag_block_control_e;
+      set->flag = kt_tacocat_socket_flag_receive_block_control_e;
       set->retry = 0;
       set->buffer.used = 0;
       set->socket.size_read = kt_tacocat_packet_read_d;
@@ -77,12 +75,14 @@ extern "C" {
 
       if (F_status_is_error(set->status)) {
         kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_open_s);
+
+        return;
       }
     }
 
     // Load the header of the new packet.
-    if (set->flag & kt_tacocat_socket_flag_block_control_e) {
-      kt_tacocat_receive_process_control(main, index);
+    if (set->flag & kt_tacocat_socket_flag_receive_block_control_e) {
+      kt_tacocat_receive_process_control(main, set);
 
       if (set->buffer.used < kt_tacocat_packet_peek_d) {
         f_file_close_id(&set->socket.id_data);
@@ -105,7 +105,7 @@ extern "C" {
       macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag, &set->socket.id_data);
     }
 
-    if (set->flag & kt_tacocat_socket_flag_block_payload_e) {
+    if (set->flag & kt_tacocat_socket_flag_receive_block_payload_e) {
       size_t length_read = 0;
 
       set->status = f_socket_read_stream(&set->socket, 0, (void *) set->buffer.string, &length_read);
@@ -152,11 +152,9 @@ extern "C" {
 #endif // _di_kt_tacocat_receive_process_
 
 #ifndef _di_kt_tacocat_receive_process_control_
-  void kt_tacocat_receive_process_control(kt_tacocat_main_t * const main, const f_number_unsigned_t index) {
+  void kt_tacocat_receive_process_control(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
 
-    if (!main) return;
-
-    kt_tacocat_socket_set_t * const set = &main->setting.receive.array[index];
+    if (!main || !set) return;
 
     const size_t size_read = set->socket.size_read;
     size_t length_read = 0;
@@ -192,21 +190,34 @@ extern "C" {
         set->status = f_socket_read_stream(&set->socket, f_socket_flag_peek_e | f_socket_flag_wait_not_e, (void *) main->cache.peek, &length_read);
 
         set->socket.size_read = size_read;
-      }
 
-      // Connection is closed when length is 0, which means the packet is too small.
-      if (!length_read) {
-        kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
+        // Connection is closed when length is 0, which means the packet is too small.
+        if (!length_read) {
+          kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
+
+          set->buffer.used = 0;
+          set->retry = 0;
+          set->status = F_status_set_error(F_packet_too_small);
+          set->flag = 0;
+
+          return;
+        }
+      }
+      else {
+
+        // Connection is closed when length is 0.
+        kt_tacocat_print_warning_on_client_closed(&main->program.warning, kt_tacocat_receive_s, set->network);
 
         set->buffer.used = 0;
-        main->setting.receive.array[index].retry = 0;
-        set->status = F_status_set_error(F_packet_too_small);
         set->flag = 0;
+        set->packet.control = 0;
+        set->packet.size = 0;
+        set->status = F_status_set_error(F_packet_too_small);
 
         return;
       }
 
-      ++main->setting.receive.array[index].retry;
+      ++set->retry;
 
       return;
     }
@@ -214,13 +225,14 @@ extern "C" {
     set->status = f_fss_simple_packet_extract_range(set->buffer, &set->packet);
     macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->flag);
 
-    if (set->status == F_packet_too_small) {
+    if (set->status == F_packet_too_small || set->packet.size < F_fss_simple_packet_block_header_size_d) {
+      kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
+
+      set->buffer.used = 0;
+      set->flag = 0;
       set->packet.control = 0;
       set->packet.size = 0;
-    }
-
-    if (set->packet.size < F_fss_simple_packet_block_header_size_d) {
-      set->flag = 0;
+      set->status = F_status_set_error(F_packet_too_small);
 
       return;
     }
@@ -247,8 +259,8 @@ extern "C" {
       }
     }
 
-    set->flag |= kt_tacocat_socket_flag_block_payload_e;
-    set->flag -= kt_tacocat_socket_flag_block_control_e;
+    set->flag |= kt_tacocat_socket_flag_receive_block_payload_e;
+    set->flag -= kt_tacocat_socket_flag_receive_block_control_e;
 
     // The payload range "stop" is used to represent the total amount of bytes processed so far (uncluding the header).
     set->packet.payload.start = 0;

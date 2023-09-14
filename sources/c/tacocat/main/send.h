@@ -31,6 +31,27 @@ extern "C" {
   extern void * kt_tacocat_send(void * const main);
 #endif // _di_kt_tacocat_send_
 
+/**
+ * Process the network socket, retrieving the data and writing to the file.
+ *
+ * @param main
+ *   The main program and settings data.
+ *
+ *   This alters main.setting.state.status:
+ *     F_okay on success.
+ *
+ *     F_packet_too_large (with error bit) on total packet size is too large.
+ *     F_payload_too_large (with error bit) on total payload size is too large.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ * @see f_socket_read_stream()
+ */
+#ifndef _di_kt_tacocat_send_process_
+  extern f_status_t kt_tacocat_send_process(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_send_process_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

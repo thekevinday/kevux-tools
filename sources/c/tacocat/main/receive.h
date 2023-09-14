@@ -42,13 +42,14 @@ extern "C" {
  *
  *     F_packet_too_large (with error bit) on total packet size is too large.
  *     F_payload_too_large (with error bit) on total payload size is too large.
- * @param index
- *   The position within the receive arrays to process.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
  *
  * @see f_socket_read_stream()
  */
 #ifndef _di_kt_tacocat_receive_process_
-  extern void kt_tacocat_receive_process(kt_tacocat_main_t * const main, const f_number_unsigned_t index);
+  extern void kt_tacocat_receive_process(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
 #endif // _di_kt_tacocat_receive_process_
 
 /**
@@ -62,13 +63,14 @@ extern "C" {
  *
  *     F_packet_too_large (with error bit) on total packet size is too large.
  *     F_payload_too_large (with error bit) on total payload size is too large.
- * @param index
- *   The position within the receive arrays to process.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
  *
  * @see f_socket_read_stream()
  */
 #ifndef _di_kt_tacocat_receive_process_control_
-  extern void kt_tacocat_receive_process_control(kt_tacocat_main_t * const main, const f_number_unsigned_t index);
+  extern void kt_tacocat_receive_process_control(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
 #endif // _di_kt_tacocat_receive_process_control_
 
 #ifdef __cplusplus
