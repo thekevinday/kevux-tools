@@ -34,6 +34,9 @@ extern "C" {
 /**
  * Process the network socket, retrieving the data and writing to the file.
  *
+ * This sends an FSS-000F (Simple Packet) using FSS-000E (Payload) such that the "payload" Object contains the file being transferred.
+ * The file being transferred is transferred as-is.
+ *
  * @param main
  *   The main program and settings data.
  *

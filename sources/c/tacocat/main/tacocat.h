@@ -40,6 +40,8 @@
 
 // FLL-1 includes.
 #include <fll/level_1/conversion.h>
+#include <fll/level_1/fss.h>
+#include <fll/level_1/fss/payload.h>
 #include <fll/level_1/print.h>
 
 // FLL-2 includes.

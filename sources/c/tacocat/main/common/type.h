@@ -28,16 +28,23 @@ extern "C" {
  * socket: Socket structure.
  * status: The status of the socket operations.
  *
- * buffer:  A buffer for sending or receiving data between clients.
- * client:  A single client address for some network connection.
- * name:    A file name for reading from or writing to.
- * network: A network name for the socket.
- * packet:  The simple packet range representing the parts of the packet for use during processing.
+ * buffer:      A buffer for sending or receiving data between clients.
+ * cache:       A cache used for various purposes, but primarily for the building of the send packet.
+ * client:      A single client address for some network connection.
+ * header:      A buffer used for the header part and possibly the reset of a packet, except for the actual payload.
+ * name:        A file name for reading from or writing to.
+ * network:     A network name for the socket.
+ * packet:      The simple packet range representing the parts of the packet for use during processing.
+ * write_state: State data for the packet write operation.
+ *
+ * abstruses: The abstruse header map array, used for building the headers when sending a response.
+ * headers:   The map of the headers after being processed for use when buulding the headers when sending a response.
  */
 #ifndef _di_kt_tacocat_socket_set_t_
   typedef struct {
     f_number_unsigned_t size_block;
     size_t size_done;
+    size_t size_total;
 
     uint16_t flag;
     uint16_t retry;
@@ -46,15 +53,22 @@ extern "C" {
     f_status_t status;
 
     f_string_dynamic_t buffer;
+    f_string_dynamic_t cache;
     f_string_dynamic_t client;
+    f_string_dynamic_t header;
     f_string_dynamic_t name;
     f_string_dynamic_t network;
     f_fss_simple_packet_range_t packet;
+    f_fss_payload_header_write_state_t write_state;
+
+    f_abstruse_maps_t abstruses;
+    f_string_maps_t headers;
   } kt_tacocat_socket_set_t;
 
   #define kt_tacocat_socket_set_t_initialize \
     { \
       kt_tacocat_block_size_d, \
+      0, \
       0, \
       0, \
       0, \
@@ -65,12 +79,18 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
+      f_fss_payload_header_write_state_t_initialize, \
+      f_abstruse_maps_t_initialize, \
+      f_string_maps_t_initialize, \
     }
 
   #define macro_kt_tacocat_socket_set_t_initialize_1(size_block) \
     { \
       size_block, \
+      0, \
       0, \
       0, \
       0, \
@@ -82,7 +102,35 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
+      f_fss_payload_header_write_state_t_initialize, \
+      f_abstruse_maps_t_initialize, \
+      f_string_maps_t_initialize, \
+    }
+
+  #define macro_kt_tacocat_socket_set_t_initialize_2(size_block, write_state) \
+    { \
+      size_block, \
+      0, \
+      0, \
+      0, \
+      0, \
+      f_file_t_initialize, \
+      f_poll_t_initialize, \
+      f_socket_t_initialize, \
+      f_status_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
+      f_fss_simple_packet_range_t_initialize, \
+      write_state, \
+      f_abstruse_maps_t_initialize, \
+      f_string_maps_t_initialize, \
     }
 #endif // _di_kt_tacocat_socket_set_t_
 

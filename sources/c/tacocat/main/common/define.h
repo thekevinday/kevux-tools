@@ -41,8 +41,10 @@ extern "C" {
  *   - maintain: The max size in bytes to maintain a particular buffer.
  *
  * kt_tacocat_packet_*_d:
- *   - peek: The size to peek into the packet to get the initial information.
- *   - read: The size to read at a time when processing the packet.
+ *   - minimum:   The minimum packet size, "header:\npayload:\n" = 17.
+ *   - peek:      The size to peek into the packet to get the initial information.
+ *   - prebuffer: A size used to include during allocation to add additional space for the packet header and therefore help reduce the potential number of allocations.
+ *   - read:      The size to read at a time when processing the packet.
  *
  * kt_tacocat_signal_*_d:
  *   - check:          When not using threads, this is how often to perform the check (lower numbers incur more kernel I/O).
@@ -70,8 +72,10 @@ extern "C" {
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
   #define kt_tacocat_max_maintain_d 0x100000   // 0x10^5 (Which is 1 Megabyte in base 16 (1 Megaxyte (MX)).
 
-  #define kt_tacocat_packet_peek_d F_fss_simple_packet_block_header_size_d
-  #define kt_tacocat_packet_read_d 0x2000
+  #define kt_tacocat_packet_minimum_d   17
+  #define kt_tacocat_packet_peek_d      64
+  #define kt_tacocat_packet_prebuffer_d 0x200
+  #define kt_tacocat_packet_read_d      0x2000
 
   #define kt_tacocat_signal_check_d          0x4e20
   #define kt_tacocat_signal_check_failsafe_d 0x4e20

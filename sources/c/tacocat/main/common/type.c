@@ -54,8 +54,16 @@ extern "C" {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].buffer.string, &array[i].buffer.used, &array[i].buffer.size);
         }
 
+        if (array[i].cache.size) {
+          f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].cache.string, &array[i].cache.used, &array[i].cache.size);
+        }
+
         if (array[i].client.size) {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].client.string, &array[i].client.used, &array[i].client.size);
+        }
+
+        if (array[i].header.size) {
+          f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].header.string, &array[i].header.used, &array[i].header.size);
         }
 
         if (array[i].name.size) {
@@ -64,6 +72,14 @@ extern "C" {
 
         if (array[i].network.size) {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].network.string, &array[i].network.used, &array[i].network.size);
+        }
+
+        if (array[i].abstruses.size) {
+          f_memory_arrays_resize(0, sizeof(f_abstruse_map_t), (void **) &array[i].abstruses.array, &array[i].abstruses.used, &array[i].abstruses.size, &f_abstruse_maps_delete_callback);
+        }
+
+        if (array[i].headers.size) {
+          f_memory_arrays_resize(0, sizeof(f_string_map_t), (void **) &array[i].headers.array, &array[i].headers.used, &array[i].headers.size, &f_string_maps_delete_callback);
         }
       } // for
     }

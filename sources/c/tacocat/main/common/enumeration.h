@@ -146,21 +146,25 @@ extern "C" {
  * Individual socket-specific flags for receiving.
  *
  * kt_tacocat_socket_flag_send_*_e:
- *   - none:        No flags set.
- *   - file_open:   File is open.
- *   - file_buffer: File is buffered.
- *   - connect:     The remote address is connected.
- *   - buffer:      Send the buffer.
- *   - buffer_sent: Buffer has been sent.
+ *   - none:    No flags set.
+ *   - size:    Determine the file size.
+ *   - file:    Buffer the file.
+ *   - build:   Build the header information.
+ *   - connect: Connect to the remote address.
+ *   - header:  Send the header information.
+ *   - payload: Send the payload information.
+ *   - done:    The entire Packet is sent.
  */
 #ifndef _di_kt_tacocat_socket_flag_send_e_
   enum {
-    kt_tacocat_socket_flag_send_none_e        = 0x0,
-    kt_tacocat_socket_flag_send_file_open_e   = 0x1,
-    kt_tacocat_socket_flag_send_file_buffer_e = 0x2,
-    kt_tacocat_socket_flag_send_connect_e     = 0x4,
-    kt_tacocat_socket_flag_send_buffer_e      = 0x8,
-    kt_tacocat_socket_flag_send_buffer_sent_e = 0x10,
+    kt_tacocat_socket_flag_send_none_e    = 0x0,
+    kt_tacocat_socket_flag_send_size_e    = 0x1,
+    kt_tacocat_socket_flag_send_file_e    = 0x2,
+    kt_tacocat_socket_flag_send_build_e   = 0x4,
+    kt_tacocat_socket_flag_send_connect_e = 0x8,
+    kt_tacocat_socket_flag_send_header_e  = 0x10,
+    kt_tacocat_socket_flag_send_payload_e = 0x20,
+    kt_tacocat_socket_flag_send_done_e    = 0x40,
   }; // enum
 #endif // _di_kt_tacocat_socket_flag_send_e_
 

@@ -39,14 +39,14 @@ extern "C" {
  */
 #ifndef _di_kt_tacocat_f_e_
   enum {
-    kt_tacocat_f_f_console_parameter_process_e,
+    kt_tacocat_f_f_console_parameter_process_e = 0,
     kt_tacocat_f_f_file_close_e,
     kt_tacocat_f_f_file_close_id_e,
     kt_tacocat_f_f_file_open_e,
     kt_tacocat_f_f_file_read_block_e,
     kt_tacocat_f_f_file_size_by_id_e,
     kt_tacocat_f_f_file_write_e,
-    kt_tacocat_f_f_fss_simple_packet_extract_range_e,
+    kt_tacocat_f_f_fss_payload_extract_range_e,
     kt_tacocat_f_f_memory_array_increase_by_e,
     kt_tacocat_f_f_memory_array_resize_e,
     kt_tacocat_f_f_network_from_ip_name_e,

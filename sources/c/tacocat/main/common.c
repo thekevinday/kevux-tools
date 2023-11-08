@@ -332,8 +332,11 @@ extern "C" {
           j = sets[i]->used;
 
           sets[i]->array[j].size_block = default_block_size[i];
+          sets[i]->array[j].abstruses.used = 0;
           sets[i]->array[j].buffer.used = 0;
+          sets[i]->array[j].cache.used = 0;
           sets[i]->array[j].client.used = 0;
+          sets[i]->array[j].header.used = 0;
           sets[i]->array[j].flag = 0;
           sets[i]->array[j].name.used = 0;
           sets[i]->array[j].network.used = 0;
@@ -343,6 +346,8 @@ extern "C" {
           sets[i]->array[j].packet.payload.stop = 0;
           sets[i]->array[j].retry = 0;
           sets[i]->array[j].status = F_okay;
+          sets[i]->array[j].write_state.conversion = f_conversion_data_base_10_c;
+          sets[i]->array[j].write_state.cache = &sets[i]->array[j].cache;
 
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {

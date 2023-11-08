@@ -222,10 +222,10 @@ extern "C" {
       return;
     }
 
-    set->status = f_fss_simple_packet_extract_range(set->buffer, &set->packet);
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->flag);
+    set->status = f_fss_payload_extract_range(set->buffer, &set->packet);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_payload_extract_range, set->network, set->status, set->flag);
 
-    if (set->status == F_packet_too_small || set->packet.size < F_fss_simple_packet_block_header_size_d) {
+    if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d) {
       kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
 
       set->buffer.used = 0;
