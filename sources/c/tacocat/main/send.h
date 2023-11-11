@@ -45,9 +45,12 @@ extern "C" {
  *
  *     F_packet_too_large (with error bit) on total packet size is too large.
  *     F_payload_too_large (with error bit) on total payload size is too large.
+ *     F_too_large (with error bit) on file too large.
  * @param set
  *   The socket set to process.
  *   Must not be NULL.
+ *
+ * @todo Processing and logic around the return status needs to reviewed and updated.
  *
  * @see f_socket_read_stream()
  */

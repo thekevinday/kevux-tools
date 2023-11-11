@@ -74,7 +74,7 @@ extern "C" {
       set->status = f_file_open(set->name, F_file_mode_all_rw_d, &set->file);
 
       if (F_status_is_error(set->status)) {
-        kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_open_s);
+        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_open_s);
 
         return;
       }
@@ -118,7 +118,7 @@ extern "C" {
 
         // Keep going on error, but in the future more advanced error handling/recovery is needed to make this more robust.
         if (F_status_is_error(set->status)) {
-          kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_write), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_write_s);
+          kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_write), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_write_s);
         }
 
         // Reset buffer used and increment counter.

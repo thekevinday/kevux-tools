@@ -69,12 +69,60 @@ extern "C" {
     // @todo this needs a max retries for sending without error, possibly resetting depending on the part (flag).
 
     if (!set->flag) {
+      set->abstruses.used = 0;
+      set->buffer.used = 0;
+      set->header.used = 0;
+      set->headers.used = 0;
       set->size_done = 0;
+
+      // Initialize the default file payload.
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_string_map_t), (void **) &set->headers.array, &set->headers.used, &set->headers.size);
+      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->header.string, &set->header.used, &set->header.size);
+      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_abstruse_map_t), (void **) &set->abstruses.array, &set->abstruses.used, &set->abstruses.size);
+      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+
+      // Make sure the buffer is large enough for the file block reads (including a space for a terminating NULL).
+      set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 2, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
+      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+
+      // Index 0 is the status.
+      set->abstruses.array[0].key = f_fss_payload_object_status_s;
+      set->abstruses.array[0].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[0].value.is.a_dynamic = f_status_okay_s;
+
+      // Index 1 is the type.
+      set->abstruses.array[1].key = f_fss_payload_object_type_s;
+      set->abstruses.array[1].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[1].value.is.a_dynamic = f_file_type_name_file_s;
+
+      // Index 2 is the length.
+      set->abstruses.array[2].key = f_fss_payload_object_length_s;
+      set->abstruses.array[2].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[2].value.is.a_unsigned = 0;
+
+      // Index 3 is the part.
+      set->abstruses.array[3].key = f_fss_payload_object_part_s;
+      set->abstruses.array[3].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[3].value.is.a_unsigned = 0;
+
+      // Index 4 is the total (size of file).
+      set->abstruses.array[4].key = f_fss_payload_object_total_s;
+      set->abstruses.array[4].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[4].value.is.a_unsigned = 0;
+
+      // Index 5 is the name.
+      set->abstruses.array[5].key = f_fss_payload_object_name_s;
+      set->abstruses.array[5].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[5].value.is.a_dynamic = set->name;
 
       set->status = f_file_open(set->name, F_file_mode_all_r_d, &set->file);
 
       if (F_status_is_error(set->status)) {
-        kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
+        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
 
         return F_done_not;
       }
@@ -90,21 +138,25 @@ extern "C" {
       set->status = f_file_size_by_id(set->file, &total);
 
       if (F_status_is_error(set->status)) {
-        kt_tacocat_print_error_on_file(&main->program.error, macro_kt_tacocat_f(f_file_size_by_id), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
+        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_size_by_id), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
 
         return F_done_not;
       }
 
-      set->size_total = (size_t) total; // @todo there is a size_total, but there is a total packet size and a total payload size. Find a way to distinguish both.
+      if ((f_number_unsigned_t) total > F_number_t_size_unsigned_d) {
+        set->status = F_status_set_error(F_too_large);
+
+        kt_tacocat_print_error_on_file_too_large(&main->program.error, set->name, kt_tacocat_send_s, set->network, F_number_t_size_unsigned_d, set->abstruses.array[4].value.is.a_unsigned);
+
+        return F_done_not;
+      }
+
+      set->abstruses.array[4].value.is.a_unsigned = (f_number_unsigned_t) total;
       set->flag = kt_tacocat_socket_flag_send_file_e;
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_file_e) {
       set->buffer.used = 0;
-
-      // Make sure the buffer is large enough for the file block reads (including a space for a terminating NULL).
-      set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 1, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
 
       set->status = f_string_dynamic_append(f_fss_payload_object_payload_s, &set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
@@ -112,6 +164,7 @@ extern "C" {
       set->status = f_string_dynamic_append(f_fss_payload_object_end_s, &set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
 
+      // Each block is sent one at a time.
       set->status = f_file_read_block(set->file, &set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
 
@@ -123,10 +176,7 @@ extern "C" {
     if (set->flag == kt_tacocat_socket_flag_send_build_e) {
       set->header.used = 0;
 
-      if (set->buffer.used) {
-        set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->header.string, &set->header.used, &set->header.size);
-        macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
-
+      if (set->header.used) {
         f_state_t state_local = main->setting.state;
         state_local.data = &set->write_state;
 
@@ -142,7 +192,7 @@ extern "C" {
         //       1) type file (or string, and if file, then name is filesize and size is filesize, otherwise name is unused and size is string length.)
         //       1) name "example.csv"
         //       2) size 1234
-        //       3) status F_okay
+        //       3) status F_okay (f_status_okay_s)
 
         // @todo
         //       1) Build abstruse headers map of data.

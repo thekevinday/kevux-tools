@@ -18,6 +18,7 @@ f_pipe
 f_print
 f_signal
 f_socket
+f_status_string
 f_thread
 f_time
 
