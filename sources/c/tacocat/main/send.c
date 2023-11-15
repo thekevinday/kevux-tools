@@ -35,12 +35,15 @@ extern "C" {
             }
           }
           else {
+            // @todo the kt_tacocat_receive_process() and kt_tacocat_send_process() have different return designs, figure out which design to use and be consistent.
+            // @todo in all cases error or success, when done be sure set->file is closed.
             if (kt_tacocat_send_process(main, &main->setting.send.array[i]) == F_done) {
               if (ready != F_done_not) {
                 ready = F_done;
               }
             }
             else {
+              // @todo on error during partial transfer either attempt to resend, attempt to send failure packet, or abandon.
               ready = F_done_not;
             }
           }
@@ -85,8 +88,7 @@ extern "C" {
       set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_abstruse_map_t), (void **) &set->abstruses.array, &set->abstruses.used, &set->abstruses.size);
       macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
 
-      // Make sure the buffer is large enough for the file block reads (including a space for a terminating NULL).
-      set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 2, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
+      set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 1, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
       macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
 
       // Index 0 is the status.
@@ -109,7 +111,7 @@ extern "C" {
       set->abstruses.array[3].value.type = f_abstruse_unsigned_e;
       set->abstruses.array[3].value.is.a_unsigned = 0;
 
-      // Index 4 is the total (size of file).
+      // Index 4 is the total number of packets (based on block size).
       set->abstruses.array[4].key = f_fss_payload_object_total_s;
       set->abstruses.array[4].value.type = f_abstruse_unsigned_e;
       set->abstruses.array[4].value.is.a_unsigned = 0;
@@ -151,7 +153,19 @@ extern "C" {
         return F_done_not;
       }
 
-      set->abstruses.array[4].value.is.a_unsigned = (f_number_unsigned_t) total;
+      set->abstruses.array[3].value.is.a_unsigned = 0;
+
+      if (total) {
+        set->abstruses.array[4].value.is.a_unsigned = ((f_number_unsigned_t) total) / set->file.size_read;
+
+        if (set->abstruses.array[4].value.is.a_unsigned % set->file.size_read) {
+          ++set->abstruses.array[4].value.is.a_unsigned;
+        }
+      }
+      else {
+        set->abstruses.array[4].value.is.a_unsigned = 1;
+      }
+
       set->flag = kt_tacocat_socket_flag_send_file_e;
     }
 
@@ -164,54 +178,46 @@ extern "C" {
       set->status = f_string_dynamic_append(f_fss_payload_object_end_s, &set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
 
-      // Each block is sent one at a time.
       set->status = f_file_read_block(set->file, &set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
 
+      set->abstruses.array[2].value.is.a_unsigned = set->buffer.used - f_fss_payload_object_payload_s.used - f_fss_payload_object_end_s.used;
       set->buffer.string[set->buffer.used] = 0;
       set->flag = kt_tacocat_socket_flag_send_build_e;
     }
 
-    // @todo The build process needs to be broken up into multiple parts that can fit in a FSS Packet (2^32 - 6).
     if (set->flag == kt_tacocat_socket_flag_send_build_e) {
-      set->header.used = 0;
+      set->cache.used = 0;
 
-      if (set->header.used) {
+      {
         f_state_t state_local = main->setting.state;
         state_local.data = &set->write_state;
 
-        // @todo build the header and add to the header buffer and also add the "\npayload:\n". (resume programming here)
-        // The entire structure:
-        //   f_fss_payload_comment_header_begin_s.used + f_fss_payload_comment_header_s.used + f_fss_payload_comment_header_end_s.used
-        //   f_fss_payload_object_header_s.used + f_fss_payload_object_end_s
-        //   set->header.used
-        //   f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s
-        //   set->buffer.used
+        fl_fss_payload_header_map(set->abstruses, &set->headers, &state_local);
+        macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, set->network, state_local.status, set->flag);
 
-        // @todo create the following headers:
-        //       1) type file (or string, and if file, then name is filesize and size is filesize, otherwise name is unused and size is string length.)
-        //       1) name "example.csv"
-        //       2) size 1234
-        //       3) status F_okay (f_status_okay_s)
+        set->flag = kt_tacocat_socket_flag_send_combine_e;
+      }
+    }
 
-        // @todo
-        //       1) Build abstruse headers map of data.
-        //       2) Call this: fl_fss_payload_header_map(set->headers, f_string_maps_t * const destinations, f_state_t * const state)
-        //       3) append maps to buffer.
+    if (set->flag == kt_tacocat_socket_flag_send_combine_e) {
+      set->header.used = 0;
 
-        // @todo needs to be kt_tacocat_socket_flag_send_build_e equivalent for sending the structures, like the header structure.
+      {
+        set->status = f_string_dynamic_append(f_fss_payload_comment_header_s, &set->header);
+        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
+
+        set->status = f_string_dynamic_append(f_fss_payload_comment_header_end_s, &set->header);
+        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
+
+        // @todo walk through the header map.
 
         set->header.string[set->header.used] = 0;
         set->flag = kt_tacocat_socket_flag_send_build_e;
       }
-      else {
-
-        // File is empty, nothing left to send.
-        set->flag = kt_tacocat_socket_flag_send_done_e;
-      }
     }
 
-    // @todo all below is not updated to flag enumeration changes.
+    // @todo all below is not updated to flag enumeration changes (need to connect, send header, send payload, and close (done)).
 
     // @todo don't send just yet, need to build the payload header (then send that first, followed by the payload itself)..
     // probably should send the header data separately first to avoid additional allocations of merging the buffer with the header.

@@ -37,6 +37,7 @@ extern "C" {
     "f_thread_create",
     "fl_conversion_dynamic_partial_to_unsigned_detect",
     "fl_conversion_dynamic_to_unsigned_detect",
+    "fl_fss_payload_header_map",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",
     "kt_tacocat_process_socket_set_error_has",

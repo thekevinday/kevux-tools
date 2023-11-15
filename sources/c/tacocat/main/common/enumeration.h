@@ -150,6 +150,7 @@ extern "C" {
  *   - size:    Determine the file size.
  *   - file:    Buffer the file.
  *   - build:   Build the header information.
+ *   - combine: Combine the built header information into a single buffer.
  *   - connect: Connect to the remote address.
  *   - header:  Send the header information.
  *   - payload: Send the payload information.
@@ -161,10 +162,11 @@ extern "C" {
     kt_tacocat_socket_flag_send_size_e    = 0x1,
     kt_tacocat_socket_flag_send_file_e    = 0x2,
     kt_tacocat_socket_flag_send_build_e   = 0x4,
-    kt_tacocat_socket_flag_send_connect_e = 0x8,
-    kt_tacocat_socket_flag_send_header_e  = 0x10,
-    kt_tacocat_socket_flag_send_payload_e = 0x20,
-    kt_tacocat_socket_flag_send_done_e    = 0x40,
+    kt_tacocat_socket_flag_send_combine_e = 0x8,
+    kt_tacocat_socket_flag_send_connect_e = 0x10,
+    kt_tacocat_socket_flag_send_header_e  = 0x20,
+    kt_tacocat_socket_flag_send_payload_e = 0x40,
+    kt_tacocat_socket_flag_send_done_e    = 0x80,
   }; // enum
 #endif // _di_kt_tacocat_socket_flag_send_e_
 
