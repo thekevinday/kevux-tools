@@ -80,16 +80,22 @@ extern "C" {
 
       // Initialize the default file payload.
       set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_string_map_t), (void **) &set->headers.array, &set->headers.used, &set->headers.size);
-      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
 
-      set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->header.string, &set->header.used, &set->header.size);
-      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->header.string, &set->header.used, &set->header.size);
+      }
 
-      set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_abstruse_map_t), (void **) &set->abstruses.array, &set->abstruses.used, &set->abstruses.size);
-      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_abstruse_map_t), (void **) &set->abstruses.array, &set->abstruses.used, &set->abstruses.size);
+      }
 
-      set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 1, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_memory_array_increase_by(set->file.size_read + f_fss_payload_object_payload_s.used + f_fss_payload_object_end_s.used + 1, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
+      }
+
+      if (F_status_is_error(set->status)) {
+        macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+      }
 
       // Index 0 is the status.
       set->abstruses.array[0].key = f_fss_payload_object_status_s;
@@ -173,13 +179,18 @@ extern "C" {
       set->buffer.used = 0;
 
       set->status = f_string_dynamic_append(f_fss_payload_object_payload_s, &set->buffer);
-      macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
 
-      set->status = f_string_dynamic_append(f_fss_payload_object_end_s, &set->buffer);
-      macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_string_dynamic_append(f_fss_payload_object_end_s, &set->buffer);
+      }
 
-      set->status = f_file_read_block(set->file, &set->buffer);
-      macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_file_read_block(set->file, &set->buffer);
+      }
+
+      if (F_status_is_error(set->status)) {
+        macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
+      }
 
       set->abstruses.array[2].value.is.a_unsigned = set->buffer.used - f_fss_payload_object_payload_s.used - f_fss_payload_object_end_s.used;
       set->buffer.string[set->buffer.used] = 0;
@@ -203,32 +214,82 @@ extern "C" {
     if (set->flag == kt_tacocat_socket_flag_send_combine_e) {
       set->header.used = 0;
 
-      {
+      set->status = f_string_dynamic_append(f_fss_payload_comment_header_begin_s, &set->header);
+
+      if (F_status_is_error_not(set->status)) {
         set->status = f_string_dynamic_append(f_fss_payload_comment_header_s, &set->header);
-        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
-
-        set->status = f_string_dynamic_append(f_fss_payload_comment_header_end_s, &set->header);
-        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
-
-        // @todo walk through the header map.
-
-        set->header.string[set->header.used] = 0;
-        set->flag = kt_tacocat_socket_flag_send_build_e;
       }
-    }
 
-    // @todo all below is not updated to flag enumeration changes (need to connect, send header, send payload, and close (done)).
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_string_dynamic_append(f_fss_payload_comment_header_end_s, &set->header);
+      }
 
-    // @todo don't send just yet, need to build the payload header (then send that first, followed by the payload itself)..
-    // probably should send the header data separately first to avoid additional allocations of merging the buffer with the header.
-    if (set->flag == kt_tacocat_socket_flag_send_build_e) {
-      set->status = f_socket_connect(set->socket);
-      macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, set->network, set->status, set->flag);
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_string_dynamic_append(f_fss_payload_object_header_s, &set->header);
+      }
 
+      if (F_status_is_error_not(set->status)) {
+        set->status = f_string_dynamic_append(f_fss_payload_object_end_s, &set->header);
+      }
+
+      if (F_status_is_error_not(set->status)) {
+        for (f_number_unsigned_t i = 0; i < set->headers.used; ++i) {
+
+          set->status = f_string_dynamic_append(set->headers.array[i].name, &set->header);
+
+          if (F_status_is_error_not(set->status)) {
+            set->status = f_string_dynamic_append(f_fss_extended_open_s, &set->header);
+          }
+
+          if (F_status_is_error_not(set->status)) {
+            set->status = f_string_dynamic_append(set->headers.array[i].value, &set->header);
+          }
+
+          if (F_status_is_error_not(set->status)) {
+            set->status = f_string_dynamic_append(f_fss_extended_close_s, &set->header);
+          }
+          else {
+            break;
+          }
+        } // for
+      }
+
+      if (F_status_is_error_not(set->status)) {
+        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
+      }
+
+      set->header.string[set->header.used] = 0;
       set->flag = kt_tacocat_socket_flag_send_connect_e;
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_connect_e) {
+      set->status = f_socket_connect(set->socket);
+      macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, set->network, set->status, set->flag);
+
+      set->flag = kt_tacocat_socket_flag_send_header_e;
+    }
+
+    if (set->flag == kt_tacocat_socket_flag_send_header_e) {
+      size_t written = 0;
+
+      set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->header.string + set->size_done), &written);
+      macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, set->network, set->status, set->flag);
+
+      set->size_done += written;
+
+      // When the buffer is smaller than the read block size, then the entire file should be completely sent.
+      if (set->size_done >= set->header.used) {
+        set->size_done = 0;
+        set->flag = kt_tacocat_socket_flag_send_payload_e;
+      }
+      else {
+        set->status = F_okay;
+
+        return F_done_not;
+      }
+    }
+
+    if (set->flag == kt_tacocat_socket_flag_send_payload_e) {
       size_t written = 0;
 
       set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->buffer.string + set->size_done), &written);
@@ -237,8 +298,14 @@ extern "C" {
       set->size_done += written;
 
       // When the buffer is smaller than the read block size, then the entire file should be completely sent.
-      if (set->size_done == set->buffer.used && set->size_done < set->file.size_read) {
+      if (set->size_done >= set->buffer.used) {
+        set->size_done = 0;
         set->flag = kt_tacocat_socket_flag_send_done_e;
+      }
+      else {
+        set->status = F_okay;
+
+        return F_done_not;
       }
     }
 
