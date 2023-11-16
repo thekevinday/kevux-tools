@@ -158,9 +158,9 @@ extern "C" {
       continue; \
     }
 
-  #define macro_kt_receive_process_handle_error_exit_1(main, method, name, status, flag, id_data) \
+  #define macro_kt_receive_process_handle_error_exit_1(main, method, network, status, name, flag, id_data) \
     if (F_status_is_error(status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, name, status); \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
       if (id_data) { \
         f_file_close_id(id_data); \
@@ -171,18 +171,18 @@ extern "C" {
       return; \
     }
 
-  #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, name, status, flag) \
+  #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, flag) \
     if (F_status_is_error(status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, name, status); \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
       flag = 0; \
       \
       return; \
     }
 
-  #define macro_kt_send_process_handle_error_exit_1(main, method, name, status, flag) \
+  #define macro_kt_send_process_handle_error_exit_1(main, method, network, status, name, flag) \
     if (F_status_is_error(status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_send_s, name, status); \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_send_s, network, status, name); \
       \
       return F_done_not; \
     }

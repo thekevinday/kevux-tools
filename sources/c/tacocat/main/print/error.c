@@ -41,7 +41,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_file_
 
 #ifndef _di_kt_tacocat_print_error_on_
-  f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status) {
+  f_status_t kt_tacocat_print_error_on(fl_print_t * const print, const f_string_t function, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -52,6 +52,8 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
     fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+    fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
     fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
@@ -63,7 +65,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_
 
 #ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
+  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -87,7 +89,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_buffer_too_large_
 
 #ifndef _di_kt_tacocat_print_error_on_file_too_large_
-  f_status_t kt_tacocat_print_error_on_file_too_large(fl_print_t * const print, f_string_static_t file, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
+  f_status_t kt_tacocat_print_error_on_file_too_large(fl_print_t * const print, f_string_static_t file, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -113,7 +115,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_file_too_large_
 
 #ifndef _di_kt_tacocat_print_error_on_busy_
-  f_status_t kt_tacocat_print_error_on_busy(fl_print_t * const print, f_string_static_t on, const f_string_static_t network) {
+  f_status_t kt_tacocat_print_error_on_busy(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -133,7 +135,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_busy_
 
 #ifndef _di_kt_tacocat_print_error_on_file_receive_
-  f_status_t kt_tacocat_print_error_on_file_receive(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation) {
+  f_status_t kt_tacocat_print_error_on_file_receive(fl_print_t * const print, const f_string_t function, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation) {
 
     if (!print || !print->custom) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -155,7 +157,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_file_receive_
 
 #ifndef _di_kt_tacocat_print_error_on_file_send_
-  f_status_t kt_tacocat_print_error_on_file_send(fl_print_t * const print, const f_string_t function, f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation) {
+  f_status_t kt_tacocat_print_error_on_file_send(fl_print_t * const print, const f_string_t function, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation) {
 
     if (!print || !print->custom) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -176,8 +178,30 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_error_on_file_send_
 
+#ifndef _di_kt_tacocat_print_error_on_max_retries_
+  f_status_t kt_tacocat_print_error_on_max_retries(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_string_static_t name) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QMax retry on failure reached while trying to%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+    fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
+    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    return F_okay;
+  }
+#endif // _di_kt_tacocat_print_error_on_max_retries_
+
 #ifndef _di_kt_tacocat_print_error_on_packet_too_small_
-  f_status_t kt_tacocat_print_error_on_packet_too_small(fl_print_t * const print, f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
+  f_status_t kt_tacocat_print_error_on_packet_too_small(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;

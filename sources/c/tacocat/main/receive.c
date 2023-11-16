@@ -102,14 +102,14 @@ extern "C" {
 
       // Make sure the buffer is large enough for payload processing block reads.
       set->status = f_memory_array_increase_by(set->socket.size_read, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, &set->socket.id_data);
     }
 
     if (set->flag & kt_tacocat_socket_flag_receive_block_payload_e) {
       size_t length_read = 0;
 
       set->status = f_socket_read_stream(&set->socket, 0, (void *) set->buffer.string, &length_read);
-      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag, &set->socket.id_data);
 
       if (length_read) {
         set->buffer.used = length_read;
@@ -145,7 +145,7 @@ extern "C" {
 
       // Report the resize error but do not fail.
       if (F_status_is_error(set->status)) {
-        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status);
+        kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status, set->name);
       }
     }
   }
@@ -162,10 +162,10 @@ extern "C" {
     set->status = f_socket_accept(&set->socket);
 
     // The socket failed to accept and so there is no data socket id to close.
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_socket_accept, set->network, set->status, set->flag);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_socket_accept, set->network, set->status, set->name, set->flag);
 
     set->status = f_memory_array_increase_by(kt_tacocat_packet_peek_d + 1, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag);
 
     set->socket.size_read = kt_tacocat_packet_peek_d;
 
@@ -173,7 +173,7 @@ extern "C" {
 
     set->socket.size_read = size_read;
 
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->flag);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag);
 
     set->buffer.used += length_read;
 
@@ -223,7 +223,7 @@ extern "C" {
     }
 
     set->status = f_fss_simple_packet_extract_range(set->buffer, &set->packet);
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->flag);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->name, set->flag);
 
     if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d) {
       kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
@@ -246,7 +246,7 @@ extern "C" {
 
           // Report the resize error but do not fail.
           if (F_status_is_error(set->status)) {
-            kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status);
+            kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status, set->name);
           }
         }
 

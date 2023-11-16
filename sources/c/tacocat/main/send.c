@@ -29,21 +29,28 @@ extern "C" {
             return 0;
           }
 
-          if (main->setting.send.array[i].status == F_done) {
-            if (ready != F_done_not) {
+          if (F_status_set_fine(main->setting.send.array[i].status) == F_done) {
+            if (F_status_is_error(main->setting.send.array[i].status) || ready != F_done_not) {
               ready = F_done;
             }
           }
           else {
             // @todo the kt_tacocat_receive_process() and kt_tacocat_send_process() have different return designs, figure out which design to use and be consistent.
             // @todo in all cases error or success, when done be sure set->file is closed.
+            // @todo on error during partial transfer either attempt to resend, attempt to send failure packet, or abandon.
             if (kt_tacocat_send_process(main, &main->setting.send.array[i]) == F_done) {
-              if (ready != F_done_not) {
+              if (F_status_is_error(main->setting.send.array[i].status)) {
+                ++main->setting.send.array[i].retry;
+              }
+              else if (ready != F_done_not) {
                 ready = F_done;
               }
             }
             else {
-              // @todo on error during partial transfer either attempt to resend, attempt to send failure packet, or abandon.
+              if (F_status_is_error(main->setting.send.array[i].status)) {
+                ++main->setting.send.array[i].retry;
+              }
+
               ready = F_done_not;
             }
           }
@@ -94,7 +101,7 @@ extern "C" {
       }
 
       if (F_status_is_error(set->status)) {
-        macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->flag);
+        macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag);
       }
 
       // Index 0 is the status.
@@ -136,6 +143,18 @@ extern "C" {
       }
 
       set->flag = kt_tacocat_socket_flag_send_size_e;
+    }
+
+    if (set->retry >= kt_tacocat_startup_retry_max_d) {
+      f_file_close(&set->file);
+      f_socket_disconnect(&set->socket, f_socket_close_write_e);
+
+      // Keep error bit but set state to done to designate that nothing else is to be done.
+      set->status = F_status_set_error(F_done);
+
+      kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_send_s, set->network, set->name);
+
+      return F_done;
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_size_e) {
@@ -189,7 +208,7 @@ extern "C" {
       }
 
       if (F_status_is_error(set->status)) {
-        macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->flag);
+        macro_kt_send_process_handle_error_exit_1(main, f_file_read_block, set->network, set->status, set->name, set->flag);
       }
 
       set->abstruses.array[2].value.is.a_unsigned = set->buffer.used - f_fss_payload_object_payload_s.used - f_fss_payload_object_end_s.used;
@@ -205,7 +224,7 @@ extern "C" {
         state_local.data = &set->write_state;
 
         fl_fss_payload_header_map(set->abstruses, &set->headers, &state_local);
-        macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, set->network, state_local.status, set->flag);
+        macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, set->network, state_local.status, set->name, set->flag);
 
         set->flag = kt_tacocat_socket_flag_send_combine_e;
       }
@@ -255,7 +274,7 @@ extern "C" {
       }
 
       if (F_status_is_error_not(set->status)) {
-        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->flag);
+        macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_append, set->network, set->status, set->name, set->flag);
       }
 
       set->header.string[set->header.used] = 0;
@@ -264,7 +283,7 @@ extern "C" {
 
     if (set->flag == kt_tacocat_socket_flag_send_connect_e) {
       set->status = f_socket_connect(set->socket);
-      macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, set->network, set->status, set->flag);
+      macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, set->network, set->status, set->name, set->flag);
 
       set->flag = kt_tacocat_socket_flag_send_header_e;
     }
@@ -273,7 +292,7 @@ extern "C" {
       size_t written = 0;
 
       set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->header.string + set->size_done), &written);
-      macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, set->network, set->status, set->flag);
+      macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, set->network, set->status, set->name, set->flag);
 
       set->size_done += written;
 
@@ -293,7 +312,7 @@ extern "C" {
       size_t written = 0;
 
       set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->buffer.string + set->size_done), &written);
-      macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, set->network, set->status, set->flag);
+      macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, set->network, set->status, set->name, set->flag);
 
       set->size_done += written;
 
