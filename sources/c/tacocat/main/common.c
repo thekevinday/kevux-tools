@@ -346,6 +346,8 @@ extern "C" {
           sets[i]->array[j].packet.payload.stop = 0;
           sets[i]->array[j].retry = 0;
           sets[i]->array[j].status = F_okay;
+          sets[i]->array[j].socket.id = -1;
+          sets[i]->array[j].socket.id_data = -1;
           sets[i]->array[j].write_state.conversion = f_conversion_data_base_10_c;
           sets[i]->array[j].write_state.cache = &sets[i]->array[j].cache;
 

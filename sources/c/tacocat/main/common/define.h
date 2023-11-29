@@ -180,9 +180,9 @@ extern "C" {
       return; \
     }
 
-  #define macro_kt_send_process_handle_error_exit_1(main, method, network, status, name, flag) \
+  #define macro_kt_send_process_handle_error_exit_1(main, method, on, network, status, name, flag) \
     if (F_status_is_error(status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_send_s, network, status, name); \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), on, network, status, name); \
       \
       return F_done_not; \
     }

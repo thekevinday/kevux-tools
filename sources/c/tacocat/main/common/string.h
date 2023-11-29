@@ -80,6 +80,14 @@ extern "C" {
   #define KT_TACOCAT_network_or_socket_s  "network / socket"
   #define KT_TACOCAT_receive_s            "receive"
   #define KT_TACOCAT_send_s               "send"
+  #define KT_TACOCAT_send_build_s         "send build"
+  #define KT_TACOCAT_send_combine_s       "send combine"
+  #define KT_TACOCAT_send_connect_s       "send connect"
+  #define KT_TACOCAT_send_done_s          "send done"
+  #define KT_TACOCAT_send_file_s          "send file"
+  #define KT_TACOCAT_send_header_s        "send header"
+  #define KT_TACOCAT_send_payload_s       "send payload"
+  #define KT_TACOCAT_send_size_s          "send size"
   #define KT_TACOCAT_socket_s             "socket"
   #define KT_TACOCAT_tacocat_s            "tacocat"
   #define KT_TACOCAT_two_s                "two"
@@ -92,6 +100,14 @@ extern "C" {
   #define KT_TACOCAT_network_or_socket_s_length  16
   #define KT_TACOCAT_receive_s_length            7
   #define KT_TACOCAT_send_s_length               4
+  #define KT_TACOCAT_send_build_s_length         19
+  #define KT_TACOCAT_send_combine_s_length       12
+  #define KT_TACOCAT_send_connect_s_length       12
+  #define KT_TACOCAT_send_done_s_length          9
+  #define KT_TACOCAT_send_file_s_length          9
+  #define KT_TACOCAT_send_header_s_length        11
+  #define KT_TACOCAT_send_payload_s_length       12
+  #define KT_TACOCAT_send_size_s_length          9
   #define KT_TACOCAT_socket_s_length             6
   #define KT_TACOCAT_tacocat_s_length            7
   #define KT_TACOCAT_two_s_length                3
@@ -104,6 +120,14 @@ extern "C" {
   extern const f_string_static_t kt_tacocat_network_or_socket_s;
   extern const f_string_static_t kt_tacocat_receive_s;
   extern const f_string_static_t kt_tacocat_send_s;
+  extern const f_string_static_t kt_tacocat_send_build_s;
+  extern const f_string_static_t kt_tacocat_send_combine_s;
+  extern const f_string_static_t kt_tacocat_send_connect_s;
+  extern const f_string_static_t kt_tacocat_send_done_s;
+  extern const f_string_static_t kt_tacocat_send_file_s;
+  extern const f_string_static_t kt_tacocat_send_header_s;
+  extern const f_string_static_t kt_tacocat_send_payload_s;
+  extern const f_string_static_t kt_tacocat_send_size_s;
   extern const f_string_static_t kt_tacocat_socket_s;
   extern const f_string_static_t kt_tacocat_tacocat_s;
   extern const f_string_static_t kt_tacocat_two_s;

@@ -239,6 +239,9 @@ extern "C" {
         continue;
       }
 
+      // The id_data socket ID is the same when sending (writing) to the socket.
+      main->setting.send.array[i].socket.id_data = main->setting.send.array[i].socket.id;
+
       // Make the socket re-usable.
       {
         value_socket = 1;
@@ -349,6 +352,9 @@ extern "C" {
         if (F_status_is_error(status)) {
           f_socket_disconnect(&sets->array[i].socket, f_socket_close_read_write_e);
         }
+
+        sets->array[i].socket.id = -1;
+        sets->array[i].socket.id_data = -1;
       } // for
     }
 
