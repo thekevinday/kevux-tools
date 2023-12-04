@@ -282,10 +282,11 @@ extern "C" {
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_connect_e) {
-      set->status = f_socket_connect(set->socket);
-      macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, kt_tacocat_send_connect_s, set->network, set->status, set->name, set->flag);
+      // @fixme this is already performed, so do not do this here, the whole kt_tacocat_socket_flag_send_connect_e stage and kt_tacocat_send_connect_s should be removed.
+      //set->status = f_socket_connect(set->socket);
+      //macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, kt_tacocat_send_connect_s, set->network, set->status, set->name, set->flag);
 
-      set->socket.id_data = set->socket.id;
+      //set->socket.id_data = set->socket.id;
       set->flag = kt_tacocat_socket_flag_send_header_e;
     }
 
@@ -344,6 +345,8 @@ extern "C" {
       if (F_status_is_error(set->status)) {
         kt_tacocat_print_warning_on_file(&main->program.warning, macro_kt_tacocat_f(f_socket_disconnect), kt_tacocat_send_done_s, set->network, set->status, set->name, f_file_operation_close_s);
       }
+
+      f_file_close_id(&set->socket.id_data);
 
       set->socket.id = -1;
       set->socket.id_data = -1;

@@ -249,17 +249,19 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
 
 #ifndef _di_kt_tacocat_print_error_port_number_invalid_
-  f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_t port_range) {
+  f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_double_t range_ip) {
 
     if (!print || !print->custom) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
 
     kt_tacocat_main_t * const main = (kt_tacocat_main_t *) print->custom;
 
+    const f_string_range_t range = macro_f_string_range_t_initialize_1(range_ip.start_2, range_ip.stop_2);
+
     f_file_stream_lock(print->to);
 
     fl_print_format("%[%QUnknown or invalid port number%] ", print->to, print->set->error, print->prefix, print->set->error);
-    fl_print_format("%[%/Q%]", print->to, print->set->notable, address, port_range, print->set->notable);
+    fl_print_format("%[%/Q%]", print->to, print->set->notable, address, range, print->set->notable);
     fl_print_format(" %[from the address '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, address, print->set->notable);
     fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);

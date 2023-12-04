@@ -361,8 +361,8 @@ extern "C" {
  *   This does not alter print.custom.setting.state.status.
  * @param address
  *   The entire address string, including the port number.
- * @param port_range
- *   The range within the address string representing the port.
+ * @param range_ip
+ *   The positions within the address representing the IP address and port.
  *
  * @return
  *   F_okay on success.
@@ -373,7 +373,7 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_port_number_invalid_
-  extern f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_t port_range);
+  extern f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_double_t range_ip);
 #endif // _di_kt_tacocat_print_error_port_number_invalid_
 
 /**

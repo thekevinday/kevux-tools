@@ -17,6 +17,7 @@ extern "C" {
     "f_memory_array_increase_by",
     "f_memory_array_resize",
     "f_network_from_ip_name",
+    "f_network_from_ip_string",
     "f_network_is_ip_address",
     "f_socket_accept",
     "f_socket_bind_inet4",

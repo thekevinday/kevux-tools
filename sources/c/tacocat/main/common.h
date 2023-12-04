@@ -110,6 +110,8 @@ extern "C" {
  *     F_parameter (with error bit) if a parameter is invalid.
  *
  *     Errors (with error bit) from: fl_conversion_dynamic_to_unsigned_detect().
+ * @param range_ip
+ *   The range in the string representing the extracted address and port number.
  * @param address
  *   The string representing the address to extract the port number from.
  *   If a valid number is found, then this is updated to truncate the length at the colon and a NULL termination is inserted at the colon.
@@ -124,16 +126,13 @@ extern "C" {
  *   - Decimal (base 10) is used for all other cases.
  * @param port
  *   The extracted port number.
- * @param port_range
- *   The range in the string representing the extracted port number.
- *   This is primarily intended for printing errors.
  *
  *   When main.setting.state.status is set to either F_network_version_four or F_network_version_six when calling this function, the port represents the location within the address string that the port number begins.
  *
  * @see fl_conversion_dynamic_to_unsigned_detect()
  */
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
-  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, f_string_static_t * const address, f_number_unsigned_t * const port, f_string_range_t * const port_range);
+  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, const f_string_range_double_t range_ip, f_string_static_t * const address, f_number_unsigned_t * const port);
 #endif // _di_kt_tacocat_setting_load_address_port_extract_
 
 #ifdef __cplusplus

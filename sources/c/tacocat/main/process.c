@@ -239,9 +239,6 @@ extern "C" {
         continue;
       }
 
-      // The id_data socket ID is the same when sending (writing) to the socket.
-      main->setting.send.array[i].socket.id_data = main->setting.send.array[i].socket.id;
-
       // Make the socket re-usable.
       {
         value_socket = 1;
@@ -260,7 +257,17 @@ extern "C" {
       for (main->setting.send.array[i].retry = 0; main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d; ++main->setting.send.array[i].retry) {
 
         if (main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet4_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet6_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_local_e) {
-          main->setting.send.array[i].status = f_socket_connect(main->setting.send.array[i].socket);
+          main->setting.send.array[i].status = f_socket_connect(main->setting.send.array[i].socket); // @fixme this is currently failing because part of the parameters is invalid (figure out why).
+
+          // The id_data socket ID is the same when sending (writing) to the socket.
+          if (F_status_is_error_not(main->setting.send.array[i].status)) {
+            main->setting.send.array[i].socket.id_data = main->setting.send.array[i].socket.id;
+          }
+
+          // Treat invalid file descriptor as an error as the descriptor should be valid at this point in time.
+          if (main->setting.send.array[i].status == F_file_descriptor) {
+            main->setting.send.array[i].status = F_status_set_error(F_file_descriptor);
+          }
         }
         else {
           main->setting.status_send = F_status_set_error(F_parameter);
@@ -322,6 +329,7 @@ extern "C" {
         main->setting.send_polls.array[i].revents = 0;
       }
       else {
+        // @todo do not forget to utilize the poll fd.
         main->setting.send_polls.array[i].fd = main->setting.send.array[i].socket.id;
         main->setting.send_polls.array[i].events = f_poll_write_e;
         main->setting.send_polls.array[i].revents = 0;

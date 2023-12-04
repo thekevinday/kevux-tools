@@ -50,6 +50,7 @@ extern "C" {
     kt_tacocat_f_f_memory_array_increase_by_e,
     kt_tacocat_f_f_memory_array_resize_e,
     kt_tacocat_f_f_network_from_ip_name_e,
+    kt_tacocat_f_f_network_from_ip_string_e,
     kt_tacocat_f_f_network_is_ip_address_e,
     kt_tacocat_f_f_socket_accept_e,
     kt_tacocat_f_f_socket_bind_inet4_e,
