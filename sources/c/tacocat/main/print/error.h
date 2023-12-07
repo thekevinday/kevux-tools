@@ -373,7 +373,7 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_port_number_invalid_
-  extern f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_double_t range_ip);
+  extern f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_range_double_t range_ip);
 #endif // _di_kt_tacocat_print_error_port_number_invalid_
 
 /**

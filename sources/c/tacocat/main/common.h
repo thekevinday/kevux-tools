@@ -132,7 +132,7 @@ extern "C" {
  * @see fl_conversion_dynamic_to_unsigned_detect()
  */
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
-  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, const f_string_range_double_t range_ip, f_string_static_t * const address, f_number_unsigned_t * const port);
+  extern void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, const f_range_double_t range_ip, f_string_static_t * const address, f_number_unsigned_t * const port);
 #endif // _di_kt_tacocat_setting_load_address_port_extract_
 
 #ifdef __cplusplus

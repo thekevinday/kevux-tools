@@ -249,14 +249,14 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_parameter_value_resolve_unknown_
 
 #ifndef _di_kt_tacocat_print_error_port_number_invalid_
-  f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_string_range_double_t range_ip) {
+  f_status_t kt_tacocat_print_error_port_number_invalid(fl_print_t * const print, const f_string_static_t address, const f_range_double_t range_ip) {
 
     if (!print || !print->custom) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
 
     kt_tacocat_main_t * const main = (kt_tacocat_main_t *) print->custom;
 
-    const f_string_range_t range = macro_f_string_range_t_initialize_1(range_ip.start_2, range_ip.stop_2);
+    const f_range_t range = macro_f_range_t_initialize_1(range_ip.start_2, range_ip.stop_2);
 
     f_file_stream_lock(print->to);
 

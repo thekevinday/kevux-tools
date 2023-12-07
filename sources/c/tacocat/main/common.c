@@ -354,7 +354,7 @@ extern "C" {
           if (main->program.parameters.arguments.array[index].used) {
             if (f_path_is_absolute(main->program.parameters.arguments.array[index]) == F_true || f_path_is_relative_current(main->program.parameters.arguments.array[index]) == F_true) {
 
-              main->setting.state.status = f_memory_array_increase_by(main->program.parameters.arguments.array[index].used + 2, sizeof(f_char_t), (void **) &sets[i]->array[j].network.string, &sets[i]->array[j].network.used, &sets[i]->array[j].network.size);
+              main->setting.state.status = f_memory_array_increase_by(main->program.parameters.arguments.array[index].used + 1, sizeof(f_char_t), (void **) &sets[i]->array[j].network.string, &sets[i]->array[j].network.used, &sets[i]->array[j].network.size);
 
               macro_setting_load_handle_send_receive_error_continue_2(f_memory_array_increase_by);
 
@@ -362,9 +362,7 @@ extern "C" {
 
               macro_setting_load_handle_send_receive_error_continue_2(f_string_dynamic_append_nulless);
 
-              // Designate this as a socket file by appending after the terminating NULL, past the used length.
               sets[i]->array[j].network.string[sets[i]->array[j].network.used] = 0;
-              sets[i]->array[j].network.string[sets[i]->array[j].network.used + 1] = f_string_ascii_slash_forward_s.string[0];
 
               if (is_receive[i]) {
                 main->setting.state.status = f_file_exists(sets[i]->array[j].network, F_true);
@@ -383,11 +381,12 @@ extern "C" {
               memset(&family, 0, sizeof(f_network_family_ip_t));
 
               address = main->program.parameters.arguments.array[index];
-              f_char_t address_string[address.used];
-              f_string_range_double_t range_ip = f_string_range_double_t_initialize;
+              f_char_t address_string[address.used + 1];
+              f_range_double_t range_ip = f_range_double_t_initialize;
 
               memcpy(address_string, address.string, address.used);
               address.string = address_string;
+              address.string[address.used] = 0;
 
               f_network_is_ip_address(address, &range_ip, &main->setting.state);
 
@@ -626,7 +625,7 @@ extern "C" {
 #endif // _di_kt_tacocat_setting_load_send_receive_
 
 #ifndef _di_kt_tacocat_setting_load_address_port_extract_
-  void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, const f_string_range_double_t range_ip, f_string_static_t * const address, f_number_unsigned_t * const port) {
+  void kt_tacocat_setting_load_address_port_extract(kt_tacocat_main_t * const main, const f_range_double_t range_ip, f_string_static_t * const address, f_number_unsigned_t * const port) {
 
     if (!main) return;
 
@@ -647,7 +646,9 @@ extern "C" {
         *port = 0;
 
         {
-          const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(address->string + range_ip.start_2, 0, (range_ip.start_2 - range_ip.stop_2) + 1);
+          char adjusted_string[(range_ip.stop_2 - range_ip.start_2) + 1];
+          const f_string_static_t adjusted = macro_f_string_static_t_initialize_1(adjusted_string, 0, (range_ip.stop_2 - range_ip.start_2) + 1);
+          memcpy(adjusted_string, address->string + range_ip.start_2, adjusted.used);
 
           main->setting.state.status = fl_conversion_dynamic_to_unsigned_detect(fl_conversion_data_base_10_c, adjusted, port);
           if (F_status_is_error(main->setting.state.status)) return;
@@ -659,9 +660,7 @@ extern "C" {
         while (address->used && address->string[address->used] != f_string_ascii_colon_s.string[0]) --address->used;
 
         // Be sure to also remove the colon.
-        if (address->used) {
-          address->string[address->used--] = 0;
-        }
+        address->string[address->used] = 0;
       }
 
       main->setting.state.status = F_okay;
