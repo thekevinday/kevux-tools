@@ -120,14 +120,8 @@ extern "C" {
 
       for (main->setting.receive.array[i].retry = 0; main->setting.receive.array[i].retry < kt_tacocat_startup_retry_max_d; ++main->setting.receive.array[i].retry) {
 
-        if (main->setting.receive.array[i].socket.domain == f_socket_protocol_family_inet4_e) {
-          main->setting.receive.array[i].status = f_socket_bind_inet4(&main->setting.receive.array[i].socket);
-        }
-        else if (main->setting.receive.array[i].socket.domain == f_socket_protocol_family_inet6_e) {
-          main->setting.receive.array[i].status = f_socket_bind_inet6(&main->setting.receive.array[i].socket);
-        }
-        else if (main->setting.receive.array[i].socket.domain == f_socket_protocol_family_local_e) {
-          main->setting.receive.array[i].status = f_socket_bind_local(&main->setting.receive.array[i].socket);
+        if (main->setting.receive.array[i].socket.form == f_socket_address_form_inet4_e || main->setting.receive.array[i].socket.form == f_socket_address_form_inet6_e || main->setting.receive.array[i].socket.form == f_socket_address_form_local_e) {
+          main->setting.receive.array[i].status = f_socket_bind(&main->setting.receive.array[i].socket);
         }
         else {
           main->setting.status_receive = F_status_set_error(F_parameter);
@@ -177,13 +171,7 @@ extern "C" {
           kt_tacocat_print_error_on_busy(&main->program.error, kt_tacocat_receive_s, main->setting.receive.array[i].network);
         }
         else {
-          kt_tacocat_print_error_status(&main->program.error, main->setting.receive.array[i].socket.domain == f_socket_protocol_family_inet4_e
-            ? macro_kt_tacocat_f(f_socket_bind_inet4)
-            : main->setting.receive.array[i].socket.domain == f_socket_protocol_family_inet6_e
-              ? macro_kt_tacocat_f(f_socket_bind_inet6)
-              : macro_kt_tacocat_f(f_socket_bind_local),
-            main->setting.status_receive
-          );
+          kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_bind), main->setting.status_receive);
         }
 
         continue;
@@ -257,7 +245,7 @@ extern "C" {
       for (main->setting.send.array[i].retry = 0; main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d; ++main->setting.send.array[i].retry) {
 
         if (main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet4_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet6_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_local_e) {
-          main->setting.send.array[i].status = f_socket_connect(main->setting.send.array[i].socket); // @fixme this is currently failing because part of the parameters is invalid (figure out why).
+          main->setting.send.array[i].status = f_socket_connect(&main->setting.send.array[i].socket);
 
           // The id_data socket ID is the same when sending (writing) to the socket.
           if (F_status_is_error_not(main->setting.send.array[i].status)) {

@@ -64,30 +64,6 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_error_
 
-#ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
-
-    if (!print) return F_status_set_error(F_output_not);
-    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
-
-    f_file_stream_lock(print->to);
-
-    fl_print_format("%[%QNetwork packet is too large for%] ", print->to, print->set->error, print->prefix, print->set->error);
-    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
-    fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
-    fl_print_format("%[', the maximum size is%] ", print->to, print->set->error, print->set->error);
-    fl_print_format("%[%ul%]", print->to, print->set->notable, size_expect, print->set->notable);
-    fl_print_format("%[, and the provided size is%] ", print->to, print->set->error, print->set->error);
-    fl_print_format("%[%ul%]", print->to, print->set->notable, size_got, print->set->notable);
-    fl_print_format(f_string_format_sentence_end_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
-
-    f_file_stream_unlock(print->to);
-
-    return F_okay;
-  }
-#endif // _di_kt_tacocat_print_error_on_buffer_too_large_
-
 #ifndef _di_kt_tacocat_print_error_on_file_too_large_
   f_status_t kt_tacocat_print_error_on_file_too_large(fl_print_t * const print, f_string_static_t file, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got) {
 
@@ -177,6 +153,26 @@ extern "C" {
     fll_error_file_print(print, F_status_set_fine(((kt_tacocat_main_t *) print->custom)->setting.state.status), function, F_true, name, operation, fll_error_file_type_file_e);
   }
 #endif // _di_kt_tacocat_print_error_on_file_send_
+
+#ifndef _di_kt_tacocat_print_error_on_packet_invalid_
+  f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QNetwork packet is invalid for%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    return F_okay;
+  }
+#endif // _di_kt_tacocat_print_error_on_packet_invalid_
 
 #ifndef _di_kt_tacocat_print_error_on_max_retries_
   f_status_t kt_tacocat_print_error_on_max_retries(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_string_static_t name) {

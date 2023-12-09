@@ -282,16 +282,22 @@ extern "C" {
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_connect_e) {
-      // @fixme this is already performed, so do not do this here, the whole kt_tacocat_socket_flag_send_connect_e stage and kt_tacocat_send_connect_s should be removed.
-      //set->status = f_socket_connect(set->socket);
-      //macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, kt_tacocat_send_connect_s, set->network, set->status, set->name, set->flag);
+      if (set->socket.id == -1) {
+        set->status = f_socket_connect(&set->socket);
+        macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, kt_tacocat_send_connect_s, set->network, set->status, set->name, set->flag);
+      }
 
-      //set->socket.id_data = set->socket.id;
+      if (set->socket.id_data == -1) {
+        set->socket.id_data = set->socket.id;
+      }
+
       set->flag = kt_tacocat_socket_flag_send_header_e;
     }
 
     if (set->flag == kt_tacocat_socket_flag_send_header_e) {
       size_t written = 0;
+
+      set->socket.size_write = set->size_done + set->size_block > set->header.used ? set->header.used - set->size_done : set->size_block;
 
       set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->header.string + set->size_done), &written);
       macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, kt_tacocat_send_header_s, set->network, set->status, set->name, set->flag);
@@ -312,6 +318,8 @@ extern "C" {
 
     if (set->flag == kt_tacocat_socket_flag_send_payload_e) {
       size_t written = 0;
+
+      set->socket.size_write = set->size_done + set->size_block > set->buffer.used ? set->buffer.used - set->size_done : set->size_block;
 
       set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->buffer.string + set->size_done), &written);
       macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, kt_tacocat_send_payload_s, set->network, set->status, set->name, set->flag);

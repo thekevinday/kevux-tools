@@ -348,6 +348,7 @@ extern "C" {
           sets[i]->array[j].status = F_okay;
           sets[i]->array[j].socket.id = -1;
           sets[i]->array[j].socket.id_data = -1;
+          sets[i]->array[j].socket.form = f_socket_address_form_generic_e;
           sets[i]->array[j].write_state.conversion = f_conversion_data_base_10_c;
           sets[i]->array[j].write_state.cache = &sets[i]->array[j].cache;
 
@@ -398,14 +399,17 @@ extern "C" {
               if (main->setting.state.status == F_network_version_four) {
                 host.h_addrtype = f_socket_address_family_inet4_e;
                 family.type = f_network_family_ip_4_e;
+                sets[i]->array[j].socket.form = f_socket_address_form_inet4_e;
               }
               else if (main->setting.state.status == F_network_version_six) {
                 host.h_addrtype = f_socket_address_family_inet6_e;
                 family.type = f_network_family_ip_6_e;
+                sets[i]->array[j].socket.form = f_socket_address_form_inet6_e;
               }
               else {
                 host.h_addrtype = 0;
                 family.type = f_network_family_none_e;
+                sets[i]->array[j].socket.form = f_socket_address_form_generic_e;
               }
 
               kt_tacocat_setting_load_address_port_extract(main, range_ip, &address, &port);

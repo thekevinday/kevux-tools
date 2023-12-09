@@ -196,9 +196,11 @@ extern "C" {
           kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
 
           set->buffer.used = 0;
+          set->flag = 0;
+          set->packet.control = 0;
+          set->packet.size = 0;
           set->retry = 0;
           set->status = F_status_set_error(F_packet_too_small);
-          set->flag = 0;
 
           return;
         }
@@ -212,6 +214,7 @@ extern "C" {
         set->flag = 0;
         set->packet.control = 0;
         set->packet.size = 0;
+        set->retry = 0;
         set->status = F_status_set_error(F_packet_too_small);
 
         return;
@@ -225,38 +228,33 @@ extern "C" {
     set->status = f_fss_simple_packet_extract_range(set->buffer, &set->packet);
     macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->name, set->flag);
 
-    if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d) {
-      kt_tacocat_print_error_on_packet_too_small(&main->program.error, kt_tacocat_receive_s, set->network, kt_tacocat_packet_peek_d, set->buffer.used);
-
+    if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d || set->packet.size > main->setting.max_buffer) {
       set->buffer.used = 0;
+
+      if (set->buffer.size > kt_tacocat_max_maintain_d) {
+        set->status = f_memory_array_resize(kt_tacocat_max_maintain_d, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
+
+        // Report the resize error but do not fail.
+        if (F_status_is_error(set->status)) {
+          kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status, set->name);
+        }
+      }
+
       set->flag = 0;
       set->packet.control = 0;
       set->packet.size = 0;
-      set->status = F_status_set_error(F_packet_too_small);
+      set->retry = 0;
+
+      if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d) {
+        set->status = F_status_set_error(F_packet_too_large);
+      }
+      else {
+        set->status = F_status_set_error(F_packet_too_small);
+      }
+
+      kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, set->network);
 
       return;
-    }
-
-    if (main->setting.flag & kt_tacocat_main_flag_max_buffer_e) {
-      if (set->packet.size > main->setting.max_buffer) {
-        set->buffer.used = 0;
-
-        if (set->buffer.size > kt_tacocat_max_maintain_d) {
-          set->status = f_memory_array_resize(kt_tacocat_max_maintain_d, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-
-          // Report the resize error but do not fail.
-          if (F_status_is_error(set->status)) {
-            kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_resize), kt_tacocat_receive_s, set->network, set->status, set->name);
-          }
-        }
-
-        set->status = F_status_set_error(F_packet_too_large);
-        set->flag = 0;
-
-        kt_tacocat_print_error_on_buffer_too_large(&main->program.error, kt_tacocat_receive_s, set->network, main->setting.max_buffer, set->packet.size);
-
-        return;
-      }
     }
 
     set->flag |= kt_tacocat_socket_flag_receive_block_payload_e;

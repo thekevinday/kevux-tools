@@ -125,34 +125,6 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_
 
 /**
- * Print network-related error message for when buffer is too large to accept additional packet blocks.
- *
- * @param print
- *   The output structure to print to.
- *
- *   This does not alter print.custom.setting.state.status.
- * @param on
- *   The network connection direction, which should either be "receive" or "send".
- * @param network
- *   The name of the network in which the error is related.
- * @param size_max
- *   The maximum buffer size.
- * @param size_got
- *   The provided buffer size.
- *
- * @return
- *   F_okay on success.
- *   F_output_not on success, but no printing is performed.
- *
- *   F_output_not (with error bit) if setting is NULL.
- *
- * @see fll_error_file_print()
- */
-#ifndef _di_kt_tacocat_print_error_on_buffer_too_large_
-  extern f_status_t kt_tacocat_print_error_on_buffer_too_large(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got);
-#endif // _di_kt_tacocat_print_error_on_buffer_too_large_
-
-/**
  * Print network-related error message for when file is too large to send.
  *
  * @param print
@@ -271,6 +243,30 @@ extern "C" {
 #ifndef _di_kt_tacocat_print_error_on_file_send_
   extern f_status_t kt_tacocat_print_error_on_file_send(fl_print_t * const print, const f_string_t function, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t operation);
 #endif // _di_kt_tacocat_print_error_on_file_send_
+
+/**
+ * Print network-related error message for when a packet is invalid.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_packet_invalid_
+  extern f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network);
+#endif // _di_kt_tacocat_print_error_on_packet_invalid_
 
 /**
  * Print error message regarding maximum retries after error reached.
