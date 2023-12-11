@@ -521,11 +521,13 @@ extern "C" {
 
               if (host.h_addrtype == f_socket_address_family_inet4_e) {
                 sets[i]->array[j].socket.domain = f_socket_protocol_family_inet4_e;
+                sets[i]->array[j].socket.address.inet4.sin_family = f_socket_address_family_inet4_e;
                 sets[i]->array[j].socket.address.inet4.sin_port = htons((in_port_t) port);
                 sets[i]->array[j].socket.address.inet4.sin_addr.s_addr = family.address.v4.s_addr;
               }
               else if (host.h_addrtype == f_socket_address_family_inet6_e) {
                 sets[i]->array[j].socket.domain = f_socket_protocol_family_inet6_e;
+                sets[i]->array[j].socket.address.inet4.sin_family = f_socket_address_family_inet6_e;
                 sets[i]->array[j].socket.address.inet6.sin6_port = htons((in_port_t) port);
                 sets[i]->array[j].socket.address.inet6.sin6_addr = family.address.v6;
               }

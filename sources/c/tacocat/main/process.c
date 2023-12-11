@@ -227,30 +227,13 @@ extern "C" {
         continue;
       }
 
-      // Make the socket re-usable.
-      {
-        value_socket = 1;
-
-        main->setting.send.array[i].status = f_socket_option_set(&main->setting.send.array[i].socket, SOL_SOCKET, f_socket_option_address_reuse_e | f_socket_option_port_reuse_e, &value_socket, sizeof(int));
-
-        if (F_status_is_error(main->setting.send.array[i].status)) {
-          main->setting.status_send = main->setting.send.array[i].status;
-
-          kt_tacocat_print_error_status(&main->program.error, macro_kt_tacocat_f(f_socket_option_set), main->setting.status_send);
-
-          continue;
-        }
-      }
+      // The id_data socket ID is the same when sending (writing) to the socket.
+      main->setting.send.array[i].socket.id_data = main->setting.send.array[i].socket.id;
 
       for (main->setting.send.array[i].retry = 0; main->setting.send.array[i].retry < kt_tacocat_startup_retry_max_d; ++main->setting.send.array[i].retry) {
 
         if (main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet4_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_inet6_e || main->setting.send.array[i].socket.domain == f_socket_protocol_family_local_e) {
           main->setting.send.array[i].status = f_socket_connect(&main->setting.send.array[i].socket);
-
-          // The id_data socket ID is the same when sending (writing) to the socket.
-          if (F_status_is_error_not(main->setting.send.array[i].status)) {
-            main->setting.send.array[i].socket.id_data = main->setting.send.array[i].socket.id;
-          }
 
           // Treat invalid file descriptor as an error as the descriptor should be valid at this point in time.
           if (main->setting.send.array[i].status == F_file_descriptor) {
@@ -311,6 +294,7 @@ extern "C" {
         continue;
       }
 
+      // @fixme are send_polls even used yet? This should be used to listen for and catch a response from the receive end after sending.
       if (main->setting.send.array[i].socket.id == -1) {
         main->setting.send_polls.array[i].fd = -1;
         main->setting.send_polls.array[i].events = 0;
@@ -343,11 +327,7 @@ extern "C" {
         f_file_close(&sets->array[i].file);
         f_file_close_id(&sets->array[i].socket.id_data);
 
-        status = f_socket_disconnect(&sets->array[i].socket, main->program.signal_received ? f_socket_close_fast_e : f_socket_close_read_write_e);
-
-        if (F_status_is_error(status)) {
-          f_socket_disconnect(&sets->array[i].socket, f_socket_close_read_write_e);
-        }
+        f_socket_disconnect(&sets->array[i].socket, f_socket_close_fast_e);
 
         sets->array[i].socket.id = -1;
         sets->array[i].socket.id_data = -1;

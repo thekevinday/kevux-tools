@@ -145,7 +145,7 @@ extern "C" {
 
     if (set->retry >= kt_tacocat_startup_retry_max_d) {
       f_file_close(&set->file);
-      f_socket_disconnect(&set->socket, f_socket_close_write_e);
+      f_socket_disconnect(&set->socket, f_socket_close_fast_e);
 
       // Keep error bit but set state to done to designate that nothing else is to be done.
       set->status = F_status_set_error(F_done);
@@ -278,19 +278,6 @@ extern "C" {
       }
 
       set->header.string[set->header.used] = 0;
-      set->flag = kt_tacocat_socket_flag_send_connect_e;
-    }
-
-    if (set->flag == kt_tacocat_socket_flag_send_connect_e) {
-      if (set->socket.id == -1) {
-        set->status = f_socket_connect(&set->socket);
-        macro_kt_send_process_handle_error_exit_1(main, f_socket_connect, kt_tacocat_send_connect_s, set->network, set->status, set->name, set->flag);
-      }
-
-      if (set->socket.id_data == -1) {
-        set->socket.id_data = set->socket.id;
-      }
-
       set->flag = kt_tacocat_socket_flag_send_header_e;
     }
 
@@ -299,7 +286,8 @@ extern "C" {
 
       set->socket.size_write = set->size_done + set->size_block > set->header.used ? set->header.used - set->size_done : set->size_block;
 
-      set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->header.string + set->size_done), &written);
+      set->status = f_socket_write_stream(&set->socket, f_socket_flag_signal_not_e, (void *) (set->header.string + set->size_done), &written);
+
       macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, kt_tacocat_send_header_s, set->network, set->status, set->name, set->flag);
 
       set->size_done += written;
@@ -321,7 +309,7 @@ extern "C" {
 
       set->socket.size_write = set->size_done + set->size_block > set->buffer.used ? set->buffer.used - set->size_done : set->size_block;
 
-      set->status = f_socket_write_stream(&set->socket, 0, (void *) (set->buffer.string + set->size_done), &written);
+      set->status = f_socket_write_stream(&set->socket, f_socket_flag_signal_not_e, (void *) (set->buffer.string + set->size_done), &written);
       macro_kt_send_process_handle_error_exit_1(main, f_socket_write_stream, kt_tacocat_send_payload_s, set->network, set->status, set->name, set->flag);
 
       set->size_done += written;
@@ -348,7 +336,7 @@ extern "C" {
         kt_tacocat_print_warning_on_file(&main->program.warning, macro_kt_tacocat_f(f_file_close), kt_tacocat_send_done_s, set->network, set->status, set->name, f_file_operation_close_s);
       }
 
-      set->status = f_socket_disconnect(&set->socket, f_socket_close_write_e);
+      set->status = f_socket_disconnect(&set->socket, f_socket_close_fast_e);
 
       if (F_status_is_error(set->status)) {
         kt_tacocat_print_warning_on_file(&main->program.warning, macro_kt_tacocat_f(f_socket_disconnect), kt_tacocat_send_done_s, set->network, set->status, set->name, f_file_operation_close_s);
