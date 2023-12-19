@@ -39,6 +39,9 @@ extern "C" {
       return;
     }
 
+    // Establish random seed.
+    srandom((long) time(0));
+
     kt_tacocat_process_main(main);
 
     if (main->program.signal_received) {

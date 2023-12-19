@@ -21,6 +21,7 @@ extern "C" {
  *
  * size_block: The size in bytes to used to represent a block when sending or receiving packets.
  * size_done:  The size in bytes that are done being processed (generally used by send/write).
+ * size_total: The size in bytes tht represent the entire size to be processed (size_done should eventually equal this).
  *
  * flag:   A set of flags.
  * retry:  The current number of retries performed.

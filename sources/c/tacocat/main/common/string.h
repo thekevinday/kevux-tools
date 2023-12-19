@@ -79,6 +79,7 @@ extern "C" {
   #define KT_TACOCAT_network_s            "network"
   #define KT_TACOCAT_network_or_socket_s  "network / socket"
   #define KT_TACOCAT_receive_s            "receive"
+  #define KT_TACOCAT_salt_s               "salt"
   #define KT_TACOCAT_send_s               "send"
   #define KT_TACOCAT_send_build_s         "send build"
   #define KT_TACOCAT_send_combine_s       "send combine"
@@ -99,6 +100,7 @@ extern "C" {
   #define KT_TACOCAT_network_s_length            7
   #define KT_TACOCAT_network_or_socket_s_length  16
   #define KT_TACOCAT_receive_s_length            7
+  #define KT_TACOCAT_salt_s_length               4
   #define KT_TACOCAT_send_s_length               4
   #define KT_TACOCAT_send_build_s_length         19
   #define KT_TACOCAT_send_combine_s_length       12
@@ -119,6 +121,7 @@ extern "C" {
   extern const f_string_static_t kt_tacocat_network_s;
   extern const f_string_static_t kt_tacocat_network_or_socket_s;
   extern const f_string_static_t kt_tacocat_receive_s;
+  extern const f_string_static_t kt_tacocat_salt_s;
   extern const f_string_static_t kt_tacocat_send_s;
   extern const f_string_static_t kt_tacocat_send_build_s;
   extern const f_string_static_t kt_tacocat_send_combine_s;

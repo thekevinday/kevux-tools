@@ -225,8 +225,8 @@ extern "C" {
       return;
     }
 
-    set->status = f_fss_simple_packet_extract_range(set->buffer, &set->packet);
-    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_extract_range, set->network, set->status, set->name, set->flag);
+    set->status = f_fss_simple_packet_decode_range(set->buffer, &set->packet);
+    macro_kt_receive_process_begin_handle_error_exit_1(main, f_fss_simple_packet_decode_range, set->network, set->status, set->name, set->flag);
 
     if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d || set->packet.size > main->setting.max_buffer) {
       set->buffer.used = 0;
@@ -246,10 +246,10 @@ extern "C" {
       set->retry = 0;
 
       if (set->status == F_packet_too_small || set->packet.size < kt_tacocat_packet_minimum_d) {
-        set->status = F_status_set_error(F_packet_too_large);
+        set->status = F_status_set_error(F_packet_too_small);
       }
       else {
-        set->status = F_status_set_error(F_packet_too_small);
+        set->status = F_status_set_error(F_packet_too_large);
       }
 
       kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, set->network);

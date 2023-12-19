@@ -73,7 +73,7 @@ extern "C" {
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
   #define kt_tacocat_max_maintain_d 0x100000   // 0x10^5 (Which is 1 Megabyte in base 16 (1 Megaxyte (MX)).
 
-  #define kt_tacocat_packet_headers_d   0x6
+  #define kt_tacocat_packet_headers_d   0x7
   #define kt_tacocat_packet_minimum_d   0x11
   #define kt_tacocat_packet_peek_d      0x40
   #define kt_tacocat_packet_prebuffer_d 0x200

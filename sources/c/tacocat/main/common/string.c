@@ -25,6 +25,7 @@ extern "C" {
   const f_string_static_t kt_tacocat_network_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_network_s, 0, KT_TACOCAT_network_s_length);
   const f_string_static_t kt_tacocat_network_or_socket_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_network_or_socket_s, 0, KT_TACOCAT_network_or_socket_s_length);
   const f_string_static_t kt_tacocat_receive_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_receive_s, 0, KT_TACOCAT_receive_s_length);
+  const f_string_static_t kt_tacocat_salt_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_salt_s, 0, KT_TACOCAT_salt_s_length);
   const f_string_static_t kt_tacocat_send_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_send_s, 0, KT_TACOCAT_send_s_length);
   const f_string_static_t kt_tacocat_send_build_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_send_build_s, 0, KT_TACOCAT_send_build_s_length);
   const f_string_static_t kt_tacocat_send_combine_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_send_combine_s, 0, KT_TACOCAT_send_combine_s_length);
