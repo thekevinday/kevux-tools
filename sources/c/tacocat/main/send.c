@@ -17,6 +17,7 @@ extern "C" {
 
     kt_tacocat_process_socket_set_send(main);
 
+    // @todo this needs to integrate send_polls, for checking responses to sent packets.
     if (F_status_is_error_not(main->setting.status_send) && main->setting.send.used) {
       do {
         ready = F_okay;
@@ -35,7 +36,6 @@ extern "C" {
             }
           }
           else {
-            // @todo the kt_tacocat_receive_process() and kt_tacocat_send_process() have different return designs, figure out which design to use and be consistent.
             // @todo in all cases error or success, when done be sure set->file is closed.
             // @todo on error during partial transfer either attempt to resend, attempt to send failure packet, or abandon.
             if (kt_tacocat_send_process(main, &main->setting.send.array[i]) == F_done) {
@@ -79,11 +79,27 @@ extern "C" {
     if (!set->flag) {
       set->abstruses.used = 0;
       set->buffer.used = 0;
+      set->cache.used = 0;
       set->header.used = 0;
       set->headers.used = 0;
+      set->objects.used = 0;
+      set->contents.used = 0;
+      set->objects_delimits.used = 0;
+      set->contents_delimits.used = 0;
+      set->comments.used = 0;
+      set->retry = 0;
       set->size_done = 0;
       set->size_total = 0;
       set->file.size_read = set->size_block;
+      set->socket.size_read = kt_tacocat_packet_read_d;
+      set->range.start = -1;
+      set->range.stop = 0;
+      set->packet.control = 0;
+      set->packet.size = 0;
+      set->status = F_none;
+
+      // For writes, the id_data is the same as the id.
+      set->socket.id_data = set->socket.id;
 
       // Initialize the default file payload.
       set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_string_map_t), (void **) &set->headers.array, &set->headers.used, &set->headers.size);
@@ -137,14 +153,6 @@ extern "C" {
 
       set->abstruses.used = 7;
 
-      set->status = f_file_open(set->name, F_file_mode_all_r_d, &set->file);
-
-      if (F_status_is_error(set->status)) {
-        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
-
-        return F_done_not;
-      }
-
       set->flag = kt_tacocat_socket_flag_send_size_e;
     }
 
@@ -152,17 +160,27 @@ extern "C" {
       f_file_close(&set->file);
       f_socket_disconnect(&set->socket, f_socket_close_fast_e);
 
+      set->flag = 0;
+      set->socket.id_data = -1;
+
       // Keep error bit but set state to done to designate that nothing else is to be done.
       set->status = F_status_set_error(F_done);
-      set->socket.id = -1;
-      set->socket.id_data = -1;
 
       kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_send_s, set->network, set->name);
 
       return F_done;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_size_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_size_e) {
+      if (set->file.id == -1) {
+        set->status = f_file_open(set->name, F_file_mode_all_r_d, &set->file);
+
+        if (F_status_is_error(set->status)) {
+          kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_open), kt_tacocat_send_s, set->network, set->status, set->name, f_file_operation_open_s);
+
+          return F_done_not;
+        }
+      }
 
       // Total is used here to explicitly pass a pointer of off_t rather than a pointer of size_t cast to an off_t.
       off_t total = 0;
@@ -208,7 +226,7 @@ extern "C" {
       set->flag = kt_tacocat_socket_flag_send_build_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_build_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_build_e) {
       f_state_t state_local = main->setting.state;
       state_local.data = &set->write_state;
 
@@ -218,7 +236,7 @@ extern "C" {
       set->flag = kt_tacocat_socket_flag_send_header_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_header_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_header_e) {
       // @todo this needs to check the current status, accodingly (for when multiple blocks are being sent).
 
       // Reserve the FSS Packet header, which will be calculated just before sending.
@@ -270,7 +288,7 @@ extern "C" {
       set->flag = kt_tacocat_socket_flag_send_file_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_file_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_file_e) {
       const f_number_unsigned_t size_header = set->buffer.used;
 
       set->status = f_string_dynamic_append(f_fss_payload_object_payload_s, &set->buffer);
@@ -295,10 +313,11 @@ extern "C" {
       set->status = f_string_dynamic_terminate_after(&set->buffer);
       macro_kt_send_process_handle_error_exit_1(main, f_string_dynamic_terminate_after, kt_tacocat_send_combine_s, set->network, set->status, set->name, set->flag);
 
+      set->retry = 0;
       set->flag = kt_tacocat_socket_flag_send_check_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_check_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_check_e) {
       // @todo this needs to check if the size read has changed and then re-build the header (swap the buffer read block into the cache then rebuild the header with th new size).
       //if (set->abstruses.array[2].value.is.a_unsigned < set->file.size_read) {
       //}
@@ -306,7 +325,7 @@ extern "C" {
       set->flag = kt_tacocat_socket_flag_send_encode_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_encode_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_encode_e) {
       const f_number_unsigned_t original = set->buffer.used;
 
       set->buffer.used = 0;
@@ -322,7 +341,7 @@ extern "C" {
       set->flag = kt_tacocat_socket_flag_send_packet_e;
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_packet_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_packet_e) {
       size_t written = 0;
 
       {
@@ -353,7 +372,7 @@ extern "C" {
       }
     }
 
-    if (set->flag == kt_tacocat_socket_flag_send_done_e) {
+    if (set->flag & kt_tacocat_socket_flag_send_done_e) {
       set->status = f_file_close(&set->file);
 
       if (F_status_is_error(set->status)) {
@@ -366,11 +385,7 @@ extern "C" {
         kt_tacocat_print_warning_on_file(&main->program.warning, macro_kt_tacocat_f(f_socket_disconnect), kt_tacocat_send_done_s, set->network, set->status, set->name, f_file_operation_close_s);
       }
 
-      f_file_close_id(&set->socket.id_data);
-
       set->flag = 0;
-      set->size_done = 0;
-      set->socket.id = -1;
       set->socket.id_data = -1;
       set->status = F_okay;
 

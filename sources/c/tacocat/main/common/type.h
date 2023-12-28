@@ -29,6 +29,14 @@ extern "C" {
  * socket: Socket structure.
  * status: The status of the socket operations.
  *
+ * range:             A generic range, often used for FSS processing.
+ * objects:           An array of FSS Objects.
+ * contents:          An array of FSS Contents.
+ * objects_delimits:  An array of FSS Object delimits.
+ * contents_delimits: An array of FSS Content delimits.
+ * comments:          An array of FSS comments.
+ * state:             Basic state information, usually passed to the FSS functions.
+ *
  * buffer:      A buffer for sending or receiving data between clients.
  * cache:       A cache used for various purposes, but primarily for the building of the send packet.
  * client:      A single client address for some network connection.
@@ -53,6 +61,14 @@ extern "C" {
     f_socket_t socket;
     f_status_t status;
 
+    f_range_t range;
+    f_ranges_t objects;
+    f_rangess_t contents;
+    f_number_unsigneds_t objects_delimits;
+    f_number_unsigneds_t contents_delimits;
+    f_ranges_t comments;
+    f_state_t state;
+
     f_string_dynamic_t buffer;
     f_string_dynamic_t cache;
     f_string_dynamic_t client;
@@ -76,6 +92,13 @@ extern "C" {
       f_file_t_initialize, \
       f_socket_t_initialize, \
       f_status_t_initialize, \
+      f_range_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_ranges_t_initialize, \
+      f_state_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -99,6 +122,13 @@ extern "C" {
       f_poll_t_initialize, \
       f_socket_t_initialize, \
       f_status_t_initialize, \
+      f_range_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_ranges_t_initialize, \
+      f_state_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -122,6 +152,13 @@ extern "C" {
       f_poll_t_initialize, \
       f_socket_t_initialize, \
       f_status_t_initialize, \
+      f_range_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_ranges_t_initialize, \
+      f_state_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -164,9 +201,12 @@ extern "C" {
  * This is passed to the program-specific main entry point to designate program settings.
  * These program settings are often processed from the program arguments (often called the command line arguments).
  *
- * flag:       Flags passed to the main function.
- * interval:   The poll interval to use.
- * max_buffer: The maximum buffer size to use on receive.
+ * flag:           Flags passed to the main function.
+ * interval:       The poll interval to use.
+ * interval_fast:  A poll interval to use when needing the interval to be short.
+ * max_buffer:     The maximum buffer size to use on receive.
+ * active_receive: The number of active receive processes, after initial connection is established.
+ * active_send:    The number of active send processes, after initial connection is established.
  *
  * status_receive: A status used exclusively by the receive thread.
  * status_send:    A status used exclusively by the send thread.
@@ -184,7 +224,10 @@ extern "C" {
   typedef struct {
     uint64_t flag;
     uint64_t interval;
+    uint64_t interval_fast;
     f_number_unsigned_t max_buffer;
+    f_number_unsigned_t active_receive;
+    f_number_unsigned_t active_send;
 
     f_status_t status_receive;
     f_status_t status_send;
@@ -203,7 +246,10 @@ extern "C" {
     { \
       kt_tacocat_main_flag_max_buffer_e, \
       kt_tacocat_interval_poll_d, \
+      kt_tacocat_interval_poll_fast_d, \
       kt_tacocat_max_buffer_d, \
+      0, \
+      0, \
       F_okay, \
       F_okay, \
       F_okay, \

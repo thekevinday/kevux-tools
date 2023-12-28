@@ -20,9 +20,12 @@ extern "C" {
  *
  *   Must be of type kt_tacocat_main_t.
  *
- *   This alters main.setting.state.status:
+ *   This does not alter main.setting.state.status, except on interrupt signal.
+ *
+ *   This alters main.setting.status_send:
  *     F_okay on success.
- *     F_child on child process exiting.
+ *
+ *     F_interrupt (with error bit set) on interrupt received.
  *
  * @return
  *   0, always.
@@ -40,17 +43,17 @@ extern "C" {
  * @param main
  *   The main program and settings data.
  *
- *   This alters main.setting.state.status:
+ *   This does not alter main.setting.state.status, except on interrupt signal.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ *   This alters set.status:
  *     F_okay on success.
  *
  *     F_packet_too_large (with error bit) on total packet size is too large.
  *     F_payload_too_large (with error bit) on total payload size is too large.
  *     F_too_large (with error bit) on file too large.
- * @param set
- *   The socket set to process.
- *   Must not be NULL.
- *
- * @todo Processing and logic around the return status needs to reviewed and updated.
  *
  * @see f_socket_read_stream()
  */

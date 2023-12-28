@@ -162,6 +162,10 @@ extern "C" {
       }
 
       main->setting.interval = number;
+
+      if (number < kt_tacocat_interval_poll_fast_d) {
+        main->setting.interval_fast = number;
+      }
     }
     else if (main->program.parameters.array[kt_tacocat_parameter_interval_e].result & f_console_result_found_e) {
       main->setting.state.status = F_status_set_error(F_parameter);
@@ -346,6 +350,14 @@ extern "C" {
           sets[i]->array[j].packet.payload.stop = 0;
           sets[i]->array[j].retry = 0;
           sets[i]->array[j].status = F_okay;
+          sets[i]->array[j].range.start = 1;
+          sets[i]->array[j].range.stop = 0;
+          sets[i]->array[j].objects.used = 0;
+          sets[i]->array[j].contents.used = 0;
+          sets[i]->array[j].objects_delimits.used = 0;
+          sets[i]->array[j].contents_delimits.used = 0;
+          sets[i]->array[j].comments.used = 0;
+          sets[i]->array[j].state = main->setting.state;
           sets[i]->array[j].socket.id = -1;
           sets[i]->array[j].socket.id_data = -1;
           sets[i]->array[j].socket.form = f_socket_address_form_generic_e;

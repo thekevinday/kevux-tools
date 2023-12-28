@@ -130,15 +130,21 @@ extern "C" {
  * Individual socket-specific flags for receiving.
  *
  * kt_tacocat_socket_flag_receive_*_e:
- *   - none:          No flags set.
- *   - block_control: Reading and processing the Control block and Size block.
- *   - block_payload: Reading and processing the Payload block.
+ *   - none:    No flags set.
+ *   - control: Reading and processing the Control block and Size block.
+ *   - packet:  Reading and processing the rest of the Packet block (the Header and Payload).
+ *   - check:   Process and check the loaded Payload block, processing the Header.
+ *   - write:   Save the loaded Payload block to the file (write to the file).
+ *   - done:    Done processing file.
  */
 #ifndef _di_kt_tacocat_socket_flag_receive_e_
   enum {
-    kt_tacocat_socket_flag_receive_none_e          = 0x0,
-    kt_tacocat_socket_flag_receive_block_control_e = 0x1,
-    kt_tacocat_socket_flag_receive_block_payload_e = 0x2,
+    kt_tacocat_socket_flag_receive_none_e    = 0x0,
+    kt_tacocat_socket_flag_receive_control_e = 0x1,
+    kt_tacocat_socket_flag_receive_packet_e  = 0x2,
+    kt_tacocat_socket_flag_receive_check_e   = 0x4,
+    kt_tacocat_socket_flag_receive_write_e   = 0x8,
+    kt_tacocat_socket_flag_receive_done_e    = 0x10,
   }; // enum
 #endif // _di_kt_tacocat_socket_flag_receive_e_
 

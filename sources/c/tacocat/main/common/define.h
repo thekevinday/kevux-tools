@@ -33,7 +33,8 @@ extern "C" {
  *   - peek: The size in bytes representing the size of the peek cache (should be set to at least "kt_tacocat_block_size_receive_d + 1" and must be greater than zero).
  *
  * kt_tacocat_interval_*_d:
- *   - poll: The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
+ *   - poll:      The time in milliseconds to poll for before returning (this is the amount of time poll() blocks).
+ *   - poll_fast: The time in milliseconds to poll for before returning fo fast polls, such as when there is an active process (this is the amount of time poll() blocks).
  *
  * kt_tacocat_max_*_d:
  *   - backlog:  The max backlog in bytes size to use.
@@ -67,7 +68,8 @@ extern "C" {
 
   #define kt_tacocat_cache_size_peek_d (kt_tacocat_block_size_receive_d + 1)
 
-  #define kt_tacocat_interval_poll_d 1400 // 1.4 second.
+  #define kt_tacocat_interval_poll_d      1400 // 1.4 second.
+  #define kt_tacocat_interval_poll_fast_d 50   // 0.05 second.
 
   #define kt_tacocat_max_backlog_d  0x400
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
@@ -101,11 +103,11 @@ extern "C" {
  *   The same as macro_setting_load_handle_send_receive_error_continue_1() but intended for file errors.
  *
  * macro_kt_receive_process_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_receive_block_control_e.
+ *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_receive_control_e.
  *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
  *
  * macro_kt_receive_process_begin_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_receive_block_control_e.
+ *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_receive_control_e.
  *
  * @todo document macro_kt_send_process_handle_error_exit_1.
  */
@@ -168,7 +170,7 @@ extern "C" {
       \
       flag = 0; \
       \
-      return; \
+      return F_done_not; \
     }
 
   #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, flag) \
