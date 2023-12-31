@@ -56,6 +56,10 @@ extern "C" {
  *   - retry_delay_second:      The delay in seconds to wait between each retry.
  *   - retry_delay_millisecond: The delay in milliseconds to wait between each retry.
  *   - retry_max:               During start up, the maximum number of retries to perform when trying to establish the initial connection before giving up.
+ *
+ * kt_tacocat_startup_seed_*_d:
+ *   - delay_second:     The delay in seconds to wait if the first non-blocking random seed setup fails.
+ *   - delay_nanosecond: The delay in nanoseconds to wait if the first non-blocking random seed setup fails.
  */
 #ifndef _di_kt_tacocat_d_
   #define kt_tacocat_allocation_console_d 0x4
@@ -87,6 +91,9 @@ extern "C" {
   #define kt_tacocat_startup_retry_delay_second_d      3
   #define kt_tacocat_startup_retry_delay_millisecond_d 0
   #define kt_tacocat_startup_retry_max_d               24
+
+  #define kt_tacocat_startup_seed_delay_second_d      0
+  #define kt_tacocat_startup_seed_delay_nanosecond_d  100
 #endif // _di_kt_tacocat_d_
 
 /**

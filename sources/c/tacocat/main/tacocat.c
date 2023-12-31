@@ -39,8 +39,26 @@ extern "C" {
       return;
     }
 
-    // Establish random seed.
-    srandom((long) time(0));
+    main->setting.state.status = f_random_seed(GRND_NONBLOCK);
+
+    // Try again, but only once if blocked.
+    if (main->setting.state.status == F_status_set_error(F_again)) {
+      {
+        const struct timespec time = { .tv_sec = kt_tacocat_startup_seed_delay_second_d, .tv_nsec = kt_tacocat_startup_seed_delay_nanosecond_d };
+
+        nanosleep(&time, 0);
+      }
+
+      main->setting.state.status = f_random_seed(GRND_NONBLOCK);
+    }
+
+    if (F_status_is_error(main->setting.state.status)) {
+
+      // Fall back to the far less secure but better than nothing method of using time as the seed.
+      f_random_seed_set((unsigned int) time(0));
+
+      main->setting.state.status = F_okay;
+    }
 
     kt_tacocat_process_main(main);
 

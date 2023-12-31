@@ -16,6 +16,7 @@ f_network
 f_path
 f_pipe
 f_print
+f_random
 f_signal
 f_socket
 f_status_string
