@@ -46,10 +46,13 @@ extern "C" {
 
                     if (main->setting.receive.array[i].flag) {
                       main->setting.receive.array[i].flag = 0;
-                      --main->setting.active_receive;
+
+                      if (main->setting.active_receive) {
+                        --main->setting.active_receive;
+                      }
                     }
 
-                    kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_receive_s, main->setting.receive.array[i].network, main->setting.receive.array[i].name);
+                    kt_tacocat_print_error_on_max_retries_receive(&main->program.error, &main->setting.receive.array[i]);
                   }
 
                   // @todo if flag is kt_tacocat_socket_flag_receive_control_e, check if error is either F_packet_too_small or F_packet_too_large. This is a non-retrying error.
@@ -65,10 +68,13 @@ extern "C" {
 
                     if (main->setting.receive.array[i].flag) {
                       main->setting.receive.array[i].flag = 0;
-                      --main->setting.active_receive;
+
+                      if (main->setting.active_receive) {
+                        --main->setting.active_receive;
+                      }
                     }
 
-                    kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_receive_s, main->setting.receive.array[i].network, main->setting.receive.array[i].name);
+                    kt_tacocat_print_error_on_max_retries_receive(&main->program.error, &main->setting.receive.array[i]);
                   }
                 }
               }
@@ -118,12 +124,14 @@ extern "C" {
       set->file.size_read = set->size_block;
       set->socket.size_read = kt_tacocat_packet_read_d;
       set->socket.id_data = -1;
-      set->range.start = -1;
+      set->range.start = 1;
       set->range.stop = 0;
       set->state.status = F_none;
       set->status = F_none;
       set->packet.control = 0;
       set->packet.size = 0;
+      set->packet.payload.start = 1;
+      set->packet.payload.stop = 0;
       set->flag = kt_tacocat_socket_flag_receive_control_e;
 
       ++main->setting.active_receive;
@@ -135,9 +143,12 @@ extern "C" {
       // Keep error bit but set state to done to designate that nothing else is to be done.
       set->status = F_status_set_error(F_done);
       set->flag = 0;
-      --main->setting.active_receive;
 
-      kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_receive_s, set->network, set->name);
+      if (main->setting.active_receive) {
+        --main->setting.active_receive;
+      }
+
+      kt_tacocat_print_error_on_max_retries_receive(&main->program.error, set);
 
       return F_done;
     }
@@ -147,56 +158,150 @@ extern "C" {
       kt_tacocat_receive_process_control(main, set);
 
       if (set->buffer.used < kt_tacocat_packet_peek_d || F_status_is_error(set->status)) {
-        --main->setting.active_receive;
+        if (main->setting.active_receive) {
+          --main->setting.active_receive;
+        }
 
         return F_done;
       }
 
       // Reset the buffer to allow for reusing and writing to the file in blocks.
       set->buffer.used = 0;
-      set->socket.size_read = kt_tacocat_packet_read_d;
 
       // Make sure the buffer is large enough for payload processing block reads.
       set->status = f_memory_array_increase_by(set->socket.size_read, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
       macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, &set->socket.id_data);
 
       set->retry = 0;
+      set->buffer.used = 0;
       set->flag = kt_tacocat_socket_flag_receive_packet_e;
     }
 
     if (set->flag & kt_tacocat_socket_flag_receive_packet_e) {
       size_t length_read = 0;
 
-      set->status = f_socket_read_stream(&set->socket, 0, (void *) set->buffer.string, &length_read);
+      set->status = f_socket_read_stream(&set->socket, 0, (void *) (set->buffer.string + set->buffer.used), &length_read);
       macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag, &set->socket.id_data);
 
       if (length_read) {
         set->retry = 0;
         set->buffer.used += length_read;
-        set->flag = kt_tacocat_socket_flag_receive_check_e;
+
+        // This is not a valid packet if the actual size is greater than expected.
+        if (set->buffer.used > set->packet.size) {
+          kt_tacocat_print_error_on_packet_too_large(&main->program.error, kt_tacocat_receive_s, set->network, set->packet.size, set->buffer.used);
+
+          set->status = F_status_set_error(F_packet_too_large);
+
+          return F_done;
+        }
+
+        // Initialize the range to start reading after the Control and Size blocks.
+        if (set->range.start > set->range.stop) {
+          set->range.start = F_fss_simple_packet_block_header_size_d;
+        }
+
+        set->range.stop = set->buffer.used - 1;
+        set->flag = kt_tacocat_socket_flag_receive_find_e;
       }
       else {
         ++set->retry;
       }
     }
 
+    if (set->flag & kt_tacocat_socket_flag_receive_find_e) {
+      set->state.status = F_none;
+
+      fll_fss_payload_read(set->buffer, &set->range, &set->objects, &set->contents, &set->objects_delimits, &set->contents_delimits, &set->comments, &set->state);
+
+      // Note that F_fss_found_object_content_not is not treated as an error because the "payload" section is optional.
+      if (F_status_is_error(set->state.status) && F_status_set_fine(set->state.status) != F_fss_found_object_content_not) {
+        switch (F_status_set_fine(set->state.status)) {
+          case F_okay:
+          case F_okay_eos:
+          case F_okay_stop:
+
+            if (set->buffer.used == set->packet.size) {
+
+              // The packet is fully loaded and there is no "payload" section.
+              set->flag = kt_tacocat_socket_flag_receive_check_e;
+            }
+            else {
+
+              // Seek the left-most new line from the current position to ensure that the next pass potentially reads a complete line.
+              while (set->range.start && set->buffer.string[set->range.start] != f_string_eol_s.string[0]) {
+
+                --set->range.start;
+              } // while
+
+              // No packet is found and is not yet finished loading the data.
+              set->flag = kt_tacocat_socket_flag_receive_packet_e;
+            }
+
+            break;
+
+          default:
+
+            // Seek the left-most new line from the current position to ensure that the next pass potentially reads a complete line.
+            while (set->range.start && set->buffer.string[set->range.start] != f_string_eol_s.string[0]) {
+
+              --set->range.start;
+            } // while
+
+            if (set->buffer.used != set->packet.size) {
+              set->flag = kt_tacocat_socket_flag_receive_packet_e;
+            }
+
+            ++set->retry;
+
+            break;
+        }
+      }
+      else {
+        switch (F_status_set_fine(set->state.status)) {
+          case F_okay:
+          case F_okay_eos:
+          case F_okay_stop:
+          case F_data_not:
+          case F_data_not_eos:
+          case F_data_not_stop:
+          case F_fss_found_object_content_not:
+            set->flag = kt_tacocat_socket_flag_receive_check_e;
+
+            break;
+
+          default:
+            ++set->retry;
+
+            break;
+        }
+      }
+    }
+
     if (set->flag & kt_tacocat_socket_flag_receive_check_e) {
-       // @todo after payload, a headers, and a save step. The check step will be the FSS processing check and if the proper step is reached, then set another flag to designate that the payload start has been found, process the headers (another flag),
-       set->range.start = 0;
-       set->range.stop = set->buffer.used - 1;
-       set->state.status = F_none;
 
-       fll_fss_payload_read(set->buffer, &set->range, &set->objects, &set->contents, &set->objects_delimits, &set->contents_delimits, &set->comments, &set->state);
+      // @todo this probably should be in a separate function, similar to how kt_tacocat_receive_process_control() is.
+      {
+        uint8_t found_not = F_true;
 
-       // @todo before writing the buffer to the file, attempt to read the header, keep appending to the current buffer until in memory matches "payload:".
-       // @todo if the entire header is not available, then set flag back to kt_tacocat_socket_flag_receive_packet_e.
-      //extern void fll_fss_payload_read(const f_string_static_t buffer, f_range_t * const range, f_ranges_t * const objects, f_rangess_t * const contents, f_number_unsigneds_t * const objects_delimits, f_number_unsigneds_t * const contents_delimits, f_ranges_t * const comments, f_state_t * const state);
+        for (f_number_unsigned_t i = 0; i < set->objects.used; ++i) {
 
-      /*if (set->packet.payload.stop + 1 < set->packet.size) {
-        set->flag = kt_tacocat_socket_flag_receive_packet_e;
+          if (f_compare_dynamic_partial_string(f_fss_payload_object_header_s.string, set->buffer, f_fss_payload_object_header_s.used, set->objects.array[i]) == F_equal_to) {
+            // @todo walk through header, mapping it.
+          }
+          else if (f_compare_dynamic_partial_string(f_fss_payload_object_signature_s.string, set->buffer, f_fss_payload_object_signature_s.used, set->objects.array[i]) == F_equal_to) {
+            // @todo walk through signature, mapping it.
+          }
+          else if (f_compare_dynamic_partial_string(f_fss_payload_object_payload_s.string, set->buffer, f_fss_payload_object_payload_s.used, set->objects.array[i]) == F_equal_to) {
+            if (found_not) {
+              set->packet.payload = set->contents.array[i].array[0];
+              found_not = F_false;
+            }
+          }
+        } // for
+      }
 
-        return F_data_not;
-      }*/
+      // @todo walk through each set->objects and their respective set->contents, checking and processing the data.
 
       set->flag = kt_tacocat_socket_flag_receive_write_e;
     }
@@ -210,22 +315,18 @@ extern "C" {
         return F_done_not; // @todo consider sending a file error to caller. This should not infinitely attempt to open on failure.
       }
 
-      // @todo write only the Payload.
-      set->status = f_file_write(set->file, set->buffer, 0);
+      set->status = f_file_write_range(set->file, set->buffer, set->packet.payload, 0);
 
       // Keep going on error, but in the future more advanced error handling/recovery is needed to make this more robust.
       if (F_status_is_error(set->status)) {
         f_file_close(&set->file);
 
-        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_write), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_write_s);
+        kt_tacocat_print_error_on_file_receive(&main->program.error, macro_kt_tacocat_f(f_file_write_range), kt_tacocat_receive_s, set->network, set->status, set->name, f_file_operation_write_s);
       }
-
-      // Reset buffer used and increment counter.
-      set->packet.payload.stop += set->buffer.used;
-      set->buffer.used = 0;
 
       f_file_close(&set->file);
 
+      set->buffer.used = 0;
       set->flag = kt_tacocat_socket_flag_receive_done_e;
     }
 
@@ -237,7 +338,10 @@ extern "C" {
 
       set->flag = 0;
       set->status = F_okay;
-      --main->setting.active_receive;
+
+      if (main->setting.active_receive) {
+        --main->setting.active_receive;
+      }
 
       if (set->buffer.size > kt_tacocat_max_maintain_d) {
         set->buffer.used = 0;
@@ -275,7 +379,7 @@ extern "C" {
 
     set->socket.size_read = kt_tacocat_packet_peek_d;
 
-    set->status = f_socket_read_stream(&set->socket, 0, (void *) (set->buffer.string + set->buffer.used), &length_read);
+    set->status = f_socket_read_stream(&set->socket, f_socket_flag_peek_e, (void *) (set->buffer.string + set->buffer.used), &length_read);
 
     set->socket.size_read = size_read;
 
@@ -350,12 +454,6 @@ extern "C" {
 
       return;
     }
-
-    set->flag = kt_tacocat_socket_flag_receive_packet_e;
-
-    // The payload range "stop" is used to represent the total amount of bytes processed so far (uncluding the header).
-    set->packet.payload.start = 0;
-    set->packet.payload.stop = set->buffer.used - 1;
 
     kt_tacocat_print_message_receive_operation_control_size(&main->program.message, *set);
   }

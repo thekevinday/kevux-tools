@@ -14,6 +14,7 @@ extern "C" {
     "f_file_seek",
     "f_file_size_by_id",
     "f_file_write",
+    "f_file_write_range",
     "f_fss_simple_packet_decode_range",
     "f_fss_simple_packet_encode",
     "f_memory_array_increase_by",

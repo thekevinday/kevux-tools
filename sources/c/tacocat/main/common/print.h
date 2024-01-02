@@ -47,6 +47,7 @@ extern "C" {
     kt_tacocat_f_f_file_seek_e,
     kt_tacocat_f_f_file_size_by_id_e,
     kt_tacocat_f_f_file_write_e,
+    kt_tacocat_f_f_file_write_range_e,
     kt_tacocat_f_f_fss_simple_packet_decode_range_e,
     kt_tacocat_f_f_fss_simple_packet_encode_e,
     kt_tacocat_f_f_memory_array_increase_by_e,

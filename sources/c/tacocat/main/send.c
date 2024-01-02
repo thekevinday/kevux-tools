@@ -149,7 +149,14 @@ extern "C" {
       // Index 6 is the salt.
       set->abstruses.array[6].key = kt_tacocat_salt_s;
       set->abstruses.array[6].value.type = f_abstruse_unsigned_e;
-      set->abstruses.array[6].value.is.a_unsigned = random();
+
+      {
+        long salt = 0;
+
+        f_random_get(&salt);
+
+        set->abstruses.array[6].value.is.a_unsigned = (f_number_unsigned_t) salt;
+      }
 
       set->abstruses.used = 7;
 
@@ -166,7 +173,7 @@ extern "C" {
       // Keep error bit but set state to done to designate that nothing else is to be done.
       set->status = F_status_set_error(F_done);
 
-      kt_tacocat_print_error_on_max_retries(&main->program.error, kt_tacocat_send_s, set->network, set->name);
+      kt_tacocat_print_error_on_max_retries_send(&main->program.error, set);
 
       return F_done;
     }

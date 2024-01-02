@@ -48,8 +48,17 @@ extern "C" {
  *   This alters set.status:
  *     F_okay on success.
  *
+ *     F_done (with error bit) on too many retries.
+ *     F_packet_too_small (with error bit) on total packet size is too small.
  *     F_packet_too_large (with error bit) on total packet size is too large.
  *     F_payload_too_large (with error bit) on total payload size is too large.
+ *
+ *     Errors (with error bit) from: f_file_open().
+ *     Errors (with error bit) from: f_file_write().
+ *     Errors (with error bit) from: f_memory_array_increase_by().
+ *     Errors (with error bit) from: f_memory_array_resize().
+ *     Errors (with error bit) from: f_socket_read_stream().
+ *     Errors (with error bit) from: kt_tacocat_receive_process_control().
  *
  * @see f_socket_read_stream()
  */

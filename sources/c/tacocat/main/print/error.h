@@ -269,7 +269,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_packet_invalid_
 
 /**
- * Print error message regarding maximum retries after error reached.
+ * Print error message regarding maximum retries after error reached, when receiving.
  *
  * This could be on any error, such as errors on file load, memory, access, or network failures.
  *
@@ -277,12 +277,11 @@ extern "C" {
  *   The output structure to print to.
  *
  *   This does not alter print.custom.setting.state.status.
- * @param on
- *   The network connection direction, which should either be "receive" or "send".
- * @param network
- *   The name of the network in which the error is related.
- * @param name
- *   Th name of the file.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ *   This does not alter set.status.
  *
  * @return
  *   F_okay on success.
@@ -292,12 +291,67 @@ extern "C" {
  *
  * @see fll_error_file_print()
  */
-#ifndef _di_kt_tacocat_print_error_on_max_retries_
-  extern f_status_t kt_tacocat_print_error_on_max_retries(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_string_static_t name);
-#endif // _di_kt_tacocat_print_error_on_max_retries_
+#ifndef _di_kt_tacocat_print_error_on_max_retries_receive_
+  extern f_status_t kt_tacocat_print_error_on_max_retries_receive(fl_print_t * const print, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_print_error_on_max_retries_receive_
 
 /**
- * Print network-related error message for when the connection is busy.
+ * Print error message regarding maximum retries after error reached, when sending.
+ *
+ * This could be on any error, such as errors on file load, memory, access, or network failures.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ *   This does not alter set.status.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_max_retries_send_
+  extern f_status_t kt_tacocat_print_error_on_max_retries_send(fl_print_t * const print, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_print_error_on_max_retries_send_
+
+/**
+ * Print network-related error message for when the packet is too large.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ * @param size_expect
+ *   The expected buffer size.
+ * @param size_got
+ *   The provided buffer size.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_packet_too_large_
+  extern f_status_t kt_tacocat_print_error_on_packet_too_large(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_number_unsigned_t size_expect, const f_number_unsigned_t size_got);
+#endif // _di_kt_tacocat_print_error_on_packet_too_large_
+
+/**
+ * Print network-related error message for when the the packet is too small.
  *
  * @param print
  *   The output structure to print to.

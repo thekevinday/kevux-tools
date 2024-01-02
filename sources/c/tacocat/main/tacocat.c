@@ -39,7 +39,7 @@ extern "C" {
       return;
     }
 
-    main->setting.state.status = f_random_seed(GRND_NONBLOCK);
+    main->setting.state.status = f_random_seed(F_random_seed_flag_block_not_d);
 
     // Try again, but only once if blocked.
     if (main->setting.state.status == F_status_set_error(F_again)) {
@@ -49,7 +49,7 @@ extern "C" {
         nanosleep(&time, 0);
       }
 
-      main->setting.state.status = f_random_seed(GRND_NONBLOCK);
+      main->setting.state.status = f_random_seed(F_random_seed_flag_block_not_d);
     }
 
     if (F_status_is_error(main->setting.state.status)) {
