@@ -40,6 +40,8 @@ extern "C" {
     "fl_conversion_dynamic_partial_to_unsigned_detect",
     "fl_conversion_dynamic_to_unsigned_detect",
     "fl_fss_payload_header_map",
+    "fll_fss_extended_read",
+    "fll_fss_payload_read",
     "fll_program_parameter_process_context",
     "fll_program_parameter_process_verbosity",
     "kt_tacocat_process_socket_set_error_has",

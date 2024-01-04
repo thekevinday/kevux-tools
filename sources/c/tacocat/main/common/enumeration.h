@@ -132,9 +132,10 @@ extern "C" {
  * kt_tacocat_socket_flag_receive_*_e:
  *   - none:    No flags set.
  *   - control: Reading and processing the Control block and Size block.
- *   - packet:  Reading and processing the rest of the Packet block (the Header and Payload).
- *   - find:    Find the Header block and everything else up until the Payload block.
- *   - check:   Process and check the loaded Payload block, processing the Header block.
+ *   - packet:  Reading and processing the rest of the Packet block (the Header and Payload sections).
+ *   - find:    Find the Header section and everything else up until the Payload section.
+ *   - extract: Process the loaded data, extracting the Header and Signature sections.
+ *   - check:   Check the loaded data, doing size checks, interpreting the status, and performing any signature checks.
  *   - write:   Save the loaded Payload block to the file (write to the file).
  *   - done:    Done processing file.
  */
@@ -144,9 +145,10 @@ extern "C" {
     kt_tacocat_socket_flag_receive_control_e = 0x1,
     kt_tacocat_socket_flag_receive_packet_e  = 0x2,
     kt_tacocat_socket_flag_receive_find_e    = 0x4,
-    kt_tacocat_socket_flag_receive_check_e   = 0x8,
-    kt_tacocat_socket_flag_receive_write_e   = 0x10,
-    kt_tacocat_socket_flag_receive_done_e    = 0x20,
+    kt_tacocat_socket_flag_receive_extract_e = 0x8,
+    kt_tacocat_socket_flag_receive_check_e   = 0x10,
+    kt_tacocat_socket_flag_receive_write_e   = 0x20,
+    kt_tacocat_socket_flag_receive_done_e    = 0x40,
   }; // enum
 #endif // _di_kt_tacocat_socket_flag_receive_e_
 

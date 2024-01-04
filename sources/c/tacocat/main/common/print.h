@@ -73,6 +73,8 @@ extern "C" {
     kt_tacocat_f_fl_conversion_dynamic_partial_to_unsigned_detect_e,
     kt_tacocat_f_fl_conversion_dynamic_to_unsigned_detect_e,
     kt_tacocat_f_fl_fss_payload_header_map_e,
+    kt_tacocat_f_fll_fss_extended_read_e,
+    kt_tacocat_f_fll_fss_payload_read_e,
     kt_tacocat_f_fll_program_parameter_process_context_e,
     kt_tacocat_f_fll_program_parameter_process_verbosity_e,
     kt_tacocat_f_kt_tacocat_process_socket_set_error_has_e,

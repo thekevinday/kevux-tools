@@ -54,16 +54,64 @@ extern "C" {
           f_memory_array_resize(0, sizeof(f_range_t), (void **) &array[i].objects.array, &array[i].objects.used, &array[i].objects.size);
         }
 
+        if (array[i].objects_header.size) {
+          f_memory_array_resize(0, sizeof(f_range_t), (void **) &array[i].objects_header.array, &array[i].objects_header.used, &array[i].objects_header.size);
+        }
+
+        if (array[i].objects_signature.size) {
+          f_memory_array_resize(0, sizeof(f_range_t), (void **) &array[i].objects_signature.array, &array[i].objects_signature.used, &array[i].objects_signature.size);
+        }
+
         if (array[i].contents.size) {
           f_memory_arrays_resize(0, sizeof(f_range_t), (void **) &array[i].contents.array, &array[i].contents.used, &array[i].contents.size, &f_rangess_delete_callback);
+        }
+
+        if (array[i].contents_header.size) {
+          f_memory_arrays_resize(0, sizeof(f_range_t), (void **) &array[i].contents_header.array, &array[i].contents_header.used, &array[i].contents_header.size, &f_rangess_delete_callback);
+        }
+
+        if (array[i].contents_signature.size) {
+          f_memory_arrays_resize(0, sizeof(f_range_t), (void **) &array[i].contents_signature.array, &array[i].contents_signature.used, &array[i].contents_signature.size, &f_rangess_delete_callback);
         }
 
         if (array[i].objects_delimits.size) {
           f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].objects_delimits.array, &array[i].objects_delimits.used, &array[i].objects_delimits.size);
         }
 
-        if (array[i].objects_delimits.size) {
+        if (array[i].objects_delimits_header.size) {
+          f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].objects_delimits_header.array, &array[i].objects_delimits_header.used, &array[i].objects_delimits_header.size);
+        }
+
+        if (array[i].objects_delimits_signature.size) {
+          f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].objects_delimits_signature.array, &array[i].objects_delimits_signature.used, &array[i].objects_delimits_signature.size);
+        }
+
+        if (array[i].contents_delimits.size) {
           f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].contents_delimits.array, &array[i].contents_delimits.used, &array[i].contents_delimits.size);
+        }
+
+        if (array[i].contents_delimits_header.size) {
+          f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].contents_delimits_header.array, &array[i].contents_delimits_header.used, &array[i].contents_delimits_header.size);
+        }
+
+        if (array[i].contents_delimits_signature.size) {
+          f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].contents_delimits_signature.array, &array[i].contents_delimits_signature.used, &array[i].contents_delimits_signature.size);
+        }
+
+        if (array[i].objects_quoted_header.size) {
+          f_memory_array_resize(0, sizeof(uint8_t), (void **) &array[i].objects_quoted_header.array, &array[i].objects_quoted_header.used, &array[i].objects_quoted_header.size);
+        }
+
+        if (array[i].objects_quoted_signature.size) {
+          f_memory_array_resize(0, sizeof(uint8_t), (void **) &array[i].objects_quoted_signature.array, &array[i].objects_quoted_signature.used, &array[i].objects_quoted_signature.size);
+        }
+
+        if (array[i].contents_quoted_header.size) {
+          f_memory_arrays_resize(0, sizeof(uint8_t), (void **) &array[i].contents_quoted_header.array, &array[i].contents_quoted_header.used, &array[i].contents_quoted_header.size, &f_uint8ss_delete_callback);
+        }
+
+        if (array[i].contents_quoted_signature.size) {
+          f_memory_arrays_resize(0, sizeof(uint8_t), (void **) &array[i].contents_quoted_signature.array, &array[i].contents_quoted_signature.used, &array[i].contents_quoted_signature.size, &f_uint8ss_delete_callback);
         }
 
         if (array[i].comments.size) {

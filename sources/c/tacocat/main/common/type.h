@@ -29,13 +29,25 @@ extern "C" {
  * socket: Socket structure.
  * status: The status of the socket operations.
  *
- * range:             A generic range, often used for FSS processing.
- * objects:           An array of FSS Objects.
- * contents:          An array of FSS Contents.
- * objects_delimits:  An array of FSS Object delimits.
- * contents_delimits: An array of FSS Content delimits.
- * comments:          An array of FSS comments.
- * state:             Basic state information, usually passed to the FSS functions.
+ * range:                       A generic range, often used for FSS processing.
+ * objects:                     An array of FSS Objects.
+ * objects_header:              An array of FSS Objects, for the Header section.
+ * objects_signature:           An array of FSS Objects, for the Signature section.
+ * contents:                    An array of FSS Contents.
+ * contents_header:             An array of FSS Contents, for the Header section.
+ * contents_signature:          An array of FSS Contents, for the Signature section.
+ * objects_delimits:            An array of FSS Object delimits.
+ * objects_delimits_header:     An array of FSS Object delimits, for the Header section.
+ * objects_delimits_signature:  An array of FSS Object delimits, for the Signature section.
+ * contents_delimits:           An array of FSS Content delimits.
+ * contents_delimits_header:    An array of FSS Content delimits, for the Header section.
+ * contents_delimits_signature: An array of FSS Content delimits, for the Signature section.
+ * objects_quoted_header:       An array of FSS Objects quoted flags, for the Header section.
+ * objects_quoted_signature:    An array of FSS Objects quoted flags, for the Header section.
+ * contents_quoted_header:      An array of FSS Content quoted flags, for the Header section.
+ * contents_quoted_signature:   An array of FSS Content quoted flags, for the Header section.
+ * comments:                    An array of FSS comments.
+ * state:                       Basic state information, usually passed to the FSS functions.
  *
  * buffer:      A buffer for sending or receiving data between clients.
  * cache:       A cache used for various purposes, but primarily for the building of the send packet.
@@ -63,9 +75,21 @@ extern "C" {
 
     f_range_t range;
     f_ranges_t objects;
+    f_ranges_t objects_header;
+    f_ranges_t objects_signature;
     f_rangess_t contents;
+    f_rangess_t contents_header;
+    f_rangess_t contents_signature;
     f_number_unsigneds_t objects_delimits;
+    f_number_unsigneds_t objects_delimits_header;
+    f_number_unsigneds_t objects_delimits_signature;
     f_number_unsigneds_t contents_delimits;
+    f_number_unsigneds_t contents_delimits_header;
+    f_number_unsigneds_t contents_delimits_signature;
+    f_uint8s_t objects_quoted_header;
+    f_uint8s_t objects_quoted_signature;
+    f_uint8ss_t contents_quoted_header;
+    f_uint8ss_t contents_quoted_signature;
     f_ranges_t comments;
     f_state_t state;
 
@@ -94,9 +118,19 @@ extern "C" {
       f_status_t_initialize, \
       f_range_t_initialize, \
       f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_rangess_t_initialize, \
       f_rangess_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8ss_t_initialize, \
+      f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -124,9 +158,19 @@ extern "C" {
       f_status_t_initialize, \
       f_range_t_initialize, \
       f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_rangess_t_initialize, \
       f_rangess_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8ss_t_initialize, \
+      f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -154,9 +198,19 @@ extern "C" {
       f_status_t_initialize, \
       f_range_t_initialize, \
       f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_ranges_t_initialize, \
+      f_rangess_t_initialize, \
+      f_rangess_t_initialize, \
       f_rangess_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8s_t_initialize, \
+      f_uint8ss_t_initialize, \
+      f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
       f_string_dynamic_t_initialize, \

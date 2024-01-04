@@ -178,6 +178,7 @@ extern "C" {
       return F_done;
     }
 
+    // @todo when total > 1, then this needs to build each part, incrementing part each time (every time this needs to be done, the entire header structure needs to be rebuilt until part == total - 1) (the receive code needs to also be sure to handle multiple parts).
     if (set->flag & kt_tacocat_socket_flag_send_size_e) {
       if (set->file.id == -1) {
         set->status = f_file_open(set->name, F_file_mode_all_r_d, &set->file);

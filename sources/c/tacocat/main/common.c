@@ -18,14 +18,14 @@ extern "C" {
 
     // Identify and pocess first/last parameters.
     if (main->program.parameters.array[kt_tacocat_parameter_line_first_no_e].result & f_console_result_found_e) {
-      main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_print_first_e;
+      main->setting.flag &= ~kt_tacocat_main_flag_print_first_e;
     }
     else {
       main->setting.flag |= kt_tacocat_main_flag_print_first_e;
     }
 
     if (main->program.parameters.array[kt_tacocat_parameter_line_last_no_e].result & f_console_result_found_e) {
-      main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_print_last_e;
+      main->setting.flag &= ~kt_tacocat_main_flag_print_last_e;
     }
     else {
       main->setting.flag |= kt_tacocat_main_flag_print_last_e;
@@ -86,21 +86,21 @@ extern "C" {
       main->setting.flag |= kt_tacocat_main_flag_help_e;
     }
     else {
-      main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_help_e;
+      main->setting.flag &= ~kt_tacocat_main_flag_help_e;
     }
 
     if (main->program.parameters.array[kt_tacocat_parameter_version_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_tacocat_main_flag_version_e;
     }
     else {
-      main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_version_e;
+      main->setting.flag &= ~kt_tacocat_main_flag_version_e;
     }
 
     if (main->program.parameters.array[kt_tacocat_parameter_copyright_e].result & f_console_result_found_e) {
       main->setting.flag |= kt_tacocat_main_flag_copyright_e;
     }
     else {
-      main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_copyright_e;
+      main->setting.flag &= ~kt_tacocat_main_flag_copyright_e;
     }
 
     if (main->program.parameters.array[kt_tacocat_parameter_resolve_e].result & f_console_result_found_e) {
@@ -114,11 +114,11 @@ extern "C" {
       index = main->program.parameters.array[kt_tacocat_parameter_resolve_e].values.array[main->program.parameters.array[kt_tacocat_parameter_resolve_e].values.used - 1];
 
       if (f_compare_dynamic(main->program.parameters.arguments.array[index], kt_tacocat_classic_s) == F_equal_to) {
-        main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_resolve_kevux_e;
+        main->setting.flag &= ~kt_tacocat_main_flag_resolve_kevux_e;
         main->setting.flag |= kt_tacocat_main_flag_resolve_classic_e;
       }
       else if (f_compare_dynamic(main->program.parameters.arguments.array[index], kt_tacocat_kevux_s) == F_equal_to) {
-        main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_resolve_classic_e;
+        main->setting.flag &= ~kt_tacocat_main_flag_resolve_classic_e;
         main->setting.flag |= kt_tacocat_main_flag_resolve_kevux_e;
       }
       else {
@@ -131,10 +131,10 @@ extern "C" {
     }
     else {
       #ifdef _kt_resolve_default_kevux_
-        main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_resolve_classic_e;
+        main->setting.flag &= ~kt_tacocat_main_flag_resolve_classic_e;
         main->setting.flag |= kt_tacocat_main_flag_resolve_kevux_e;
       #else
-        main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_resolve_kevux_e;
+        main->setting.flag &= ~kt_tacocat_main_flag_resolve_kevux_e;
         main->setting.flag |= kt_tacocat_main_flag_resolve_classic_e;
       #endif // _kt_resolve_default_kevux_
     }
@@ -200,7 +200,7 @@ extern "C" {
       else if (main->setting.state.status == F_number_negative) {
         if (number == 1) {
           main->setting.max_buffer = 0;
-          main->setting.flag -= main->setting.flag & kt_tacocat_main_flag_max_buffer_e;
+          main->setting.flag &= ~kt_tacocat_main_flag_max_buffer_e;
         }
         else {
           main->setting.state.status = F_status_set_error(F_parameter);
@@ -620,7 +620,7 @@ extern "C" {
         } // for
       }
       else if (main->program.parameters.array[parameters[i]].result & f_console_result_found_e) {
-        main->setting.flag -= main->setting.flag & flags[i];
+        main->setting.flag &= ~flags[i];
         main->setting.state.status = F_status_set_error(F_parameter);
 
         macro_setting_load_print_first();
@@ -634,7 +634,7 @@ extern "C" {
         continue;
       }
       else {
-        main->setting.flag -= main->setting.flag & flags[i];
+        main->setting.flag &= ~flags[i];
       }
     } // for
 

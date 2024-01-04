@@ -66,7 +66,7 @@ extern "C" {
   #define kt_tacocat_allocation_large_d   0x800
   #define kt_tacocat_allocation_small_d   0x80
 
-  #define kt_tacocat_block_size_d          0xffff
+  #define kt_tacocat_block_size_d          0xffff // @todo set this to something small like 0xff to easily test and design sending and receiving multiple parts.
   #define kt_tacocat_block_size_receive_d  kt_tacocat_block_size_d
   #define kt_tacocat_block_size_send_d     kt_tacocat_block_size_d
 
@@ -112,6 +112,9 @@ extern "C" {
  * macro_kt_receive_process_handle_error_exit_1:
  *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_receive_control_e.
  *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
+ *
+ * macro_kt_receive_process_handle_error_exit_2:
+ *   A version of macro_kt_receive_process_handle_error_exit_1 that uses a void return statement.
  *
  * macro_kt_receive_process_begin_handle_error_exit_1:
  *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_receive_control_e.
@@ -178,6 +181,19 @@ extern "C" {
       flag = 0; \
       \
       return F_done_not; \
+    }
+
+  #define macro_kt_receive_process_handle_error_exit_2(main, method, network, status, name, flag, id_data) \
+    if (F_status_is_error(status)) { \
+      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
+      \
+      if (id_data) { \
+        f_file_close_id(id_data); \
+      } \
+      \
+      flag = 0; \
+      \
+      return; \
     }
 
   #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, flag) \
