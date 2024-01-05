@@ -26,6 +26,7 @@ f_time
 fl_conversion
 fl_fss
 fl_print
+fl_status_string
 
 fll_error
 fll_fss

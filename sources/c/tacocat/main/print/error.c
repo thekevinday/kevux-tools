@@ -154,6 +154,34 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_print_error_on_file_send_
 
+#ifndef _di_kt_tacocat_print_error_on_packet_header_value_invalid_
+  f_status_t kt_tacocat_print_error_on_packet_header_value_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t buffer, const f_range_t object, const f_range_t content) {
+
+    if (!print) return F_status_set_error(F_output_not);
+    if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
+
+    f_file_stream_lock(print->to);
+
+    fl_print_format("%[%QNetwork packet header on%] ", print->to, print->set->error, print->prefix, print->set->error);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
+    fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+    fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
+    fl_print_format("%[' is invalid for Object '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, buffer, object, print->set->notable);
+    fl_print_format("%[' and Content '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, buffer, content, print->set->notable);
+    fl_print_format("%[' with a status code of %]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_ul_single_s.string, print->to, print->set->notable, status, print->set->notable);
+    fl_print_format("%[.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+
+    f_file_stream_unlock(print->to);
+
+    return F_okay;
+  }
+#endif // _di_kt_tacocat_print_error_on_packet_header_value_invalid_
+
 #ifndef _di_kt_tacocat_print_error_on_packet_invalid_
   f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network) {
 

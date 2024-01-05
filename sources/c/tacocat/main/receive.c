@@ -462,6 +462,7 @@ extern "C" {
         kt_tacocat_receive_process_extract_header(main, set, i);
 
         if (F_status_is_error(set->status)) {
+          // @todo handle F_packet error, setup the sending of an invalid packet response (things similar to this needs to be done in multiple places).
           ++set->retry;
 
           return;
@@ -525,7 +526,9 @@ extern "C" {
         return;
     }
 
-    for (f_number_unsigned_t i = 0; i < set->objects_header.used; ++i) {
+    f_number_unsigned_t i = 0;
+
+    for (; i < set->objects_header.used; ++i) {
 
       // Index 0 is the status.
       if (f_compare_dynamic_partial_string(f_fss_payload_object_status_s.string, set->buffer, f_fss_payload_object_status_s.used, set->objects_header.array[i]) == F_equal_to) {
@@ -547,33 +550,18 @@ extern "C" {
 
         // Require Content to exist.
         if (!set->contents_header.array[i].used) {
-         set->abstruses.array[0].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[0].key = f_fss_payload_object_type_s;
-        set->abstruses.array[0].value.type = f_abstruse_range_e;
-        set->abstruses.array[0].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 2 is the length.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_length_s.string, set->buffer, f_fss_payload_object_length_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
          set->abstruses.array[1].value.type = f_abstruse_none_e;
 
           continue;
         }
 
-        set->abstruses.array[1].key = f_fss_payload_object_length_s;
+        set->abstruses.array[1].key = f_fss_payload_object_type_s;
         set->abstruses.array[1].value.type = f_abstruse_range_e;
         set->abstruses.array[1].value.is.a_range = set->contents_header.array[i].array[0];
       }
 
-      // Index 3 is the part.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_part_s.string, set->buffer, f_fss_payload_object_part_s.used, set->objects_header.array[i]) == F_equal_to) {
+      // Index 2 is the length.
+      else if (f_compare_dynamic_partial_string(f_fss_payload_object_length_s.string, set->buffer, f_fss_payload_object_length_s.used, set->objects_header.array[i]) == F_equal_to) {
 
         // Require Content to exist.
         if (!set->contents_header.array[i].used) {
@@ -582,13 +570,13 @@ extern "C" {
           continue;
         }
 
-        set->abstruses.array[2].key = f_fss_payload_object_part_s;
+        set->abstruses.array[2].key = f_fss_payload_object_length_s;
         set->abstruses.array[2].value.type = f_abstruse_range_e;
         set->abstruses.array[2].value.is.a_range = set->contents_header.array[i].array[0];
       }
 
-      // Index 4 is the total number of packets (based on block size).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_total_s.string, set->buffer, f_fss_payload_object_total_s.used, set->objects_header.array[i]) == F_equal_to) {
+      // Index 3 is the part.
+      else if (f_compare_dynamic_partial_string(f_fss_payload_object_part_s.string, set->buffer, f_fss_payload_object_part_s.used, set->objects_header.array[i]) == F_equal_to) {
 
         // Require Content to exist.
         if (!set->contents_header.array[i].used) {
@@ -597,13 +585,13 @@ extern "C" {
           continue;
         }
 
-        set->abstruses.array[3].key = f_fss_payload_object_total_s;
+        set->abstruses.array[3].key = f_fss_payload_object_part_s;
         set->abstruses.array[3].value.type = f_abstruse_range_e;
         set->abstruses.array[3].value.is.a_range = set->contents_header.array[i].array[0];
       }
 
-      // Index 5 is the name (file name).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_name_s.string, set->buffer, f_fss_payload_object_name_s.used, set->objects_header.array[i]) == F_equal_to) {
+      // Index 4 is the total number of packets (based on block size).
+      else if (f_compare_dynamic_partial_string(f_fss_payload_object_total_s.string, set->buffer, f_fss_payload_object_total_s.used, set->objects_header.array[i]) == F_equal_to) {
 
         // Require Content to exist.
         if (!set->contents_header.array[i].used) {
@@ -612,26 +600,124 @@ extern "C" {
           continue;
         }
 
-        set->abstruses.array[4].key = f_fss_payload_object_name_s;
+        set->abstruses.array[4].key = f_fss_payload_object_total_s;
         set->abstruses.array[4].value.type = f_abstruse_range_e;
         set->abstruses.array[4].value.is.a_range = set->contents_header.array[i].array[0];
       }
 
       // Index 5 is the name (file name).
-      else if (f_compare_dynamic_partial_string(kt_tacocat_salt_s.string, set->buffer, kt_tacocat_salt_s.used, set->objects_header.array[i]) == F_equal_to) {
+      else if (f_compare_dynamic_partial_string(f_fss_payload_object_name_s.string, set->buffer, f_fss_payload_object_name_s.used, set->objects_header.array[i]) == F_equal_to) {
 
         // Require Content to exist.
         if (!set->contents_header.array[i].used) {
-          set->abstruses.array[5].value.type = f_abstruse_none_e;
+         set->abstruses.array[5].value.type = f_abstruse_none_e;
 
           continue;
         }
 
-        set->abstruses.array[5].key = kt_tacocat_salt_s;
+        set->abstruses.array[5].key = f_fss_payload_object_name_s;
         set->abstruses.array[5].value.type = f_abstruse_range_e;
         set->abstruses.array[5].value.is.a_range = set->contents_header.array[i].array[0];
       }
+
+      // Index 6 is the salt.
+      else if (f_compare_dynamic_partial_string(kt_tacocat_salt_s.string, set->buffer, kt_tacocat_salt_s.used, set->objects_header.array[i]) == F_equal_to) {
+
+        // Require Content to exist.
+        if (!set->contents_header.array[i].used) {
+          set->abstruses.array[6].value.type = f_abstruse_none_e;
+
+          continue;
+        }
+
+        set->abstruses.array[6].key = kt_tacocat_salt_s;
+        set->abstruses.array[6].value.type = f_abstruse_range_e;
+        set->abstruses.array[6].value.is.a_range = set->contents_header.array[i].array[0];
+      }
     } // for
+
+    // Convert the status code.
+    if (set->abstruses.array[0].value.type) {
+      const f_number_unsigned_t length = set->abstruses.array[0].value.is.a_range.stop - set->abstruses.array[0].value.is.a_range.start + 1;
+      char buffer[length];
+      f_status_t status = F_false;
+
+      memcpy(buffer, set->buffer.string + set->abstruses.array[0].value.is.a_range.start, length);
+
+      const f_string_static_t status_string = macro_f_string_static_t_initialize_1(buffer, 0, length);
+
+      set->status = fl_status_string_from(status_string, &status);
+
+      if (set->status == F_okay) {
+        set->abstruses.array[0].value.type = f_abstruse_unsigned_e;
+        set->abstruses.array[0].value.is.a_unsigned = (f_number_unsigned_t) status;
+      }
+      else {
+        kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
+
+        set->abstruses.array[0].value.type = f_abstruse_none_e;
+        set->abstruses.array[0].value.is.a_unsigned = 0;
+
+        set->status = F_status_set_error(F_packet);
+      }
+    }
+
+    // Convert the type.
+    if (set->abstruses.array[1].value.type) {
+      if (f_compare_dynamic_partial_string(kt_tacocat_file_s.string, set->buffer, kt_tacocat_file_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
+        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
+        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_file_e;
+      }
+      else if (f_compare_dynamic_partial_string(kt_tacocat_done_s.string, set->buffer, kt_tacocat_done_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
+        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
+        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_done_e;
+      }
+      else if (f_compare_dynamic_partial_string(kt_tacocat_next_s.string, set->buffer, kt_tacocat_next_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
+        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
+        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_next_e;
+      }
+      else if (f_compare_dynamic_partial_string(kt_tacocat_resend_s.string, set->buffer, kt_tacocat_resend_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
+        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
+        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_resend_e;
+      }
+      else {
+        set->status = F_status_set_error(F_found_not);
+
+        kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
+
+        set->abstruses.array[1].value.type = f_abstruse_none_e;
+        set->abstruses.array[1].value.is.a_unsigned = 0;
+
+        set->status = F_status_set_error(F_packet);
+
+        return;
+      }
+    }
+
+    // Convert the length, part, and total.
+    {
+      f_number_unsigned_t number = 0;
+
+      for (i = 2; i < 5; ++i) {
+
+        if (!set->abstruses.array[i].value.type) continue;
+
+        set->status = fl_conversion_dynamic_partial_to_unsigned(fl_conversion_data_base_10_c, set->buffer, set->abstruses.array[i].value.is.a_range, &number);
+
+        if (set->status == F_okay) {
+          set->abstruses.array[i].value.type = f_abstruse_unsigned_e;
+          set->abstruses.array[i].value.is.a_unsigned = number;
+        }
+        else {
+          kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
+
+          set->abstruses.array[i].value.type = f_abstruse_none_e;
+          set->abstruses.array[i].value.is.a_unsigned = 0;
+
+          set->status = F_status_set_error(F_packet);
+        }
+      } // for
+    }
 
     set->abstruses.used = 6;
     set->status = F_okay;

@@ -169,6 +169,8 @@ extern "C" {
  *     F_okay on success.
  *     F_data_not on success, but no data to process.
  *
+ *     F_packet (with error bit) on invalid packet header.
+ *
  *     Errors (with error bit) from: fll_fss_extended_read().
  * @param at
  *   The index position representing which Object and Contents set to use.

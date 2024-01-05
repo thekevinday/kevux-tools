@@ -101,6 +101,26 @@ extern "C" {
 #endif // _di_kt_tacocat_parameter_e_
 
 /**
+ * Types of packets.
+ *
+ * kt_tacocat_print_flag_*_e:
+ *   - none:   No type is set.
+ *   - done:   The package concludes the connection (from the sender or receiver) or acknowledges the receipt of a packet (receiver).
+ *   - file:   The packet is a file.
+ *   - next:   The packet is a request for the next file.
+ *   - resend: The packet is a request to resend the given part number.
+ */
+#ifndef _di_kt_tacocat_print_flag_e_
+  enum {
+    kt_tacocat_packet_type_none_e   = 0x0,
+    kt_tacocat_packet_type_done_e   = 0x1,
+    kt_tacocat_packet_type_file_e   = 0x2,
+    kt_tacocat_packet_type_next_e   = 0x4,
+    kt_tacocat_packet_type_resend_e = 0x8,
+  }; // enum
+#endif // _di_kt_tacocat_print_flag_e_
+
+/**
  * Flags for fine-tuned print control.
  *
  * kt_tacocat_print_flag_*_e:

@@ -74,11 +74,14 @@ extern "C" {
 #ifndef _di_kt_tacocat_s_
   #define KT_TACOCAT_classic_s            "classic"
   #define KT_TACOCAT_digit_negative_one_s "-1"
-  #define KT_TACOCAT_kevux_s              "kevux"
+  #define KT_TACOCAT_done_s               "done"
   #define KT_TACOCAT_file_s               "file"
+  #define KT_TACOCAT_kevux_s              "kevux"
   #define KT_TACOCAT_network_s            "network"
   #define KT_TACOCAT_network_or_socket_s  "network / socket"
+  #define KT_TACOCAT_next_s               "next"
   #define KT_TACOCAT_receive_s            "receive"
+  #define KT_TACOCAT_resend_s             "resend"
   #define KT_TACOCAT_salt_s               "salt"
   #define KT_TACOCAT_send_s               "send"
   #define KT_TACOCAT_send_build_s         "send build"
@@ -95,11 +98,14 @@ extern "C" {
 
   #define KT_TACOCAT_classic_s_length            7
   #define KT_TACOCAT_digit_negative_one_s_length 2
-  #define KT_TACOCAT_kevux_s_length              5
+  #define KT_TACOCAT_done_s_length               4
   #define KT_TACOCAT_file_s_length               4
+  #define KT_TACOCAT_kevux_s_length              5
   #define KT_TACOCAT_network_s_length            7
   #define KT_TACOCAT_network_or_socket_s_length  16
+  #define KT_TACOCAT_next_s_length               4
   #define KT_TACOCAT_receive_s_length            7
+  #define KT_TACOCAT_resend_s_length             6
   #define KT_TACOCAT_salt_s_length               4
   #define KT_TACOCAT_send_s_length               4
   #define KT_TACOCAT_send_build_s_length         19
@@ -116,11 +122,14 @@ extern "C" {
 
   extern const f_string_static_t kt_tacocat_classic_s;
   extern const f_string_static_t kt_tacocat_digit_negative_one_s;
+  extern const f_string_static_t kt_tacocat_done_s;
   extern const f_string_static_t kt_tacocat_kevux_s;
   extern const f_string_static_t kt_tacocat_file_s;
   extern const f_string_static_t kt_tacocat_network_s;
   extern const f_string_static_t kt_tacocat_network_or_socket_s;
+  extern const f_string_static_t kt_tacocat_next_s;
   extern const f_string_static_t kt_tacocat_receive_s;
+  extern const f_string_static_t kt_tacocat_resend_s;
   extern const f_string_static_t kt_tacocat_salt_s;
   extern const f_string_static_t kt_tacocat_send_s;
   extern const f_string_static_t kt_tacocat_send_build_s;

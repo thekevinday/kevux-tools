@@ -245,6 +245,40 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_file_send_
 
 /**
+ * Print network-related error message for when a packet has an invalid header Object and Content.
+ *
+ * @param print
+ *   The output structure to print to.
+ *
+ *   This does not alter print.custom.setting.state.status.
+ * @param on
+ *   The network connection direction, which should either be "receive" or "send".
+ * @param network
+ *   The name of the network in which the error is related.
+ * @param status
+ *   The status code representing the error.
+ * @param name
+ *   The name of the file.
+ * @param buffer
+ *   The buffer containing the entire header.
+ * @param object
+ *   The range in the buffer representing the header Object with the error.
+ * @param content
+ *   The range in the buffer representing the header Content with the error.
+ *
+ * @return
+ *   F_okay on success.
+ *   F_output_not on success, but no printing is performed.
+ *
+ *   F_output_not (with error bit) if setting is NULL.
+ *
+ * @see fll_error_file_print()
+ */
+#ifndef _di_kt_tacocat_print_error_on_packet_header_value_invalid_
+  extern f_status_t kt_tacocat_print_error_on_packet_header_value_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_status_t status, const f_string_static_t name, const f_string_static_t buffer, const f_range_t object, const f_range_t content);
+#endif // _di_kt_tacocat_print_error_on_packet_header_value_invalid_
+
+/**
  * Print network-related error message for when a packet is invalid.
  *
  * @param print
