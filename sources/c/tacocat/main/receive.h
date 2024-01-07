@@ -68,6 +68,12 @@ extern "C" {
  *     Errors (with error bit) from: f_socket_read_stream().
  *     Errors (with error bit) from: kt_tacocat_receive_process_control().
  *
+ * @return
+ *    F_done on success and done processing.
+ *    F_done_not on success but not done processing.
+ *
+ *    F_parameter (with error bit) on invalid parameter.
+ *
  * @see f_file_open()
  * @see f_file_write()
  * @see f_memory_array_increase_by()

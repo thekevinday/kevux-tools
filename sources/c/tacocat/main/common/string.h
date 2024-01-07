@@ -72,6 +72,7 @@ extern "C" {
  * kt_tacocat_*_s: Arbitrary strings.
  */
 #ifndef _di_kt_tacocat_s_
+  #define KT_TACOCAT_abort_s              "abort"
   #define KT_TACOCAT_classic_s            "classic"
   #define KT_TACOCAT_digit_negative_one_s "-1"
   #define KT_TACOCAT_done_s               "done"
@@ -96,6 +97,7 @@ extern "C" {
   #define KT_TACOCAT_tacocat_s            "tacocat"
   #define KT_TACOCAT_two_s                "two"
 
+  #define KT_TACOCAT_abort_s_length              5
   #define KT_TACOCAT_classic_s_length            7
   #define KT_TACOCAT_digit_negative_one_s_length 2
   #define KT_TACOCAT_done_s_length               4
@@ -120,6 +122,7 @@ extern "C" {
   #define KT_TACOCAT_tacocat_s_length            7
   #define KT_TACOCAT_two_s_length                3
 
+  extern const f_string_static_t kt_tacocat_abort_s;
   extern const f_string_static_t kt_tacocat_classic_s;
   extern const f_string_static_t kt_tacocat_digit_negative_one_s;
   extern const f_string_static_t kt_tacocat_done_s;

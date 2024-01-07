@@ -26,6 +26,39 @@ extern "C" {
 #endif // _di_kt_tacocat_process_main_
 
 /**
+ * Initialize the abstruse for the send or receive process.
+ *
+ * This initializes the abstruse to the standard packet abstruse structure.
+ *
+ * Standard abstruse packet index positions:
+ *   0: status.
+ *   1: type.
+ *   2: length.
+ *   3: part.
+ *   4: total.
+ *   5: name.
+ *   6: salt.
+ *
+ * @param main
+ *   The main program and settings data.
+ *
+ *   This does not alter main.setting.state.status, except on interrupt signal.
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ *   This alters set.status:
+ *     Success from: f_memory_array_increase_by().
+ *
+ *     Errors (with error bit) from: f_memory_array_increase_by().
+ *
+ * @see f_memory_array_increase_by()
+ */
+#ifndef _di_kt_tacocat_process_abstruse_initialize_
+  extern void kt_tacocat_process_abstruse_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_process_abstruse_initialize_
+
+/**
  * Disconnect the socket set and close open file.
  *
  * @param main

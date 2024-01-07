@@ -218,7 +218,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set->name, print->set->notable);
     fl_print_format("%['", print->to, print->set->error);
 
-    if (set->flag & kt_tacocat_socket_flag_receive_find_e) {
+    if (set->flag == kt_tacocat_socket_step_receive_find_e) {
       fl_print_format(" while trying to process the Packet headers", print->to);
     }
 

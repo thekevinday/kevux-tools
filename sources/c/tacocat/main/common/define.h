@@ -73,7 +73,7 @@ extern "C" {
   #define kt_tacocat_cache_size_peek_d (kt_tacocat_block_size_receive_d + 1)
 
   #define kt_tacocat_interval_poll_d      1400 // 1.4 second.
-  #define kt_tacocat_interval_poll_fast_d 50   // 0.05 second.
+  #define kt_tacocat_interval_poll_fast_d 5    // 0.005 second.
 
   #define kt_tacocat_max_backlog_d  0x400
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
@@ -110,16 +110,16 @@ extern "C" {
  *   The same as macro_setting_load_handle_send_receive_error_continue_1() but intended for file errors.
  *
  * macro_kt_receive_process_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while not processing within flag kt_tacocat_socket_flag_receive_control_e.
+ *   Intended to be used for handling an error during the receive process while not processing within step kt_tacocat_socket_step_receive_control_e.
  *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
  *
  * macro_kt_receive_process_handle_error_exit_2:
  *   A version of macro_kt_receive_process_handle_error_exit_1 that uses a void return statement.
  *
  * macro_kt_receive_process_begin_handle_error_exit_1:
- *   Intended to be used for handling an error during the receive process while processing within flag kt_tacocat_socket_flag_receive_control_e.
+ *   Intended to be used for handling an error during the receive process while processing within step kt_tacocat_socket_step_receive_control_e.
  *
- * @todo document macro_kt_send_process_handle_error_exit_1.
+ * @todo document all macros.
  */
 #ifndef _di_kt_tacocat_macros_d_
   #define macro_setting_load_print_first() \
@@ -170,7 +170,7 @@ extern "C" {
       continue; \
     }
 
-  #define macro_kt_receive_process_handle_error_exit_1(main, method, network, status, name, flag, id_data) \
+  #define macro_kt_receive_process_handle_error_exit_1(main, method, network, status, name, step, id_data) \
     if (F_status_is_error(status)) { \
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
@@ -178,12 +178,12 @@ extern "C" {
         f_file_close_id(id_data); \
       } \
       \
-      flag = 0; \
+      step = 0; \
       \
       return F_done_not; \
     }
 
-  #define macro_kt_receive_process_handle_error_exit_2(main, method, network, status, name, flag, id_data) \
+  #define macro_kt_receive_process_handle_error_exit_2(main, method, network, status, name, step, id_data) \
     if (F_status_is_error(status)) { \
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
@@ -191,21 +191,21 @@ extern "C" {
         f_file_close_id(id_data); \
       } \
       \
-      flag = 0; \
+      step = 0; \
       \
       return; \
     }
 
-  #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, flag) \
+  #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, step) \
     if (F_status_is_error(status)) { \
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
-      flag = 0; \
+      step = 0; \
       \
       return; \
     }
 
-  #define macro_kt_send_process_handle_error_exit_1(main, method, on, network, status, name, flag) \
+  #define macro_kt_send_process_handle_error_exit_1(main, method, on, network, status, name, step) \
     if (F_status_is_error(status)) { \
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), on, network, status, name); \
       \

@@ -61,6 +61,58 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_process_main_
 
+#ifndef _di_kt_tacocat_process_abstruse_initialize_
+  void kt_tacocat_process_abstruse_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
+
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_abstruse_map_t), (void **) &set->abstruses.array, &set->abstruses.used, &set->abstruses.size);
+      if (F_status_is_error(set->status)) return;
+
+      // Index 0 is the status.
+      set->abstruses.array[0].key = f_fss_payload_object_status_s;
+      set->abstruses.array[0].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[0].value.is.a_dynamic = f_status_okay_s;
+
+      // Index 1 is the type.
+      set->abstruses.array[1].key = f_fss_payload_object_type_s;
+      set->abstruses.array[1].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[1].value.is.a_dynamic = f_file_type_name_file_s;
+
+      // Index 2 is the length.
+      set->abstruses.array[2].key = f_fss_payload_object_length_s;
+      set->abstruses.array[2].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[2].value.is.a_unsigned = 0;
+
+      // Index 3 is the part.
+      set->abstruses.array[3].key = f_fss_payload_object_part_s;
+      set->abstruses.array[3].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[3].value.is.a_unsigned = 0;
+
+      // Index 4 is the total number of packets (based on block size).
+      set->abstruses.array[4].key = f_fss_payload_object_total_s;
+      set->abstruses.array[4].value.type = f_abstruse_unsigned_e;
+      set->abstruses.array[4].value.is.a_unsigned = 0;
+
+      // Index 5 is the name.
+      set->abstruses.array[5].key = f_fss_payload_object_name_s;
+      set->abstruses.array[5].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[5].value.is.a_dynamic = set->name;
+
+      // Index 6 is the salt.
+      set->abstruses.array[6].key = kt_tacocat_salt_s;
+      set->abstruses.array[6].value.type = f_abstruse_unsigned_e;
+
+      {
+        long salt = 0;
+
+        f_random_get(&salt);
+
+        set->abstruses.array[6].value.is.a_unsigned = (f_number_unsigned_t) salt;
+      }
+
+      set->abstruses.used = 7;
+  }
+#endif // _di_kt_tacocat_process_abstruse_initialize_
+
 #ifndef _di_kt_tacocat_process_socket_set_error_has_
   f_status_t kt_tacocat_process_socket_set_error_has(kt_tacocat_main_t * const main, const f_string_static_t parameter, const kt_tacocat_socket_sets_t set, f_status_t * const status) {
 

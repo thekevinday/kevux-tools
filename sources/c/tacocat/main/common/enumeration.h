@@ -103,22 +103,24 @@ extern "C" {
 /**
  * Types of packets.
  *
- * kt_tacocat_print_flag_*_e:
+ * kt_tacocat_packet_type_*_e:
  *   - none:   No type is set.
- *   - done:   The package concludes the connection (from the sender or receiver) or acknowledges the receipt of a packet (receiver).
+ *   - abort:  The packet is designates that the connection is to be aborted.
+ *   - done:   The package acknowledges the receipt of a packet.
  *   - file:   The packet is a file.
  *   - next:   The packet is a request for the next file.
  *   - resend: The packet is a request to resend the given part number.
  */
-#ifndef _di_kt_tacocat_print_flag_e_
+#ifndef _di_kt_tacocat_packet_type_e_
   enum {
     kt_tacocat_packet_type_none_e   = 0x0,
-    kt_tacocat_packet_type_done_e   = 0x1,
-    kt_tacocat_packet_type_file_e   = 0x2,
-    kt_tacocat_packet_type_next_e   = 0x4,
-    kt_tacocat_packet_type_resend_e = 0x8,
+    kt_tacocat_packet_type_abort_e  = 0x1,
+    kt_tacocat_packet_type_done_e   = 0x2,
+    kt_tacocat_packet_type_file_e   = 0x4,
+    kt_tacocat_packet_type_next_e   = 0x8,
+    kt_tacocat_packet_type_resend_e = 0x10,
   }; // enum
-#endif // _di_kt_tacocat_print_flag_e_
+#endif // _di_kt_tacocat_packet_type_e_
 
 /**
  * Flags for fine-tuned print control.
@@ -147,9 +149,31 @@ extern "C" {
 #endif // _di_kt_tacocat_print_flag_e_
 
 /**
- * Individual socket-specific flags for receiving.
+ * Socket related flags, such as designating handling of error packet.
  *
- * kt_tacocat_socket_flag_receive_*_e:
+ * kt_tacocat_socket_flag_*_e:
+ *   - none:   No flags set.
+ *   - abort:  Abort connection.
+ *   - done:   Send packet confirming that everything is done.
+ *   - listen: Listen for a response to a previously sent connection.
+ *   - next:   Request or Send next packet for existing connection.
+ *   - resend: Send packet for requesting a re-send of the previous packet.
+ */
+#ifndef _di_kt_tacocat_socket_flag_e_
+  enum {
+    kt_tacocat_socket_flag_none_e   = 0,
+    kt_tacocat_socket_flag_abort_e  = 0x1,
+    kt_tacocat_socket_flag_done_e   = 0x2,
+    kt_tacocat_socket_flag_listen_e = 0x4,
+    kt_tacocat_socket_flag_next_e   = 0x8,
+    kt_tacocat_socket_flag_resend_e = 0x10,
+  }; // enum
+#endif // _di_kt_tacocat_socket_flag_e_
+
+/**
+ * Individual socket-specific steps for receiving.
+ *
+ * kt_tacocat_socket_step_receive_*_e:
  *   - none:    No flags set.
  *   - control: Reading and processing the Control block and Size block.
  *   - packet:  Reading and processing the rest of the Packet block (the Header and Payload sections).
@@ -159,23 +183,23 @@ extern "C" {
  *   - write:   Save the loaded Payload block to the file (write to the file).
  *   - done:    Done processing file.
  */
-#ifndef _di_kt_tacocat_socket_flag_receive_e_
+#ifndef _di_kt_tacocat_socket_step_receive_e_
   enum {
-    kt_tacocat_socket_flag_receive_none_e    = 0x0,
-    kt_tacocat_socket_flag_receive_control_e = 0x1,
-    kt_tacocat_socket_flag_receive_packet_e  = 0x2,
-    kt_tacocat_socket_flag_receive_find_e    = 0x4,
-    kt_tacocat_socket_flag_receive_extract_e = 0x8,
-    kt_tacocat_socket_flag_receive_check_e   = 0x10,
-    kt_tacocat_socket_flag_receive_write_e   = 0x20,
-    kt_tacocat_socket_flag_receive_done_e    = 0x40,
+    kt_tacocat_socket_step_receive_none_e = 0,
+    kt_tacocat_socket_step_receive_control_e,
+    kt_tacocat_socket_step_receive_packet_e,
+    kt_tacocat_socket_step_receive_find_e,
+    kt_tacocat_socket_step_receive_extract_e,
+    kt_tacocat_socket_step_receive_check_e,
+    kt_tacocat_socket_step_receive_write_e,
+    kt_tacocat_socket_step_receive_done_e,
   }; // enum
-#endif // _di_kt_tacocat_socket_flag_receive_e_
+#endif // _di_kt_tacocat_socket_step_receive_e_
 
 /**
- * Individual socket-specific flags for receiving.
+ * Individual socket-specific steps for receiving.
  *
- * kt_tacocat_socket_flag_send_*_e:
+ * kt_tacocat_socket_step_send_*_e:
  *   - none:   No flags set.
  *   - size:   Determine the file size.
  *   - header: Build and buffer the header.
@@ -186,19 +210,19 @@ extern "C" {
  *   - packet: Send the entire packet.
  *   - done:   The entire Packet is sent.
  */
-#ifndef _di_kt_tacocat_socket_flag_send_e_
+#ifndef _di_kt_tacocat_socket_step_send_e_
   enum {
-    kt_tacocat_socket_flag_send_none_e   = 0x0,
-    kt_tacocat_socket_flag_send_size_e   = 0x1,
-    kt_tacocat_socket_flag_send_header_e = 0x2,
-    kt_tacocat_socket_flag_send_build_e  = 0x4,
-    kt_tacocat_socket_flag_send_file_e   = 0x8,
-    kt_tacocat_socket_flag_send_check_e  = 0x10,
-    kt_tacocat_socket_flag_send_encode_e = 0x20,
-    kt_tacocat_socket_flag_send_packet_e = 0x40,
-    kt_tacocat_socket_flag_send_done_e   = 0x80,
+    kt_tacocat_socket_step_send_none_e = 0,
+    kt_tacocat_socket_step_send_size_e,
+    kt_tacocat_socket_step_send_header_e,
+    kt_tacocat_socket_step_send_build_e,
+    kt_tacocat_socket_step_send_file_e,
+    kt_tacocat_socket_step_send_check_e,
+    kt_tacocat_socket_step_send_encode_e,
+    kt_tacocat_socket_step_send_packet_e,
+    kt_tacocat_socket_step_send_done_e,
   }; // enum
-#endif // _di_kt_tacocat_socket_flag_send_e_
+#endif // _di_kt_tacocat_socket_step_send_e_
 
 #ifdef __cplusplus
 } // extern "C"

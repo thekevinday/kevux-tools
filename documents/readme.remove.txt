@@ -3,10 +3,10 @@
 # license: cc-by-sa-4.0
 #
 # This file (assumed to be named readme.remove.txt) can be more easily read using the following iki_read commands:
-#   iki_read readme.remove.txt +Q -w -r FLL FLL -WW character "'" "'" code '"' '"'
+#   iki_read readme.remove.txt +Q -w -W code '"' '"'
 #
 # To read the "Remove Readme Documentation" section of this file, use this command sequence:
-#   fss_basic_list_read readme.remove.txt +Q -cn "Remove Readme Documentation" | iki_read +Q -w -r FLL FLL -WW character "'" "'" code '"' '"'
+#   fss_basic_list_read readme.remove.txt +Q -cn "Remove Readme Documentation" | iki_read +Q -w -W code '"' '"'
 #
 
 Remove Readme Documentation:

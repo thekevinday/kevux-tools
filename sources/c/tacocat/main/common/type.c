@@ -94,6 +94,10 @@ extern "C" {
           f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].contents_delimits_header.array, &array[i].contents_delimits_header.used, &array[i].contents_delimits_header.size);
         }
 
+        if (array[i].parts.size) {
+          f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].parts.array, &array[i].parts.used, &array[i].parts.size);
+        }
+
         if (array[i].contents_delimits_signature.size) {
           f_memory_array_resize(0, sizeof(f_number_unsigned_t), (void **) &array[i].contents_delimits_signature.array, &array[i].contents_delimits_signature.used, &array[i].contents_delimits_signature.size);
         }

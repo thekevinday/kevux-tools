@@ -24,6 +24,7 @@ extern "C" {
  * size_total: The size in bytes tht represent the entire size to be processed (size_done should eventually equal this).
  *
  * flag:   A set of flags.
+ * step:   The current step the socket set is operating under.
  * retry:  The current number of retries performed.
  * file:   The file structure.
  * socket: Socket structure.
@@ -42,6 +43,7 @@ extern "C" {
  * contents_delimits:           An array of FSS Content delimits.
  * contents_delimits_header:    An array of FSS Content delimits, for the Header section.
  * contents_delimits_signature: An array of FSS Content delimits, for the Signature section.
+ * parts:                       An array of numbers where each index represents a part number.
  * objects_quoted_header:       An array of FSS Objects quoted flags, for the Header section.
  * objects_quoted_signature:    An array of FSS Objects quoted flags, for the Header section.
  * contents_quoted_header:      An array of FSS Content quoted flags, for the Header section.
@@ -68,6 +70,7 @@ extern "C" {
     size_t size_total;
 
     uint16_t flag;
+    uint16_t step;
     uint16_t retry;
     f_file_t file;
     f_socket_t socket;
@@ -86,6 +89,7 @@ extern "C" {
     f_number_unsigneds_t contents_delimits;
     f_number_unsigneds_t contents_delimits_header;
     f_number_unsigneds_t contents_delimits_signature;
+    f_number_unsigneds_t parts;
     f_uint8s_t objects_quoted_header;
     f_uint8s_t objects_quoted_signature;
     f_uint8ss_t contents_quoted_header;
@@ -123,6 +127,7 @@ extern "C" {
       f_rangess_t_initialize, \
       f_rangess_t_initialize, \
       f_rangess_t_initialize, \
+      f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
@@ -167,6 +172,7 @@ extern "C" {
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
+      f_number_unsigneds_t_initialize, \
       f_uint8s_t_initialize, \
       f_uint8s_t_initialize, \
       f_uint8ss_t_initialize, \
@@ -203,6 +209,7 @@ extern "C" {
       f_rangess_t_initialize, \
       f_rangess_t_initialize, \
       f_rangess_t_initialize, \
+      f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \
       f_number_unsigneds_t_initialize, \

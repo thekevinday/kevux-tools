@@ -18,6 +18,7 @@ extern "C" {
 #endif // _di_utf8_program_help_parameters_s_
 
 #ifndef _di_kt_tacocat_s_
+  const f_string_static_t kt_tacocat_abort_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_abort_s, 0, KT_TACOCAT_abort_s_length);
   const f_string_static_t kt_tacocat_classic_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_classic_s, 0, KT_TACOCAT_classic_s_length);
   const f_string_static_t kt_tacocat_digit_negative_one_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_digit_negative_one_s, 0, KT_TACOCAT_digit_negative_one_s_length);
   const f_string_static_t kt_tacocat_done_s = macro_f_string_static_t_initialize_1(KT_TACOCAT_done_s, 0, KT_TACOCAT_done_s_length);

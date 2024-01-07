@@ -55,6 +55,12 @@ extern "C" {
  *     F_payload_too_large (with error bit) on total payload size is too large.
  *     F_too_large (with error bit) on file too large.
  *
+ * @return
+ *    F_done on success and done processing.
+ *    F_done_not on success but not done processing.
+ *
+ *    F_parameter (with error bit) on invalid parameter.
+ *
  * @see f_socket_read_stream()
  */
 #ifndef _di_kt_tacocat_send_process_

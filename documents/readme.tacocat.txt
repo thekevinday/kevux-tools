@@ -3,10 +3,10 @@
 # license: cc-by-sa-4.0
 #
 # This file (assumed to be named readme.tacocat.txt) can be more easily read using the following iki_read commands:
-#   iki_read readme.tacocat.txt +Q -w -rr FLL FLL DNS DNS -WW character "'" "'" code '"' '"'
+#   iki_read readme.tacocat.txt +Q -w -rr FLL FLL DNS DNS -W code '"' '"'
 #
 # To read the "TacocaT Readme Documentation" section of this file, use this command sequence:
-#   fss_basic_list_read readme.tacocat.txt +Q -cn "TacocaT Readme Documentation" | iki_read +Q -w -rr FLL FLL DNS DNS -WW character "'" "'" code '"' '"'
+#   fss_basic_list_read readme.tacocat.txt +Q -cn "TacocaT Readme Documentation" | iki_read +Q -w -rr FLL FLL DNS DNS -W code '"' '"'
 #
 
 TacocaT Readme Documentation:
@@ -14,7 +14,7 @@ TacocaT Readme Documentation:
 
   This program is similar to code:"netcat" or code:"nc" but is not intended to function as a replacement for these tools.
 
-  The primary use for this is to test bold:"Featureless Linux Library" and bold:"Kevux Tools" network functionality.
+  The primary use for this is to test FLL:"Featureless Linux Library" and bold:"Kevux Tools" network functionality.
 
   The bold:"tacocat" program has the following arguments\:
 
