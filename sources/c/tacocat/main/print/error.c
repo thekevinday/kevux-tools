@@ -169,9 +169,9 @@ extern "C" {
     fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
     fl_print_format("%[' is invalid for Object '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, buffer, object, print->set->notable);
+    fl_print_format(f_string_format_Q_range_single_s.string, print->to, print->set->notable, buffer, object, print->set->notable);
     fl_print_format("%[' and Content '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
-    fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, buffer, content, print->set->notable);
+    fl_print_format(f_string_format_Q_range_single_s.string, print->to, print->set->notable, buffer, content, print->set->notable);
     fl_print_format("%[' with a status code of %]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_ul_single_s.string, print->to, print->set->notable, status, print->set->notable);
     fl_print_format("%[.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
@@ -337,7 +337,7 @@ extern "C" {
     f_file_stream_lock(print->to);
 
     fl_print_format("%[%QUnknown or invalid port number%] ", print->to, print->set->error, print->prefix, print->set->error);
-    fl_print_format("%[%/Q%]", print->to, print->set->notable, address, range, print->set->notable);
+    fl_print_format(f_string_format_Q_range_single_s.string, print->to, print->set->notable, address, range, print->set->notable);
     fl_print_format(" %[from the address '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, address, print->set->notable);
     fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);

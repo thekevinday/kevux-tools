@@ -119,12 +119,7 @@ extern "C" {
 #endif // _di_kt_tacocat_receive_process_control_
 
 /**
- * Process the header and signature strings, extracting the data.
- *
- * Another function should perform some of the validation on the header.
- * @todo This other function needs to return a status code such as F_continue to designate to continue to the next iteration.
- *       Ideally, the flag will be set to how to continue, such as "continue loading the entire payload".
- *       This situation would arise when the payload needs to be validated, such as the size.
+ * Process the network socket, performing the initialization step such as when step == 0.
  *
  * @param main
  *   The main program and settings data.
@@ -134,78 +129,11 @@ extern "C" {
  *   The socket set to process.
  *   Must not be NULL.
  *
- *   This alters set.status:
- *     F_okay on success.
- *
- *     Errors (with error bit) from: f_memory_array_increase_by().
- *     Errors (with error bit) from: kt_tacocat_receive_process_extract_header().
- *     Errors (with error bit) from: kt_tacocat_receive_process_extract_signature().
- *
- * @see f_memory_array_increase_by()
- * @see kt_tacocat_receive_process_extract_header()
- * @see kt_tacocat_receive_process_extract_signature()
+ *   This does not alter set.status.
  */
-#ifndef _di_kt_tacocat_receive_process_extract_
-  extern void kt_tacocat_receive_process_extract(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
-#endif // _di_kt_tacocat_receive_process_extract_
-
-/**
- * Extract the header strings using the given index for an Object and Content.
- *
- * The positions in the abstruse are hard-coded with specific representations.
- *
- * Index Positions:
- *   - 0: Status string (such as F_okay).
- *   - 1: Type string (type of packet).
- *   - 2: Length number (the length of the Payload section).
- *   - 3: Packet part number.
- *   - 4: Total packet parts number.
- *   - 5: Name string (file name).
- *   - 6: Salt string (for making packet unique, if encrypted, signed, or something similar).
- *
- * @param main
- *   The main program and settings data.
- *
- *   This does not alter main.setting.state.status, except on interrupt signal.
- * @param set
- *   The socket set to process.
- *   Must not be NULL.
- *
- *   This alters set.status:
- *     F_okay on success.
- *     F_data_not on success, but no data to process.
- *
- *     F_packet (with error bit) on invalid packet header.
- *
- *     Errors (with error bit) from: fll_fss_extended_read().
- * @param at
- *   The index position representing which Object and Contents set to use.
- *
- * @see fll_fss_extended_read()
- */
-#ifndef _di_kt_tacocat_receive_process_extract_header_
-  extern void kt_tacocat_receive_process_extract_header(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set, const f_number_unsigned_t at);
-#endif // _di_kt_tacocat_receive_process_extract_header_
-
-/**
- * Extract the signature strings using the given index for an Object and Content.
- *
- * @param main
- *   The main program and settings data.
- *
- *   This does not alter main.setting.state.status, except on interrupt signal.
- * @param set
- *   The socket set to process.
- *   Must not be NULL.
- *
- *   This alters set.status:
- *     F_okay on success.
- * @param at
- *   The index position representing which Object and Contents set to use.
- */
-#ifndef _di_kt_tacocat_receive_process_extract_signature_
-  extern void kt_tacocat_receive_process_extract_signature(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set, const f_number_unsigned_t at);
-#endif // _di_kt_tacocat_receive_process_extract_signature_
+#ifndef _di_kt_tacocat_receive_process_initialize_
+  extern void kt_tacocat_receive_process_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_receive_process_initialize_
 
 #ifdef __cplusplus
 } // extern "C"

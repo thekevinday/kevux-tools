@@ -96,10 +96,17 @@ extern "C" {
       set->abstruses.array[5].key = f_fss_payload_object_name_s;
       set->abstruses.array[5].value.type = f_abstruse_dynamic_e;
       set->abstruses.array[5].value.is.a_dynamic = set->name;
+      set->abstruses.array[5].value.is.a_dynamic.size = 0;
 
       // Index 6 is the salt.
       set->abstruses.array[6].key = kt_tacocat_salt_s;
       set->abstruses.array[6].value.type = f_abstruse_unsigned_e;
+
+      // Index 7 is the transaction id.
+      set->abstruses.array[7].key = f_fss_payload_object_id_s;
+      set->abstruses.array[7].value.type = f_abstruse_dynamic_e;
+      set->abstruses.array[7].value.is.a_dynamic = set->id;
+      set->abstruses.array[7].value.is.a_dynamic.size = 0;
 
       {
         long salt = 0;
@@ -109,7 +116,7 @@ extern "C" {
         set->abstruses.array[6].value.is.a_unsigned = (f_number_unsigned_t) salt;
       }
 
-      set->abstruses.used = 7;
+      set->abstruses.used = kt_tacocat_packet_headers_d;
   }
 #endif // _di_kt_tacocat_process_abstruse_initialize_
 

@@ -6,6 +6,7 @@ f_memory
 f_type_array
 f_string
 f_utf
+f_abstruse
 f_color
 f_console
 f_compare
@@ -13,10 +14,12 @@ f_conversion
 f_file
 f_fss
 f_network
+f_parse
 f_path
 f_pipe
 f_print
 f_random
+f_rip
 f_signal
 f_socket
 f_status_string

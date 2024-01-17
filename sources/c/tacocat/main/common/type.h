@@ -23,9 +23,11 @@ extern "C" {
  * size_done:  The size in bytes that are done being processed (generally used by send/write).
  * size_total: The size in bytes tht represent the entire size to be processed (size_done should eventually equal this).
  *
- * flag:   A set of flags.
- * step:   The current step the socket set is operating under.
- * retry:  The current number of retries performed.
+ * flag:  A set of flags.
+ * step:  The current step the socket set is operating under.
+ * retry: The current number of retries performed.
+ * part:  The current active part number.
+ *
  * file:   The file structure.
  * socket: Socket structure.
  * status: The status of the socket operations.
@@ -72,6 +74,8 @@ extern "C" {
     uint16_t flag;
     uint16_t step;
     uint16_t retry;
+    f_number_unsigned_t part;
+
     f_file_t file;
     f_socket_t socket;
     f_status_t status;
@@ -101,10 +105,11 @@ extern "C" {
     f_string_dynamic_t cache;
     f_string_dynamic_t client;
     f_string_dynamic_t header;
+    f_string_dynamic_t id;
     f_string_dynamic_t name;
     f_string_dynamic_t network;
     f_fss_simple_packet_range_t packet;
-    f_fss_payload_header_write_state_t write_state;
+    f_fss_payload_header_state_t write_state;
 
     f_abstruse_maps_t abstruses;
     f_string_maps_t headers;
@@ -144,8 +149,9 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
-      f_fss_payload_header_write_state_t_initialize, \
+      f_fss_payload_header_state_t_initialize, \
       f_abstruse_maps_t_initialize, \
       f_string_maps_t_initialize, \
     }
@@ -185,8 +191,9 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
-      f_fss_payload_header_write_state_t_initialize, \
+      f_fss_payload_header_state_t_initialize, \
       f_abstruse_maps_t_initialize, \
       f_string_maps_t_initialize, \
     }
@@ -220,6 +227,7 @@ extern "C" {
       f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \

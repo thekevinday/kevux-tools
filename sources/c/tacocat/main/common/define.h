@@ -43,6 +43,7 @@ extern "C" {
  *
  * kt_tacocat_packet_*_d:
  *   - headers:   The number of header Objects in the abstruse to create for sending a packet (type, name, part, size, status, and total).
+ *   - id_length: The length used to generate the random string for the transaction ID (must be less than 2^8, aka less than 256).
  *   - minimum:   The minimum packet size, "header:\npayload:\n" = 17.
  *   - peek:      The size to peek into the packet to get the initial information.
  *   - prebuffer: A size used to include during allocation to add additional space for the packet header and therefore help reduce the potential number of allocations.
@@ -66,7 +67,7 @@ extern "C" {
   #define kt_tacocat_allocation_large_d   0x800
   #define kt_tacocat_allocation_small_d   0x80
 
-  #define kt_tacocat_block_size_d          0xffff // @todo set this to something small like 0xff to easily test and design sending and receiving multiple parts.
+  #define kt_tacocat_block_size_d          0xffff
   #define kt_tacocat_block_size_receive_d  kt_tacocat_block_size_d
   #define kt_tacocat_block_size_send_d     kt_tacocat_block_size_d
 
@@ -79,7 +80,8 @@ extern "C" {
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
   #define kt_tacocat_max_maintain_d 0x100000   // 0x10^5 (Which is 1 Megabyte in base 16 (1 Megaxyte (MX)).
 
-  #define kt_tacocat_packet_headers_d   0x7
+  #define kt_tacocat_packet_headers_d   0x8
+  #define kt_tacocat_packet_id_length_d 0x20
   #define kt_tacocat_packet_minimum_d   0x11
   #define kt_tacocat_packet_peek_d      0x40
   #define kt_tacocat_packet_prebuffer_d 0x200
@@ -112,9 +114,6 @@ extern "C" {
  * macro_kt_receive_process_handle_error_exit_1:
  *   Intended to be used for handling an error during the receive process while not processing within step kt_tacocat_socket_step_receive_control_e.
  *   The parameter id_data and is set to 0 to disable and is otherwise an address pointer.
- *
- * macro_kt_receive_process_handle_error_exit_2:
- *   A version of macro_kt_receive_process_handle_error_exit_1 that uses a void return statement.
  *
  * macro_kt_receive_process_begin_handle_error_exit_1:
  *   Intended to be used for handling an error during the receive process while processing within step kt_tacocat_socket_step_receive_control_e.
@@ -175,25 +174,12 @@ extern "C" {
       kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
       \
       if (id_data) { \
-        f_file_close_id(id_data); \
+        f_file_close_id(&(id_data)); \
       } \
       \
       step = 0; \
       \
       return F_done_not; \
-    }
-
-  #define macro_kt_receive_process_handle_error_exit_2(main, method, network, status, name, step, id_data) \
-    if (F_status_is_error(status)) { \
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(method), kt_tacocat_receive_s, network, status, name); \
-      \
-      if (id_data) { \
-        f_file_close_id(id_data); \
-      } \
-      \
-      step = 0; \
-      \
-      return; \
     }
 
   #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, step) \

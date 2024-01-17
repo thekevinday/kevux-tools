@@ -14,6 +14,7 @@ extern "C" {
     kt_tacocat_main_t * const main = (kt_tacocat_main_t *) void_main;
     f_number_unsigned_t i = 0;
     f_status_t ready = F_okay;
+    bool poll = F_false;
 
     kt_tacocat_process_socket_set_send(main);
 
@@ -51,10 +52,26 @@ extern "C" {
                 ++main->setting.send.array[i].retry;
               }
 
+              if (main->setting.send.array[i].step == kt_tacocat_socket_step_send_wait_e) {
+                poll = F_true;
+              }
+
               ready = F_done_not;
             }
           }
         } // for
+
+        if (F_status_is_error_not(main->setting.status_send) && poll) {
+          main->setting.status_send = f_file_poll(main->setting.send_polls, main->setting.active_send ? main->setting.interval_fast : main->setting.interval);
+
+          if (main->program.signal_received) {
+            main->setting.status_receive = F_status_set_error(F_interrupt);
+
+            return 0;
+          }
+
+          poll = F_false;
+        }
 
       } while (F_status_is_error_not(main->setting.status_send) && ready == F_done_not);
     }
@@ -77,44 +94,10 @@ extern "C" {
     if (!main || !set) return F_status_set_error(F_parameter);
 
     if (!set->step) {
-      set->abstruses.used = 0;
-      set->buffer.used = 0;
-      set->cache.used = 0;
-      set->header.used = 0;
-      set->headers.used = 0;
-      set->objects.used = 0;
-      set->contents.used = 0;
-      set->objects_delimits.used = 0;
-      set->contents_delimits.used = 0;
-      set->comments.used = 0;
-      set->retry = 0;
-      set->size_done = 0;
-      set->size_total = 0;
-      set->file.size_read = set->size_block;
-      set->socket.size_read = kt_tacocat_packet_read_d;
-      set->range.start = -1;
-      set->range.stop = 0;
-      set->packet.control = 0;
-      set->packet.size = 0;
-      set->status = F_none;
-      set->flag = 0;
-
-      // For writes, the id_data is the same as the id.
-      set->socket.id_data = set->socket.id;
-
-      // Initialize the default file payload.
-      set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_string_map_t), (void **) &set->headers.array, &set->headers.used, &set->headers.size);
-
-      if (F_status_is_error_not(set->status)) {
-        set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      }
-
-      if (F_status_is_error_not(set->status)) {
-        kt_tacocat_process_abstruse_initialize(main, set);
-      }
+      kt_tacocat_send_process_initialize(main, set);
 
       if (F_status_is_error(set->status)) {
-        macro_kt_send_process_handle_error_exit_1(main, f_memory_array_increase_by, kt_tacocat_send_s, set->network, set->status, set->name, set->step);
+        macro_kt_send_process_handle_error_exit_1(main, kt_tacocat_send_process_initialize, kt_tacocat_send_s, set->network, set->status, set->name, set->step);
       }
 
       set->step = kt_tacocat_socket_step_send_size_e;
@@ -188,7 +171,7 @@ extern "C" {
         set->abstruses.array[4].value.is.a_unsigned = 1;
       }
 
-      set->status = f_memory_array_increase_by(set->abstruses.array[4].value.is.a_unsigned, sizeof(f_number_unsigned_t), (void **) &.array, &.used, &.size);
+      set->status = f_memory_array_increase_by(set->abstruses.array[4].value.is.a_unsigned, sizeof(f_number_unsigned_t), (void **) &set->parts.array, &set->parts.used, &set->parts.size);
 
       if (F_status_is_error(set->status)) {
         // @todo out of memory, send abort packet with F_memory as a status.
@@ -205,7 +188,7 @@ extern "C" {
 
         kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(f_memory_array_increase_by), kt_tacocat_send_size_s, set->network, set->status, set->name);
 
-        return;
+        return F_done_not;
       }
 
       set->step = kt_tacocat_socket_step_send_build_e;
@@ -216,7 +199,10 @@ extern "C" {
       state_local.data = &set->write_state;
 
       fl_fss_payload_header_map(set->abstruses, &set->headers, &state_local);
-      macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, kt_tacocat_send_build_s, set->network, state_local.status, set->name, set->step);
+
+      set->status = state_local.status;
+
+      macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, kt_tacocat_send_build_s, set->network, set->status, set->name, set->step);
 
       set->step = kt_tacocat_socket_step_send_header_e;
     }
@@ -345,19 +331,30 @@ extern "C" {
 
       set->size_done += written;
 
+      set->status = F_okay;
+      set->step = kt_tacocat_socket_step_send_wait_e;
+
+      // Wait for packet received confirmation.
+      return F_done_not;
+    }
+
+    if (set->step == kt_tacocat_socket_step_send_wait_e) {
+      // @todo process/validate the received response.
+
       // When the buffer is smaller than the read block size, then the entire file should be completely sent.
       if (set->size_done >= set->buffer.used) {
         set->step = kt_tacocat_socket_step_send_done_e;
       }
       else {
         set->status = F_okay;
-        set->step = kt_tacocat_socket_step_send_header_e;
+        set->step = kt_tacocat_socket_step_send_wait_e;
 
         return F_done_not;
       }
     }
 
     if (set->step == kt_tacocat_socket_step_send_done_e) {
+      //@todo send done packet.
       set->status = f_file_close(&set->file);
 
       if (F_status_is_error(set->status)) {
@@ -381,6 +378,105 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_send_process_
 
+#ifndef _di_kt_tacocat_send_process_initialize_
+  void kt_tacocat_send_process_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
+
+    if (!main || !set) return;
+
+    set->abstruses.used = 0;
+    set->buffer.used = 0;
+    set->id.used = 0;
+    set->cache.used = 0;
+    set->header.used = 0;
+    set->headers.used = 0;
+    set->objects.used = 0;
+    set->contents.used = 0;
+    set->objects_delimits.used = 0;
+    set->contents_delimits.used = 0;
+    set->comments.used = 0;
+    set->retry = 0;
+    set->size_done = 0;
+    set->size_total = 0;
+    set->file.size_read = set->size_block;
+    set->socket.size_read = kt_tacocat_packet_read_d;
+    set->socket.id_data = -1;
+    set->range.start = 1;
+    set->range.stop = 0;
+    set->state.status = F_none;
+    set->status = F_none;
+    set->packet.control = 0;
+    set->packet.size = 0;
+    set->packet.payload.start = 1;
+    set->packet.payload.stop = 0;
+    set->part = 0;
+    set->parts.used = 0;
+    set->flag = 0;
+
+    // For writes, the id_data is the same as the id.
+    set->socket.id_data = set->socket.id;
+
+    // Initialize the default file payload.
+    set->status = f_memory_array_increase_by(kt_tacocat_packet_headers_d, sizeof(f_string_map_t), (void **) &set->headers.array, &set->headers.used, &set->headers.size);
+
+    if (F_status_is_error_not(set->status)) {
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_prebuffer_d, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
+    }
+
+    if (F_status_is_error_not(set->status)) {
+      set->status = f_memory_array_increase_by(kt_tacocat_packet_id_length_d, sizeof(f_char_t), (void **) &set->id.string, &set->id.used, &set->id.size);
+    }
+
+    if (F_status_is_error_not(set->status)) {
+      f_char_t id[kt_tacocat_packet_id_length_d];
+      f_string_static_t id_buffer = macro_f_string_static_t_initialize_2(id, 0);
+      uint8_t modded = 0;
+
+      memset(id, 0, kt_tacocat_packet_id_length_d);
+
+      if (F_status_is_error_not(f_random_read(0, kt_tacocat_packet_id_length_d, &id_buffer.string, &id_buffer.used))) {
+        for (uint8_t i = 0; i < id_buffer.used; i += macro_f_utf_byte_width(id[i])) {
+
+          if (f_utf_is_alphabetic_digit(id + i, kt_tacocat_packet_id_length_d - i, 0) == F_true) {
+            set->id.string[set->id.used++] = id[i];
+
+            if (macro_f_utf_byte_width(id[i]) > 1) {
+              set->id.string[set->id.used++] = id[i + 1];
+
+              if (macro_f_utf_byte_width(id[i]) > 2) {
+                set->id.string[set->id.used++] = id[i + 2];
+
+                if (macro_f_utf_byte_width(id[i]) > 3) {
+                  set->id.string[set->id.used++] = id[i + 3];
+                }
+              }
+            }
+          }
+          else {
+            modded = ((uint8_t) id[i]) % 36;
+
+            // Fallback to ASCII based on current index position.
+            if (modded < 10) {
+              set->id.string[set->id.used++] = (modded) + 48;
+            }
+            else if (modded < 36) {
+              set->id.string[set->id.used++] = (modded) + 55; // ASCII 65 - 10 = 55.
+            }
+            else {
+              set->id.string[set->id.used++] = (modded) + 61; // ASCII 97 - 36 = 61.
+            }
+          }
+        } // for
+      }
+      else {
+        // @todo manually generate something, probably use the file name and the port number.
+      }
+    }
+
+    if (F_status_is_error_not(set->status)) {
+      kt_tacocat_process_abstruse_initialize(main, set);
+    }
+  }
+#endif // _di_kt_tacocat_send_process_initialize_
 #ifdef __cplusplus
 } // extern "C"
 #endif

@@ -138,6 +138,10 @@ extern "C" {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].header.string, &array[i].header.used, &array[i].header.size);
         }
 
+        if (array[i].id.size) {
+          f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].id.string, &array[i].id.used, &array[i].id.size);
+        }
+
         if (array[i].name.size) {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].name.string, &array[i].name.used, &array[i].name.size);
         }

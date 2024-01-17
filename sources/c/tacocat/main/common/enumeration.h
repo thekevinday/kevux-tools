@@ -181,6 +181,7 @@ extern "C" {
  *   - extract: Process the loaded data, extracting the Header and Signature sections.
  *   - check:   Check the loaded data, doing size checks, interpreting the status, and performing any signature checks.
  *   - write:   Save the loaded Payload block to the file (write to the file).
+ *   - next:    Send "next" or "done" packet.
  *   - done:    Done processing file.
  */
 #ifndef _di_kt_tacocat_socket_step_receive_e_
@@ -192,6 +193,7 @@ extern "C" {
     kt_tacocat_socket_step_receive_extract_e,
     kt_tacocat_socket_step_receive_check_e,
     kt_tacocat_socket_step_receive_write_e,
+    kt_tacocat_socket_step_receive_next_e,
     kt_tacocat_socket_step_receive_done_e,
   }; // enum
 #endif // _di_kt_tacocat_socket_step_receive_e_
@@ -200,15 +202,16 @@ extern "C" {
  * Individual socket-specific steps for receiving.
  *
  * kt_tacocat_socket_step_send_*_e:
- *   - none:   No flags set.
- *   - size:   Determine the file size.
- *   - header: Build and buffer the header.
- *   - build:  Build the header information.
- *   - file:   Buffer the file.
- *   - check:  Additional checks before sending, such as re-checking header size.
- *   - encode: Encode entire packet.
- *   - packet: Send the entire packet.
- *   - done:   The entire Packet is sent.
+ *   - none:     No flags set.
+ *   - size:     Determine the file size.
+ *   - header:   Build and buffer the header.
+ *   - build:    Build the header information.
+ *   - file:     Buffer the file.
+ *   - check:    Additional checks before sending, such as re-checking header size.
+ *   - encode:   Encode entire packet.
+ *   - packet:   Send the packet.
+ *   - response: Wait for a response packet from the opposite end.
+ *   - done:     The entire Packet is sent.
  */
 #ifndef _di_kt_tacocat_socket_step_send_e_
   enum {
@@ -220,6 +223,7 @@ extern "C" {
     kt_tacocat_socket_step_send_check_e,
     kt_tacocat_socket_step_send_encode_e,
     kt_tacocat_socket_step_send_packet_e,
+    kt_tacocat_socket_step_send_wait_e,
     kt_tacocat_socket_step_send_done_e,
   }; // enum
 #endif // _di_kt_tacocat_socket_step_send_e_

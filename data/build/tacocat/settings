@@ -34,14 +34,14 @@ build_language c
 build_libraries -lc
 build_libraries-individual -lfll_error -lfll_fss -lfll_print -lfll_program
 build_libraries-individual -lfl_conversion -lfl_fss -lfl_print -lfl_status_string
-build_libraries-individual -lf_color -lf_compare -lf_console -lf_conversion -lf_file -lf_fss -lf_memory -lf_network -lf_path -lf_pipe -lf_print -lf_random -lf_signal -lf_socket -lf_status_string -lf_string -lf_time -lf_type_array -lf_utf
+build_libraries-individual -lf_abstruse -lf_color -lf_compare -lf_console -lf_conversion -lf_file -lf_fss -lf_memory -lf_network -lf_parse -lf_path -lf_pipe -lf_print -lf_random -lf_rip -lf_signal -lf_socket -lf_status_string -lf_string -lf_time -lf_type_array -lf_utf
 build_libraries-individual_thread -lf_thread
 build_libraries-level -lfll_2 -lfll_1 -lfll_0
 build_libraries-monolithic -lfll
 
-build_sources_library main/common.c main/common/define.c main/common/enumeration.c main/common/print.c main/common/string.c main/common/type.c main/print/error.c main/print/message.c main/print/verbose.c main/print/warning.c main/process.c main/receive.c main/send.c main/signal.c main/tacocat.c main/thread.c
+build_sources_library main/common.c main/common/define.c main/common/enumeration.c main/common/print.c main/common/string.c main/common/type.c main/print/error.c main/print/message.c main/print/verbose.c main/print/warning.c main/packet.c main/process.c main/receive.c main/send.c main/signal.c main/tacocat.c main/thread.c
 
-build_sources_headers main/common.h main/common/define.h main/common/enumeration.h main/common/print.h main/common/string.h main/common/type.h main/print/error.h main/print/message.h main/print/verbose.h main/print/warning.h main/process.h main/receive.h main/send.h main/signal.h main/tacocat.h main/thread.h
+build_sources_headers main/common.h main/common/define.h main/common/enumeration.h main/common/print.h main/common/string.h main/common/type.h main/print/error.h main/print/message.h main/print/verbose.h main/print/warning.h main/packet.h main/process.h main/receive.h main/send.h main/signal.h main/tacocat.h main/thread.h
 
 build_sources_program main/main.c
 
@@ -77,6 +77,7 @@ environment LANG LC_ALL LC_COLLATE LC_CTYPE LC_FASTMSG LC_MESSAGES LC_MONETARY L
 defines -D_libcap_legacy_only_
 defines-threadless -D_di_thread_support_
 defines-thread -D_pthread_attr_unsupported_ -D_pthread_sigqueue_unsupported_
+defines-individual_thread -D_pthread_attr_unsupported_ -D_pthread_sigqueue_unsupported_
 
 flags -O2 -z now -g -fdiagnostics-color=always -Wno-logical-not-parentheses -Wno-parentheses -Wno-missing-braces
 flags-thread -pthread

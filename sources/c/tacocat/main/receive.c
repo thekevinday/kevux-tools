@@ -28,7 +28,7 @@ extern "C" {
         }
 
         // Skip if status from poll is an error or is F_time_out.
-        if (main->setting.active_receive >> main->setting.status_receive == F_okay) {
+        if (main->setting.active_receive || main->setting.status_receive == F_okay) {
           for (i = 0; i < main->setting.receive_polls.used; ++i) {
 
             if (main->setting.receive_polls.array[i].fd == -1) continue;
@@ -107,32 +107,7 @@ extern "C" {
     if (!(set->step)) {
       kt_tacocat_print_message_receive_operation_received(&main->program.message, *set);
 
-      set->abstruses.used = 0;
-      set->buffer.used = 0;
-      set->cache.used = 0;
-      set->header.used = 0;
-      set->headers.used = 0;
-      set->objects.used = 0;
-      set->contents.used = 0;
-      set->objects_delimits.used = 0;
-      set->contents_delimits.used = 0;
-      set->comments.used = 0;
-      set->retry = 0;
-      set->size_done = 0;
-      set->size_total = 0;
-      set->file.size_read = set->size_block;
-      set->socket.size_read = kt_tacocat_packet_read_d;
-      set->socket.id_data = -1;
-      set->range.start = 1;
-      set->range.stop = 0;
-      set->state.status = F_none;
-      set->status = F_none;
-      set->packet.control = 0;
-      set->packet.size = 0;
-      set->packet.payload.start = 1;
-      set->packet.payload.stop = 0;
-      set->step = kt_tacocat_socket_step_receive_control_e;
-      set->flag = 0;
+      kt_tacocat_receive_process_initialize(main, set);
 
       ++main->setting.active_receive;
     }
@@ -170,7 +145,7 @@ extern "C" {
 
       // Make sure the buffer is large enough for payload processing block reads.
       set->status = f_memory_array_increase_by(set->socket.size_read, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, set->socket.id_data);
 
       set->retry = 0;
       set->buffer.used = 0;
@@ -181,7 +156,7 @@ extern "C" {
       size_t length_read = 0;
 
       set->status = f_socket_read_stream(&set->socket, 0, (void *) (set->buffer.string + set->buffer.used), &length_read);
-      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag, &set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag, set->socket.id_data);
 
       if (length_read) {
         set->retry = 0;
@@ -277,14 +252,39 @@ extern "C" {
     }
 
     if (set->step == kt_tacocat_socket_step_receive_extract_e) {
-      kt_tacocat_receive_process_extract(main, set);
+      kt_tacocat_packet_extract(main, set, kt_tacocat_receive_s);
       if (F_status_is_error(set->status)) return F_data_not;
 
-      set->step = kt_tacocat_socket_step_receive_write_e;
+      set->step = kt_tacocat_socket_step_receive_check_e;
     }
 
     if (set->step == kt_tacocat_socket_step_receive_check_e) {
-      // @todo
+      if (set->parts.used) {
+        // @todo determine type of packet and process.
+      }
+      else {
+        // @todo the packet should only be a 'file' type for the first packet.
+        if (set->abstruses.array[4].value.type == f_abstruse_unsigned_e) {
+          set->parts.used = 0;
+
+          set->status = f_memory_array_increase_by(set->abstruses.array[4].value.is.a_unsigned, sizeof(f_number_unsigned_t), (void **) &set->parts.array, &set->parts.used, &set->parts.size);
+          macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, set->socket.id_data);
+
+          memset(set->parts.array, 0, sizeof(f_number_unsigned_t));
+
+          set->parts.used = set->abstruses.array[4].value.is.a_unsigned;
+        }
+        else {
+          // @todo error.
+        }
+
+        if (set->abstruses.array[3].value.type == f_abstruse_unsigned_e) {
+          set->part = set->abstruses.array[3].value.is.a_unsigned;
+        }
+        else {
+          // @todo error
+        }
+      }
 
       set->step = kt_tacocat_socket_step_receive_write_e;
     }
@@ -310,6 +310,12 @@ extern "C" {
       f_file_close(&set->file);
 
       set->buffer.used = 0;
+      set->step = kt_tacocat_socket_step_receive_next_e;
+    }
+
+    if (set->step == kt_tacocat_socket_step_receive_next_e) {
+      // @todo
+
       set->step = kt_tacocat_socket_step_receive_done_e;
     }
 
@@ -442,316 +448,41 @@ extern "C" {
   }
 #endif // _di_kt_tacocat_receive_process_control_
 
-#ifndef _di_kt_tacocat_receive_process_extract_
-  void kt_tacocat_receive_process_extract(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
+#ifndef _di_kt_tacocat_receive_process_initialize_
+  void kt_tacocat_receive_process_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set) {
 
     if (!main || !set) return;
 
-    kt_tacocat_process_abstruse_initialize(main, set);
-
-    if (F_status_is_error(set->status)) {
-      macro_kt_receive_process_handle_error_exit_2(main, kt_tacocat_process_abstruse_initialize, set->network, set->status, set->name, set->step, &set->socket.id_data);
-    }
-
-    // 0x1 = did not find payload, 0x2 = did not find header.
-    uint8_t found_not = 0x3;
-
-    for (f_number_unsigned_t i = 0; i < set->objects.used; ++i) {
-
-      if (f_compare_dynamic_partial_string(f_fss_payload_object_header_s.string, set->buffer, f_fss_payload_object_header_s.used, set->objects.array[i]) == F_equal_to) {
-        kt_tacocat_receive_process_extract_header(main, set, i);
-
-        if (F_status_is_error(set->status)) {
-          // @todo handle F_packet error, setup the sending of an invalid packet response (things similar to this needs to be done in multiple places).
-          ++set->retry;
-
-          return;
-        }
-
-        found_not &= ~0x2;
-      }
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_signature_s.string, set->buffer, f_fss_payload_object_signature_s.used, set->objects.array[i]) == F_equal_to) {
-        kt_tacocat_receive_process_extract_signature(main, set, i);
-
-        if (F_status_is_error(set->status)) {
-          ++set->retry;
-
-          return;
-        }
-      }
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_payload_s.string, set->buffer, f_fss_payload_object_payload_s.used, set->objects.array[i]) == F_equal_to) {
-        if (found_not & 0x1) {
-          set->packet.payload = set->contents.array[i].array[0];
-          found_not &= ~0x1;
-        }
-      }
-    } // for
-
-    set->status = F_okay;
+    set->abstruses.used = 0;
+    set->buffer.used = 0;
+    set->cache.used = 0;
+    set->header.used = 0;
+    set->headers.used = 0;
+    set->objects.used = 0;
+    set->contents.used = 0;
+    set->objects_delimits.used = 0;
+    set->contents_delimits.used = 0;
+    set->comments.used = 0;
+    set->retry = 0;
+    set->size_done = 0;
+    set->size_total = 0;
+    set->file.size_read = set->size_block;
+    set->socket.size_read = kt_tacocat_packet_read_d;
+    set->socket.id_data = -1;
+    set->range.start = 1;
+    set->range.stop = 0;
+    set->state.status = F_none;
+    set->status = F_none;
+    set->packet.control = 0;
+    set->packet.size = 0;
+    set->packet.payload.start = 1;
+    set->packet.payload.stop = 0;
+    set->part = 0;
+    set->parts.used = 0;
+    set->step = kt_tacocat_socket_step_receive_control_e;
+    set->flag = 0;
   }
-#endif // _di_kt_tacocat_receive_process_extract_
-
-#ifndef _di_kt_tacocat_receive_process_extract_header_
-  void kt_tacocat_receive_process_extract_header(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set, const f_number_unsigned_t at) {
-
-    if (!main || !set) return;
-
-    if (set->objects.array[at].start > set->objects.array[at].stop || !set->contents.array[at].used) {
-      set->status = F_data_not;
-
-      return;
-    }
-
-    set->range = set->contents.array[at].array[0];
-
-    fll_fss_extended_read(set->buffer, &set->range, &set->objects_header, &set->contents_header, &set->objects_quoted_header, &set->contents_quoted_header, &set->objects_delimits_header, &set->contents_delimits_header, &set->state);
-
-    if (F_status_is_error(set->state.status)) {
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(fll_fss_extended_read), kt_tacocat_receive_s, set->network, set->status, set->name);
-
-      set->status = set->state.status;
-
-      return;
-    }
-
-    switch (set->state.status) {
-      case F_okay:
-      case F_okay_stop:
-      case F_okay_eos:
-        break;
-
-      default:
-        set->status = F_data_not;
-
-        return;
-    }
-
-    f_number_unsigned_t i = 0;
-
-    for (; i < set->objects_header.used; ++i) {
-
-      // Index 0 is the status.
-      if (f_compare_dynamic_partial_string(f_fss_payload_object_status_s.string, set->buffer, f_fss_payload_object_status_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-          set->abstruses.array[0].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[0].key = f_fss_payload_object_status_s;
-        set->abstruses.array[0].value.type = f_abstruse_range_e;
-        set->abstruses.array[0].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 1 is the type.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_type_s.string, set->buffer, f_fss_payload_object_type_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[1].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[1].key = f_fss_payload_object_type_s;
-        set->abstruses.array[1].value.type = f_abstruse_range_e;
-        set->abstruses.array[1].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 2 is the length.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_length_s.string, set->buffer, f_fss_payload_object_length_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[2].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[2].key = f_fss_payload_object_length_s;
-        set->abstruses.array[2].value.type = f_abstruse_range_e;
-        set->abstruses.array[2].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 3 is the part.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_part_s.string, set->buffer, f_fss_payload_object_part_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[3].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[3].key = f_fss_payload_object_part_s;
-        set->abstruses.array[3].value.type = f_abstruse_range_e;
-        set->abstruses.array[3].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 4 is the total number of packets (based on block size).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_total_s.string, set->buffer, f_fss_payload_object_total_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[4].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[4].key = f_fss_payload_object_total_s;
-        set->abstruses.array[4].value.type = f_abstruse_range_e;
-        set->abstruses.array[4].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 5 is the name (file name).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_name_s.string, set->buffer, f_fss_payload_object_name_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[5].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[5].key = f_fss_payload_object_name_s;
-        set->abstruses.array[5].value.type = f_abstruse_range_e;
-        set->abstruses.array[5].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 6 is the salt.
-      else if (f_compare_dynamic_partial_string(kt_tacocat_salt_s.string, set->buffer, kt_tacocat_salt_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-          set->abstruses.array[6].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[6].key = kt_tacocat_salt_s;
-        set->abstruses.array[6].value.type = f_abstruse_range_e;
-        set->abstruses.array[6].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-    } // for
-
-    // Convert the status code.
-    if (set->abstruses.array[0].value.type) {
-      const f_number_unsigned_t length = set->abstruses.array[0].value.is.a_range.stop - set->abstruses.array[0].value.is.a_range.start + 1;
-      char buffer[length];
-      f_status_t status = F_false;
-
-      memcpy(buffer, set->buffer.string + set->abstruses.array[0].value.is.a_range.start, length);
-
-      const f_string_static_t status_string = macro_f_string_static_t_initialize_1(buffer, 0, length);
-
-      set->status = fl_status_string_from(status_string, &status);
-
-      if (set->status == F_okay) {
-        set->abstruses.array[0].value.type = f_abstruse_unsigned_e;
-        set->abstruses.array[0].value.is.a_unsigned = (f_number_unsigned_t) status;
-      }
-      else {
-        kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
-
-        set->abstruses.array[0].value.type = f_abstruse_none_e;
-        set->abstruses.array[0].value.is.a_unsigned = 0;
-
-        set->status = F_status_set_error(F_packet);
-      }
-    }
-
-    // Convert the type.
-    if (set->abstruses.array[1].value.type) {
-      if (f_compare_dynamic_partial_string(kt_tacocat_file_s.string, set->buffer, kt_tacocat_file_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
-        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
-        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_file_e;
-      }
-      else if (f_compare_dynamic_partial_string(kt_tacocat_done_s.string, set->buffer, kt_tacocat_done_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
-        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
-        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_done_e;
-      }
-      else if (f_compare_dynamic_partial_string(kt_tacocat_next_s.string, set->buffer, kt_tacocat_next_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
-        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
-        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_next_e;
-      }
-      else if (f_compare_dynamic_partial_string(kt_tacocat_resend_s.string, set->buffer, kt_tacocat_resend_s.used, set->abstruses.array[1].value.is.a_range) == F_equal_to) {
-        set->abstruses.array[1].value.type = f_abstruse_unsigned_e;
-        set->abstruses.array[1].value.is.a_unsigned = (f_number_unsigned_t) kt_tacocat_packet_type_resend_e;
-      }
-      else {
-        set->status = F_status_set_error(F_found_not);
-
-        kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
-
-        set->abstruses.array[1].value.type = f_abstruse_none_e;
-        set->abstruses.array[1].value.is.a_unsigned = 0;
-
-        set->status = F_status_set_error(F_packet);
-
-        return;
-      }
-    }
-
-    // Convert the length, part, and total.
-    {
-      f_number_unsigned_t number = 0;
-
-      for (i = 2; i < 5; ++i) {
-
-        if (!set->abstruses.array[i].value.type) continue;
-
-        set->status = fl_conversion_dynamic_partial_to_unsigned(fl_conversion_data_base_10_c, set->buffer, set->abstruses.array[i].value.is.a_range, &number);
-
-        if (set->status == F_okay) {
-          set->abstruses.array[i].value.type = f_abstruse_unsigned_e;
-          set->abstruses.array[i].value.is.a_unsigned = number;
-        }
-        else {
-          kt_tacocat_print_error_on_packet_header_value_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->status, set->name, set->buffer, set->objects.array[at], set->abstruses.array[6].value.is.a_range);
-
-          set->abstruses.array[i].value.type = f_abstruse_none_e;
-          set->abstruses.array[i].value.is.a_unsigned = 0;
-
-          set->status = F_status_set_error(F_packet);
-        }
-      } // for
-    }
-
-    set->abstruses.used = 6;
-    set->status = F_okay;
-  }
-#endif // _di_kt_tacocat_receive_process_extract_header_
-
-#ifndef _di_kt_tacocat_receive_process_extract_signature_
-  void kt_tacocat_receive_process_extract_signature(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set, const f_number_unsigned_t at) {
-
-    if (!main || !set) return;
-
-    if (set->objects.array[at].start > set->objects.array[at].stop || !set->contents.array[at].used) {
-      set->status = F_data_not;
-
-      return;
-    }
-
-    set->range = set->contents.array[at].array[0];
-
-    fll_fss_extended_read(set->buffer, &set->range, &set->objects_signature, &set->contents_signature, &set->objects_quoted_header, &set->contents_quoted_header, &set->objects_delimits_signature, &set->contents_delimits_signature, &set->state);
-
-    if (F_status_is_error(set->state.status)) {
-      kt_tacocat_print_error_on(&main->program.error, macro_kt_tacocat_f(fll_fss_extended_read), kt_tacocat_receive_s, set->network, set->status, set->name);
-
-      set->status = set->state.status;
-
-      return;
-    }
-
-    // @todo maybe 7 and beyond in the abstruse shall represent signatures?
-
-    set->status = F_okay;
-  }
-#endif // _di_kt_tacocat_receive_process_extract_signature_
+#endif // _di_kt_tacocat_receive_process_initialize_
 
 #ifdef __cplusplus
 } // extern "C"
