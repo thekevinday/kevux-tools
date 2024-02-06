@@ -54,7 +54,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
     fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -124,7 +124,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
     fl_print_format("%[' failed to receive data or write to file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -146,7 +146,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
     fl_print_format("%[' failed to send data or read from file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -174,7 +174,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_range_single_s.string, print->to, print->set->notable, buffer, content, print->set->notable);
     fl_print_format("%[' with a status code of %]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_ul_single_s.string, print->to, print->set->notable, status, print->set->notable);
-    fl_print_format("%[.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -194,7 +194,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
     fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -244,7 +244,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set->network, print->set->notable);
     fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, set->name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -340,7 +340,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_range_single_s.string, print->to, print->set->notable, address, range, print->set->notable);
     fl_print_format(" %[from the address '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, address, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
@@ -360,7 +360,7 @@ extern "C" {
     fl_print_format("%[%ul%]", print->to, print->set->notable, protocol, print->set->notable);
     fl_print_format(" %[while processing '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 

@@ -56,7 +56,7 @@ extern "C" {
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
     fl_print_format("%[' failed to write to file '%]", print->to, print->set->warning, print->set->warning, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
-    fl_print_format("%['.%]%r", print->to, print->set->warning, print->set->warning, f_string_eol_s);
+    fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->warning, print->set->warning, f_string_eol_s);
 
     f_file_stream_unlock(print->to);
 
