@@ -20,17 +20,18 @@ extern "C" {
  * Flags passed to the main function or program.
  *
  * kt_tacocat_main_flag_*_e:
- *   - none:            No flags set.
- *   - copyright:       Print copyright.
- *   - print_first:     When set, print new line to message output on program begin after loading settings.
- *   - print_last:      When set, print new line to message output on program end.
- *   - max_buffer:      When set, a maximum buffer on receive is enforced.
- *   - receive:         The address or socket to receive from is specified.
- *   - resolve_classic: Follow the classic Domain Name Resolution method.
- *   - resolve_kevux:   Follow the Kevux Domain Name Resolution method.
- *   - send:            The address or socket send to is specified.
- *   - help:            Print help.
- *   - version:         Print version.
+ *   - none:                   No flags set.
+ *   - copyright:              Print copyright.
+ *   - print_first:            When set, print new line to message output on program begin after loading settings.
+ *   - print_last:             When set, print new line to message output on program end.
+ *   - max_buffer:             When set, a maximum buffer on receive is enforced.
+ *   - receive:                The address or socket to receive from is specified.
+ *   - resolve_classic:        Follow the classic Domain Name Resolution method.
+ *   - resolve_kevux:          Follow the Kevux Domain Name Resolution method.
+ *   - send:                   The address or socket send to is specified.
+ *   - help:                   Print help.
+ *   - version:                Print version.
+ *   - version_copyright_help: A helper flag representing version, copyright, and help flag bits being set.
  *
  * For resolve_classic and resolve_kevux flags:
  *   The classic method utilizes the /etc/resolv.conf traditional method.
@@ -45,18 +46,19 @@ extern "C" {
  */
 #ifndef _di_kt_tacocat_main_flag_e_
   enum {
-    kt_tacocat_main_flag_none_e            = 0x0,
-    kt_tacocat_main_flag_copyright_e       = 0x1,
-    kt_tacocat_main_flag_help_e            = 0x2,
-    kt_tacocat_main_flag_max_buffer_e      = 0x4,
-    kt_tacocat_main_flag_print_first_e     = 0x8,
-    kt_tacocat_main_flag_print_last_e      = 0x10,
-    kt_tacocat_main_flag_receive_e         = 0x20,
-    kt_tacocat_main_flag_resolve_classic_e = 0x40,
-    kt_tacocat_main_flag_resolve_kevux_e   = 0x80,
-    kt_tacocat_main_flag_resolve_e         = 0x100,
-    kt_tacocat_main_flag_send_e            = 0x200,
-    kt_tacocat_main_flag_version_e         = 0x400,
+    kt_tacocat_main_flag_none_e                   = 0x0,
+    kt_tacocat_main_flag_copyright_e              = 0x1,
+    kt_tacocat_main_flag_help_e                   = 0x2,
+    kt_tacocat_main_flag_max_buffer_e             = 0x4,
+    kt_tacocat_main_flag_print_first_e            = 0x8,
+    kt_tacocat_main_flag_print_last_e             = 0x10,
+    kt_tacocat_main_flag_receive_e                = 0x20,
+    kt_tacocat_main_flag_resolve_classic_e        = 0x40,
+    kt_tacocat_main_flag_resolve_kevux_e          = 0x80,
+    kt_tacocat_main_flag_resolve_e                = 0x100,
+    kt_tacocat_main_flag_send_e                   = 0x200,
+    kt_tacocat_main_flag_version_e                = 0x400,
+    kt_tacocat_main_flag_version_copyright_help_e = 0x403,
   }; // enum
 #endif // _di_kt_tacocat_main_flag_e_
 

@@ -20,90 +20,91 @@ extern "C" {
  * Flags passed to the main function or program.
  *
  * kt_remove_main_flag_*_e:
- *   - none:            No flags set.
- *   - accessed:        Remove by last accessed datetime.
- *   - block:           Remove by file type: block.
- *   - character:       Remove by file type: character.
- *   - copyright:       Print copyright.
- *   - changed:         Remove by changed datetime.
- *   - different:       Remove by user different from caller.
- *   - directory:       Remove by file type: directory.
- *   - empty_only:      Remove empty directories.
- *   - empty_only_fail: Fail on empty directories.
- *   - empty_not:       Remove not empty directories.
- *   - empty_not_fail:  Fail on not empty directories.
- *   - fifo:            Remove by file type: FIFO.
- *   - follow:          Follow symbolic links for deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
- *   - force:           Forcibly delete.
- *   - group:           Remove by GID.
- *   - help:            Print help.
- *   - isolate_all:     Isolate to a single file system, error on all outside file system files (not implemented, requires /proc support).
- *   - isolate_ignore:  Ignore rather than fail for anything on a different file system (not implemented, requires /proc support).
- *   - isolate_root:    Isolate to a single file system, error on remove on '/' (not implemented, requires /proc support).
- *   - link:            Remove by file type: link.
- *   - mode:            Remove by mode.
- *   - option_used:     This gets set when when certain options are specified to toggle the default match detection boolean during removal of each file.
- *   - print_first:     When set, print new line to message output on program begin after loading settings.
- *   - print_last:      When set, print new line to message output on program end.
- *   - prompt_all:      Operate in interactive mode, prompting for every file.
- *   - prompt_follow:   Operate in interactive mode: prompting for every link that is being followed.
- *   - prompt_never:    Do not operate in interactive mode.
- *   - prompt_once:     Operate in interactive mode: prompting if removing 3 or more files.
- *   - recurse:         Recurse directories.
- *   - regular:         Remove by file type: regular.
- *   - same:            Remove by same user as caller.
- *   - simulate:        Do not actually perform deletes, instead print messages (when silent, should still return 0 or 1).
- *   - socket:          Remove by file type: socket.
- *   - tree:            Remove directory tree (parent directories) (remove a/b/c, removes a/b/c, then a/b/, then a).
- *   - updated:         Remove by last updated datetime.
- *   - user:            Remove by UID.
- *   - utc:             Process dates in UTC mode.
- *   - version:         Print version.
+ *   - none:                   No flags set.
+ *   - accessed:               Remove by last accessed datetime.
+ *   - block:                  Remove by file type: block.
+ *   - character:              Remove by file type: character.
+ *   - copyright:              Print copyright.
+ *   - changed:                Remove by changed datetime.
+ *   - different:              Remove by user different from caller.
+ *   - directory:              Remove by file type: directory.
+ *   - empty_only:             Remove empty directories.
+ *   - empty_only_fail:        Fail on empty directories.
+ *   - empty_not:              Remove not empty directories.
+ *   - empty_not_fail:         Fail on not empty directories.
+ *   - fifo:                   Remove by file type: FIFO.
+ *   - follow:                 Follow symbolic links for deleting the file being pointed to rather than the link itself (when not set the link itself is deleted).
+ *   - force:                  Forcibly delete.
+ *   - group:                  Remove by GID.
+ *   - help:                   Print help.
+ *   - isolate_all:            Isolate to a single file system, error on all outside file system files (not implemented, requires /proc support).
+ *   - isolate_ignore:         Ignore rather than fail for anything on a different file system (not implemented, requires /proc support).
+ *   - isolate_root:           Isolate to a single file system, error on remove on '/' (not implemented, requires /proc support).
+ *   - link:                   Remove by file type: link.
+ *   - mode:                   Remove by mode.
+ *   - option_used:            This gets set when when certain options are specified to toggle the default match detection boolean during removal of each file.
+ *   - print_first:            When set, print new line to message output on program begin after loading settings.
+ *   - print_last:             When set, print new line to message output on program end.
+ *   - prompt_all:             Operate in interactive mode, prompting for every file.
+ *   - prompt_follow:          Operate in interactive mode: prompting for every link that is being followed.
+ *   - prompt_never:           Do not operate in interactive mode.
+ *   - prompt_once:            Operate in interactive mode: prompting if removing 3 or more files.
+ *   - recurse:                Recurse directories.
+ *   - regular:                Remove by file type: regular.
+ *   - same:                   Remove by same user as caller.
+ *   - simulate:               Do not actually perform deletes, instead print messages (when silent, should still return 0 or 1).
+ *   - socket:                 Remove by file type: socket.
+ *   - tree:                   Remove directory tree (parent directories) (remove a/b/c, removes a/b/c, then a/b/, then a).
+ *   - updated:                Remove by last updated datetime.
+ *   - user:                   Remove by UID.
+ *   - utc:                    Process dates in UTC mode.
+ *   - version:                Print version.
+ *   - version_copyright_help: A helper flag representing version, copyright, and help flag bits being set.
  */
 #ifndef _di_kt_remove_flag_e_
   enum {
-    kt_remove_main_flag_none_e            = 0x0,
-    kt_remove_main_flag_accessed_e        = 0x1,
-    kt_remove_main_flag_block_e           = 0x2,
-    kt_remove_main_flag_character_e       = 0x4,
-    kt_remove_main_flag_copyright_e       = 0x8,
-    kt_remove_main_flag_changed_e         = 0x10,
-    kt_remove_main_flag_different_e       = 0x20,
-    kt_remove_main_flag_directory_e       = 0x40,
-    kt_remove_main_flag_empty_only_e      = 0x80,
-    kt_remove_main_flag_empty_only_fail_e = 0x100,
-    kt_remove_main_flag_empty_not_e       = 0x200,
-    kt_remove_main_flag_empty_not_fail_e  = 0x400,
-    kt_remove_main_flag_fifo_e            = 0x800,
-    kt_remove_main_flag_follow_e          = 0x1000,
-    kt_remove_main_flag_force_e           = 0x2000,
-    kt_remove_main_flag_group_e           = 0x4000,
-    kt_remove_main_flag_help_e            = 0x8000,
-    kt_remove_main_flag_isolate_all_e     = 0x10000,
-    kt_remove_main_flag_isolate_ignore_e  = 0x20000,
-    kt_remove_main_flag_isolate_root_e    = 0x40000,
-    kt_remove_main_flag_link_e            = 0x80000,
-    kt_remove_main_flag_mode_e            = 0x100000,
-    kt_remove_main_flag_option_used_e     = 0x200000,
-    kt_remove_main_flag_print_first_e     = 0x400000,
-    kt_remove_main_flag_print_last_e      = 0x800000,
-    kt_remove_main_flag_prompt_all_e      = 0x1000000,
-    kt_remove_main_flag_prompt_follow_e   = 0x2000000,
-    kt_remove_main_flag_prompt_never_e    = 0x4000000,
-    kt_remove_main_flag_prompt_once_e     = 0x8000000,
-    kt_remove_main_flag_recurse_e         = 0x10000000,
-    kt_remove_main_flag_regular_e         = 0x20000000,
-    kt_remove_main_flag_same_e            = 0x40000000,
-    kt_remove_main_flag_simulate_e        = 0x80000000,
-    kt_remove_main_flag_socket_e          = 0x100000000,
-    kt_remove_main_flag_tree_e            = 0x200000000,
-    kt_remove_main_flag_updated_e         = 0x400000000,
-    kt_remove_main_flag_user_e            = 0x800000000,
-    kt_remove_main_flag_utc_e             = 0x1000000000,
-    kt_remove_main_flag_version_e         = 0x2000000000,
+    kt_remove_main_flag_none_e                   = 0x0,
+    kt_remove_main_flag_accessed_e               = 0x1,
+    kt_remove_main_flag_block_e                  = 0x2,
+    kt_remove_main_flag_character_e              = 0x4,
+    kt_remove_main_flag_copyright_e              = 0x8,
+    kt_remove_main_flag_changed_e                = 0x10,
+    kt_remove_main_flag_different_e              = 0x20,
+    kt_remove_main_flag_directory_e              = 0x40,
+    kt_remove_main_flag_empty_only_e             = 0x80,
+    kt_remove_main_flag_empty_only_fail_e        = 0x100,
+    kt_remove_main_flag_empty_not_e              = 0x200,
+    kt_remove_main_flag_empty_not_fail_e         = 0x400,
+    kt_remove_main_flag_fifo_e                   = 0x800,
+    kt_remove_main_flag_follow_e                 = 0x1000,
+    kt_remove_main_flag_force_e                  = 0x2000,
+    kt_remove_main_flag_group_e                  = 0x4000,
+    kt_remove_main_flag_help_e                   = 0x8000,
+    kt_remove_main_flag_isolate_all_e            = 0x10000,
+    kt_remove_main_flag_isolate_ignore_e         = 0x20000,
+    kt_remove_main_flag_isolate_root_e           = 0x40000,
+    kt_remove_main_flag_link_e                   = 0x80000,
+    kt_remove_main_flag_mode_e                   = 0x100000,
+    kt_remove_main_flag_option_used_e            = 0x200000,
+    kt_remove_main_flag_print_first_e            = 0x400000,
+    kt_remove_main_flag_print_last_e             = 0x800000,
+    kt_remove_main_flag_prompt_all_e             = 0x1000000,
+    kt_remove_main_flag_prompt_follow_e          = 0x2000000,
+    kt_remove_main_flag_prompt_never_e           = 0x4000000,
+    kt_remove_main_flag_prompt_once_e            = 0x8000000,
+    kt_remove_main_flag_recurse_e                = 0x10000000,
+    kt_remove_main_flag_regular_e                = 0x20000000,
+    kt_remove_main_flag_same_e                   = 0x40000000,
+    kt_remove_main_flag_simulate_e               = 0x80000000,
+    kt_remove_main_flag_socket_e                 = 0x100000000,
+    kt_remove_main_flag_tree_e                   = 0x200000000,
+    kt_remove_main_flag_updated_e                = 0x400000000,
+    kt_remove_main_flag_user_e                   = 0x800000000,
+    kt_remove_main_flag_utc_e                    = 0x1000000000,
+    kt_remove_main_flag_version_e                = 0x2000000000,
+    kt_remove_main_flag_version_copyright_help_e = 0x2000008008,
   }; // enum
 #endif // _di_kt_remove_flag_e_
-
 
 /**
  * A set of flags used internally in the convert process.

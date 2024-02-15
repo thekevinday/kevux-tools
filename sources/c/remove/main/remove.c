@@ -23,7 +23,7 @@ extern "C" {
 
     main->setting.state.status = F_okay;
 
-    if (main->setting.flag & (kt_remove_main_flag_help_e | kt_remove_main_flag_version_e | kt_remove_main_flag_copyright_e)) {
+    if (main->setting.flag & kt_remove_main_flag_version_copyright_help_e) {
       if (main->setting.flag & kt_remove_main_flag_help_e) {
         if (main->setting.process_help) {
           main->setting.process_help((void *) main);
