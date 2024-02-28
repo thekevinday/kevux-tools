@@ -235,7 +235,7 @@ extern "C" {
       if (F_status_is_error_not(set->status)) {
         for (f_number_unsigned_t i = 0; i < set->headers.used; ++i) {
 
-          set->status = f_string_dynamic_append_nulless(set->headers.array[i].name, &set->buffer);
+          set->status = f_string_dynamic_append_nulless(set->headers.array[i].key, &set->buffer);
 
           if (F_status_is_error_not(set->status)) {
             set->status = f_string_dynamic_append_nulless(f_fss_extended_open_s, &set->buffer);
