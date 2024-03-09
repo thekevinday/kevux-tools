@@ -109,7 +109,7 @@ extern "C" {
     f_string_dynamic_t name;
     f_string_dynamic_t network;
     f_fss_simple_packet_range_t packet;
-    f_fss_payload_header_state_t write_state;
+    fl_fss_payload_header_state_t write_state;
 
     f_abstruse_maps_t abstruses;
     f_string_maps_t headers;
@@ -151,7 +151,7 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
-      f_fss_payload_header_state_t_initialize, \
+      fl_fss_payload_header_state_t_initialize, \
       f_abstruse_maps_t_initialize, \
       f_string_maps_t_initialize, \
     }
@@ -193,7 +193,7 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
-      f_fss_payload_header_state_t_initialize, \
+      fl_fss_payload_header_state_t_initialize, \
       f_abstruse_maps_t_initialize, \
       f_string_maps_t_initialize, \
     }

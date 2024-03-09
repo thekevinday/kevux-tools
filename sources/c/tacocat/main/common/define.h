@@ -67,9 +67,9 @@ extern "C" {
   #define kt_tacocat_allocation_large_d   0x800
   #define kt_tacocat_allocation_small_d   0x80
 
-  #define kt_tacocat_block_size_d          0xffff
-  #define kt_tacocat_block_size_receive_d  kt_tacocat_block_size_d
-  #define kt_tacocat_block_size_send_d     kt_tacocat_block_size_d
+  #define kt_tacocat_block_size_d         0xffff
+  #define kt_tacocat_block_size_receive_d kt_tacocat_block_size_d
+  #define kt_tacocat_block_size_send_d    kt_tacocat_block_size_d
 
   #define kt_tacocat_cache_size_peek_d (kt_tacocat_block_size_receive_d + 1)
 
@@ -94,8 +94,8 @@ extern "C" {
   #define kt_tacocat_startup_retry_delay_millisecond_d 0
   #define kt_tacocat_startup_retry_max_d               24
 
-  #define kt_tacocat_startup_seed_delay_second_d      0
-  #define kt_tacocat_startup_seed_delay_nanosecond_d  100
+  #define kt_tacocat_startup_seed_delay_second_d     0
+  #define kt_tacocat_startup_seed_delay_nanosecond_d 100
 #endif // _di_kt_tacocat_d_
 
 /**
