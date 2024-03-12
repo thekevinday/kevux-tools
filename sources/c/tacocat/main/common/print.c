@@ -22,6 +22,7 @@ extern "C" {
     "f_network_from_ip_name",
     "f_network_from_ip_string",
     "f_network_is_ip_address",
+    "f_random_array_shuffle",
     "f_socket_accept",
     "f_socket_bind",
     "f_socket_close",

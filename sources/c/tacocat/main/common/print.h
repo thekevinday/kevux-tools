@@ -55,6 +55,7 @@ extern "C" {
     kt_tacocat_f_f_network_from_ip_name_e,
     kt_tacocat_f_f_network_from_ip_string_e,
     kt_tacocat_f_f_network_is_ip_address_e,
+    kt_tacocat_f_f_random_array_shuffle_e,
     kt_tacocat_f_f_socket_accept_e,
     kt_tacocat_f_f_socket_bind_e,
     kt_tacocat_f_f_socket_close_e,

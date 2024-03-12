@@ -204,6 +204,12 @@ extern "C" {
 
       macro_kt_send_process_handle_error_exit_1(main, fl_fss_payload_header_map, kt_tacocat_send_build_s, set->network, set->status, set->name, set->step);
 
+      set->write_state.cache->used = 0;
+
+      set->status = f_random_array_shuffle(0, set->headers.used, sizeof(f_string_map_t), set->write_state.cache, (void *) set->headers.array);
+
+      macro_kt_send_process_handle_error_exit_1(main, f_random_array_shuffle, kt_tacocat_send_build_s, set->network, set->status, set->name, set->step);
+
       set->step = kt_tacocat_socket_step_send_header_e;
     }
 
