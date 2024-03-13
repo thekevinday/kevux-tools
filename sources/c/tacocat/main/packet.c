@@ -98,120 +98,40 @@ extern "C" {
 
     f_number_unsigned_t i = 0;
 
-    for (; i < set->objects_header.used; ++i) {
+    {
+      uint8_t j = 0;
 
-      // Index 0 is the status.
-      if (f_compare_dynamic_partial_string(f_fss_payload_object_status_s.string, set->buffer, f_fss_payload_object_status_s.used, set->objects_header.array[i]) == F_equal_to) {
+      f_string_static_t headers[] = {
+        f_fss_payload_object_status_s,
+        f_fss_payload_object_type_s,
+        f_fss_payload_object_length_s,
+        f_fss_payload_object_part_s,
+        f_fss_payload_object_total_s,
+        f_fss_payload_object_name_s,
+        f_fss_payload_object_salt_s,
+        f_fss_payload_object_id_s,
+        f_fss_payload_object_time_s,
+      };
 
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-          set->abstruses.array[0].value.type = f_abstruse_none_e;
+      for (; i < set->objects_header.used; ++i) {
 
-          continue;
-        }
+        for (j = 0; j < 9; ++j) {
 
-        set->abstruses.array[0].value.type = f_abstruse_range_e;
-        set->abstruses.array[0].value.is.a_range = set->contents_header.array[i].array[0];
-      }
+          if (f_compare_dynamic_partial_string(headers[j].string, set->buffer, headers[j].used, set->objects_header.array[i]) == F_equal_to) {
 
-      // Index 1 is the type.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_type_s.string, set->buffer, f_fss_payload_object_type_s.used, set->objects_header.array[i]) == F_equal_to) {
+            // Require Content to exist.
+            if (!set->contents_header.array[i].used) {
+              set->abstruses.array[j].value.type = f_abstruse_none_e;
 
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[1].value.type = f_abstruse_none_e;
+              break;
+            }
 
-          continue;
-        }
-
-        set->abstruses.array[1].value.type = f_abstruse_range_e;
-        set->abstruses.array[1].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 2 is the length.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_length_s.string, set->buffer, f_fss_payload_object_length_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[2].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[2].value.type = f_abstruse_range_e;
-        set->abstruses.array[2].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 3 is the part.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_part_s.string, set->buffer, f_fss_payload_object_part_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[3].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[3].value.type = f_abstruse_range_e;
-        set->abstruses.array[3].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 4 is the total number of packets (based on block size).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_total_s.string, set->buffer, f_fss_payload_object_total_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[4].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[4].value.type = f_abstruse_range_e;
-        set->abstruses.array[4].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 5 is the name (file name).
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_name_s.string, set->buffer, f_fss_payload_object_name_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-         set->abstruses.array[5].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[5].value.type = f_abstruse_range_e;
-        set->abstruses.array[5].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 6 is the salt.
-      else if (f_compare_dynamic_partial_string(kt_tacocat_salt_s.string, set->buffer, kt_tacocat_salt_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-          set->abstruses.array[6].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[6].value.type = f_abstruse_range_e;
-        set->abstruses.array[6].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-
-      // Index 7 is the transaction id.
-      else if (f_compare_dynamic_partial_string(f_fss_payload_object_id_s.string, set->buffer, f_fss_payload_object_id_s.used, set->objects_header.array[i]) == F_equal_to) {
-
-        // Require Content to exist.
-        if (!set->contents_header.array[i].used) {
-          set->abstruses.array[7].value.type = f_abstruse_none_e;
-
-          continue;
-        }
-
-        set->abstruses.array[7].value.type = f_abstruse_range_e;
-        set->abstruses.array[7].value.is.a_range = set->contents_header.array[i].array[0];
-      }
-    } // for
+            set->abstruses.array[j].value.type = f_abstruse_range_e;
+            set->abstruses.array[j].value.is.a_range = set->contents_header.array[i].array[0];
+          }
+        } // for
+      } // for
+    }
 
     // Convert the status code.
     if (set->abstruses.array[0].value.type) {

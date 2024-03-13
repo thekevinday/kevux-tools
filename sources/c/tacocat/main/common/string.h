@@ -83,7 +83,6 @@ extern "C" {
   #define KT_TACOCAT_next_s               "next"
   #define KT_TACOCAT_receive_s            "receive"
   #define KT_TACOCAT_resend_s             "resend"
-  #define KT_TACOCAT_salt_s               "salt"
   #define KT_TACOCAT_send_s               "send"
   #define KT_TACOCAT_send_build_s         "send build"
   #define KT_TACOCAT_send_combine_s       "send combine"
@@ -95,6 +94,7 @@ extern "C" {
   #define KT_TACOCAT_send_size_s          "send size"
   #define KT_TACOCAT_socket_s             "socket"
   #define KT_TACOCAT_tacocat_s            "tacocat"
+  #define KT_TACOCAT_time_utc_s           " UTC"
   #define KT_TACOCAT_two_s                "two"
 
   #define KT_TACOCAT_abort_s_length              5
@@ -108,7 +108,6 @@ extern "C" {
   #define KT_TACOCAT_next_s_length               4
   #define KT_TACOCAT_receive_s_length            7
   #define KT_TACOCAT_resend_s_length             6
-  #define KT_TACOCAT_salt_s_length               4
   #define KT_TACOCAT_send_s_length               4
   #define KT_TACOCAT_send_build_s_length         19
   #define KT_TACOCAT_send_combine_s_length       12
@@ -120,6 +119,7 @@ extern "C" {
   #define KT_TACOCAT_send_size_s_length          9
   #define KT_TACOCAT_socket_s_length             6
   #define KT_TACOCAT_tacocat_s_length            7
+  #define KT_TACOCAT_time_utc_s_length           4
   #define KT_TACOCAT_two_s_length                3
 
   extern const f_string_static_t kt_tacocat_abort_s;
@@ -133,7 +133,6 @@ extern "C" {
   extern const f_string_static_t kt_tacocat_next_s;
   extern const f_string_static_t kt_tacocat_receive_s;
   extern const f_string_static_t kt_tacocat_resend_s;
-  extern const f_string_static_t kt_tacocat_salt_s;
   extern const f_string_static_t kt_tacocat_send_s;
   extern const f_string_static_t kt_tacocat_send_build_s;
   extern const f_string_static_t kt_tacocat_send_combine_s;
@@ -145,6 +144,7 @@ extern "C" {
   extern const f_string_static_t kt_tacocat_send_size_s;
   extern const f_string_static_t kt_tacocat_socket_s;
   extern const f_string_static_t kt_tacocat_tacocat_s;
+  extern const f_string_static_t kt_tacocat_time_utc_s;
   extern const f_string_static_t kt_tacocat_two_s;
 #endif // _di_kt_tacocat_s_
 

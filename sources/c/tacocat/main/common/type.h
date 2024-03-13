@@ -59,6 +59,7 @@ extern "C" {
  * header:      A buffer used for the header part and possibly the reset of a packet, except for the actual payload.
  * name:        A file name for reading from or writing to.
  * network:     A network name for the socket.
+ * time:        A representation of time added for informative purposes to the packet (in a human friendly format).
  * packet:      The simple packet range representing the parts of the packet for use during processing.
  * write_state: State data for the packet write operation.
  *
@@ -108,6 +109,7 @@ extern "C" {
     f_string_dynamic_t id;
     f_string_dynamic_t name;
     f_string_dynamic_t network;
+    f_string_dynamic_t time;
     f_fss_simple_packet_range_t packet;
     fl_fss_payload_header_state_t write_state;
 
@@ -143,6 +145,7 @@ extern "C" {
       f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
@@ -192,6 +195,7 @@ extern "C" {
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_fss_simple_packet_range_t_initialize, \
       fl_fss_payload_header_state_t_initialize, \
       f_abstruse_maps_t_initialize, \
@@ -227,6 +231,7 @@ extern "C" {
       f_uint8ss_t_initialize, \
       f_ranges_t_initialize, \
       f_state_t_initialize, \
+      f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \
       f_string_dynamic_t_initialize, \

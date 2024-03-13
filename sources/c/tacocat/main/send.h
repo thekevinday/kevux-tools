@@ -90,13 +90,47 @@ extern "C" {
  *
  *     Errors (with error bit) from: f_memory_array_increase_by()
  *     Errors (with error bit) from: kt_tacocat_process_abstruse_initialize()
+ *     Errors (with error bit) from: kt_tacocat_send_process_time_now()
  *
  * @see f_memory_array_increase_by()
  * @see kt_tacocat_process_abstruse_initialize()
+ * @see kt_tacocat_send_process_time_now()
  */
 #ifndef _di_kt_tacocat_send_process_initialize_
   extern void kt_tacocat_send_process_initialize(kt_tacocat_main_t * const main, kt_tacocat_socket_set_t * const set);
 #endif // _di_kt_tacocat_send_process_initialize_
+
+/**
+ * Build a string containing the current time.
+ *
+ * @param set
+ *   The socket set to process.
+ *   Must not be NULL.
+ *
+ *   The set.time is updated with the generated time string.
+ *
+ *   This alters set.status:
+ *     F_okay on success.
+ *
+ *     F_time (with error bit) on failure to get the time.
+ *
+ *     Errors (with error bit) from: f_memory_array_increase_by().
+ *     Errors (with error bit) from: f_string_append().
+ *     Errors (with error bit) from: f_string_dynamic_append().
+ *     Errors (with error bit) from: f_string_dynamic_terminate_after().
+ *
+ * @see f_memory_array_increase_by()
+ * @see f_string_append()
+ * @see f_string_dynamic_append()
+ * @see f_string_dynamic_terminate_after()
+ *
+ * @see asctime()
+ * @see gmtime()
+ * @see strnlen()
+ */
+#ifndef _di_kt_tacocat_send_process_time_now_
+  extern void kt_tacocat_send_process_time_now(kt_tacocat_socket_set_t * const set);
+#endif // _di_kt_tacocat_send_process_time_now_
 
 #ifdef __cplusplus
 } // extern "C"

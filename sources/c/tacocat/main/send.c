@@ -214,7 +214,7 @@ extern "C" {
     }
 
     if (set->step == kt_tacocat_socket_step_send_header_e) {
-      // @todo this needs to check the current status, accodingly (for when multiple blocks are being sent).
+      // @todo this needs to check the current status, accordingly (for when multiple blocks are being sent).
 
       // Reserve the FSS Packet header, which will be calculated just before sending.
       set->buffer.used = 5;
@@ -410,6 +410,7 @@ extern "C" {
     set->range.stop = 0;
     set->state.status = F_none;
     set->status = F_none;
+    set->time.used = 0;
     set->packet.control = 0;
     set->packet.size = 0;
     set->packet.payload.start = 1;
@@ -479,10 +480,62 @@ extern "C" {
     }
 
     if (F_status_is_error_not(set->status)) {
+      kt_tacocat_send_process_time_now(set);
+    }
+
+    if (F_status_is_error_not(set->status)) {
       kt_tacocat_process_abstruse_initialize(main, set);
+    }
+
+    if (F_status_is_error_not(set->status)) {
+      set->status = F_okay;
     }
   }
 #endif // _di_kt_tacocat_send_process_initialize_
+
+#ifndef _di_kt_tacocat_send_process_time_now_
+  void kt_tacocat_send_process_time_now(kt_tacocat_socket_set_t * const set) {
+
+    if (!set) return;
+
+    set->time.used = 0;
+
+    f_string_t string = f_string_t_initialize;
+
+    {
+      time_t t = time(NULL);
+
+      string = asctime(gmtime(&t));
+    }
+
+    if (string) {
+      f_number_unsigned_t total = strnlen(string, kt_tacocat_max_asctime_d);
+
+      // Do not count the NULL (some strnlen() implementations, like glibc, appear to incorrectly include the terminating NULL in the count.
+      if (total && !string[total]) {
+        --total;
+      }
+
+      set->status = f_memory_array_increase_by(total + kt_tacocat_time_utc_s.used + 1, sizeof(f_char_t), (void **) &set->time.string, &set->time.used, &set->time.size);
+      if (F_status_is_error(set->status)) return;
+
+      set->status = f_string_append(string, total, &set->time);
+      if (F_status_is_error(set->status)) return;
+
+      set->status = f_string_dynamic_append(kt_tacocat_time_utc_s, &set->time);
+      if (F_status_is_error(set->status)) return;
+
+      set->status = f_string_dynamic_terminate_after(&set->time);
+      if (F_status_is_error(set->status)) return;
+
+      set->status = F_okay;
+    }
+    else {
+      set->status = F_status_set_error(F_time);
+    }
+  }
+#endif // _di_kt_tacocat_send_process_time_now_
+
 #ifdef __cplusplus
 } // extern "C"
 #endif

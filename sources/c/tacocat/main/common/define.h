@@ -37,6 +37,7 @@ extern "C" {
  *   - poll_fast: The time in milliseconds to poll for before returning fo fast polls, such as when there is an active process (this is the amount of time poll() blocks).
  *
  * kt_tacocat_max_*_d:
+ *   - asctime:  The max string length supported for the string returned by asctime().
  *   - backlog:  The max backlog in bytes size to use.
  *   - buffer:   The max buffer in bytes size to use when receiving packets.
  *   - maintain: The max size in bytes to maintain a particular buffer.
@@ -76,11 +77,12 @@ extern "C" {
   #define kt_tacocat_interval_poll_d      1400 // 1.4 second.
   #define kt_tacocat_interval_poll_fast_d 5    // 0.005 second.
 
+  #define kt_tacocat_max_asctime_d  0xff
   #define kt_tacocat_max_backlog_d  0x400
   #define kt_tacocat_max_buffer_d   0x10000000 // 0x10^0x5 * 0x100 (Which is 256 Megabytes (0x10^0x5 where the base unit is 16 rather than 10 or 2 (maybe call this xytes? Megaxytes?)).
   #define kt_tacocat_max_maintain_d 0x100000   // 0x10^5 (Which is 1 Megabyte in base 16 (1 Megaxyte (MX)).
 
-  #define kt_tacocat_packet_headers_d   0x8
+  #define kt_tacocat_packet_headers_d   0x9
   #define kt_tacocat_packet_id_length_d 0x20
   #define kt_tacocat_packet_minimum_d   0x11
   #define kt_tacocat_packet_peek_d      0x40

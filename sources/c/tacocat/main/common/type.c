@@ -150,6 +150,10 @@ extern "C" {
           f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].network.string, &array[i].network.used, &array[i].network.size);
         }
 
+        if (array[i].time.size) {
+          f_memory_array_resize(0, sizeof(f_char_t), (void **) &array[i].time.string, &array[i].time.used, &array[i].time.size);
+        }
+
         if (array[i].abstruses.size) {
           f_memory_arrays_resize(0, sizeof(f_abstruse_map_t), (void **) &array[i].abstruses.array, &array[i].abstruses.used, &array[i].abstruses.size, &f_abstruse_maps_delete_callback);
         }
