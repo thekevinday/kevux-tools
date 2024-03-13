@@ -289,6 +289,9 @@ extern "C" {
  *   The network connection direction, which should either be "receive" or "send".
  * @param network
  *   The name of the network in which the error is related.
+ * @param name
+ *   (optional) The name of the file.
+ *   Set name.used to 0 to disable.
  *
  * @return
  *   F_okay on success.
@@ -299,7 +302,7 @@ extern "C" {
  * @see fll_error_file_print()
  */
 #ifndef _di_kt_tacocat_print_error_on_packet_invalid_
-  extern f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network);
+  extern f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_string_static_t name);
 #endif // _di_kt_tacocat_print_error_on_packet_invalid_
 
 /**

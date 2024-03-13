@@ -120,6 +120,9 @@ extern "C" {
  * macro_kt_receive_process_begin_handle_error_exit_1:
  *   Intended to be used for handling an error during the receive process while processing within step kt_tacocat_socket_step_receive_control_e.
  *
+ * macro_kt_receive_process_invalid_packet_exit_1:
+ *   Similar to macro_kt_receive_process_handle_error_exit_1() but calls kt_tacocat_print_error_on_packet_invalid().
+ *
  * @todo document all macros.
  */
 #ifndef _di_kt_tacocat_macros_d_
@@ -183,6 +186,17 @@ extern "C" {
       \
       return F_done_not; \
     }
+
+  #define macro_kt_receive_process_invalid_packet_exit_1(main, network, name, step, id_data) \
+    kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, network, name); \
+    \
+    if (id_data) { \
+      f_file_close_id(&(id_data)); \
+    } \
+    \
+    step = 0; \
+    \
+    return F_done_not;
 
   #define macro_kt_receive_process_begin_handle_error_exit_1(main, method, network, status, name, step) \
     if (F_status_is_error(status)) { \

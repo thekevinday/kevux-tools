@@ -183,7 +183,7 @@ extern "C" {
 #endif // _di_kt_tacocat_print_error_on_packet_header_value_invalid_
 
 #ifndef _di_kt_tacocat_print_error_on_packet_invalid_
-  f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network) {
+  f_status_t kt_tacocat_print_error_on_packet_invalid(fl_print_t * const print, const f_string_static_t on, const f_string_static_t network, const f_string_static_t name) {
 
     if (!print) return F_status_set_error(F_output_not);
     if (print->verbosity < f_console_verbosity_error_e) return F_output_not;
@@ -192,8 +192,14 @@ extern "C" {
 
     fl_print_format("%[%QNetwork packet is invalid for%] ", print->to, print->set->error, print->prefix, print->set->error);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, on, print->set->notable);
-    fl_print_format(" %[buffer for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+    fl_print_format(" %[for '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
     fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, network, print->set->notable);
+
+    if (name.used) {
+      fl_print_format("%[' with file '%]", print->to, print->set->error, print->set->error, f_string_eol_s);
+      fl_print_format(f_string_format_Q_single_s.string, print->to, print->set->notable, name, print->set->notable);
+    }
+
     fl_print_format(f_string_format_sentence_end_quote_s.string, print->to, print->set->error, print->set->error, f_string_eol_s);
 
     f_file_stream_unlock(print->to);

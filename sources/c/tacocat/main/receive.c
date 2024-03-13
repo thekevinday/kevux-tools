@@ -13,11 +13,13 @@ extern "C" {
 
     kt_tacocat_main_t * const main = (kt_tacocat_main_t *) void_main;
     f_number_unsigned_t i = 0;
+    kt_tacocat_socket_set_t * set = 0;
 
     kt_tacocat_process_socket_set_receive(main);
 
     if (F_status_is_error_not(main->setting.status_receive) && main->setting.receive.used) {
       do {
+
         // @todo this would probably be better when active_receive > 0 to add a nano timestamp check and if time elapsed is smaller than a given number then do not poll.
         main->setting.status_receive = f_file_poll(main->setting.receive_polls, main->setting.active_receive ? main->setting.interval_fast : main->setting.interval);
 
@@ -34,46 +36,52 @@ extern "C" {
             if (main->setting.receive_polls.array[i].fd == -1) continue;
 
             if (main->setting.receive_polls.array[i].revents & (f_poll_read_e)) {
-              if (kt_tacocat_receive_process(main, &main->setting.receive.array[i]) == F_done) {
-                if (F_status_is_error(main->setting.receive.array[i].status)) {
+              set = &main->setting.receive.array[i];
+
+              if (kt_tacocat_receive_process(main, set) == F_done) {
+                if (F_status_is_error(set->status)) {
+
                   // @todo there probably should be a timeout as well as a retry, which should be checked if the poll read condition above is false.
-                  if (++main->setting.receive.array[i].retry >= kt_tacocat_startup_retry_max_d) {
-                    f_file_close(&main->setting.receive.array[i].file);
+                  if (++set->retry >= kt_tacocat_startup_retry_max_d || (set->step == kt_tacocat_socket_step_receive_control_e && (F_status_set_fine(set->status) == F_packet_too_small || F_status_set_fine(set->status) == F_packet_too_large))) {
+                    f_file_close(&set->file);
 
                     // Keep error bit but set state to done to designate that nothing else is to be done.
-                    main->setting.receive.array[i].status = F_status_set_error(F_done);
+                    set->status = F_status_set_error(F_done);
 
-                    if (main->setting.receive.array[i].step) {
-                      main->setting.receive.array[i].step = 0;
+                    if (set->step) {
+                      set->step = 0;
 
                       if (main->setting.active_receive) {
                         --main->setting.active_receive;
                       }
                     }
 
-                    kt_tacocat_print_error_on_max_retries_receive(&main->program.error, &main->setting.receive.array[i]);
+                    if (set->retry >= kt_tacocat_startup_retry_max_d) {
+                      kt_tacocat_print_error_on_max_retries_receive(&main->program.error, set);
+                    }
+                    else {
+                      kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->name);
+                    }
                   }
-
-                  // @todo if step is kt_tacocat_socket_step_receive_control_e, check if error is either F_packet_too_small or F_packet_too_large. This is a non-retrying error.
                 }
               }
               else {
-                if (F_status_is_error(main->setting.receive.array[i].status)) {
-                  if (++main->setting.receive.array[i].retry >= kt_tacocat_startup_retry_max_d) {
-                    f_file_close(&main->setting.receive.array[i].file);
+                if (F_status_is_error(set->status)) {
+                  if (++set->retry >= kt_tacocat_startup_retry_max_d) {
+                    f_file_close(&set->file);
 
                     // Keep error bit but set state to done to designate that nothing else is to be done. @todo review and confirm if this assignment with error bit set is needed anymore or should be changed.
-                    main->setting.receive.array[i].status = F_status_set_error(F_done);
+                    set->status = F_status_set_error(F_done);
 
-                    if (main->setting.receive.array[i].step) {
-                      main->setting.receive.array[i].step = 0;
+                    if (set->step) {
+                      set->step = 0;
 
                       if (main->setting.active_receive) {
                         --main->setting.active_receive;
                       }
                     }
 
-                    kt_tacocat_print_error_on_max_retries_receive(&main->program.error, &main->setting.receive.array[i]);
+                    kt_tacocat_print_error_on_max_retries_receive(&main->program.error, set);
                   }
                 }
               }
@@ -145,7 +153,7 @@ extern "C" {
 
       // Make sure the buffer is large enough for payload processing block reads.
       set->status = f_memory_array_increase_by(set->socket.size_read, sizeof(f_char_t), (void **) &set->buffer.string, &set->buffer.used, &set->buffer.size);
-      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->step, set->socket.id_data);
 
       set->retry = 0;
       set->buffer.used = 0;
@@ -156,7 +164,7 @@ extern "C" {
       size_t length_read = 0;
 
       set->status = f_socket_read_stream(&set->socket, 0, (void *) (set->buffer.string + set->buffer.used), &length_read);
-      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->flag, set->socket.id_data);
+      macro_kt_receive_process_handle_error_exit_1(main, f_socket_read_stream, set->network, set->status, set->name, set->step, set->socket.id_data);
 
       if (length_read) {
         set->retry = 0;
@@ -260,29 +268,38 @@ extern "C" {
 
     if (set->step == kt_tacocat_socket_step_receive_check_e) {
       if (set->parts.used) {
+        if (set->abstruses.array[1].value.type != f_abstruse_unsigned_e) {
+          macro_kt_receive_process_invalid_packet_exit_1(main, set->network, set->name, set->step, set->socket.id_data);
+        }
+
         // @todo determine type of packet and process.
       }
       else {
-        // @todo the packet should only be a 'file' type for the first packet.
+
+        // The packet should only be a 'file' type for the first packet.
+        if (set->abstruses.array[1].value.type != f_abstruse_unsigned_e || set->abstruses.array[1].value.is.a_unsigned != kt_tacocat_packet_type_file_e) {
+          macro_kt_receive_process_invalid_packet_exit_1(main, set->network, set->name, set->step, set->socket.id_data);
+        }
+
         if (set->abstruses.array[4].value.type == f_abstruse_unsigned_e) {
           set->parts.used = 0;
 
           set->status = f_memory_array_increase_by(set->abstruses.array[4].value.is.a_unsigned, sizeof(f_number_unsigned_t), (void **) &set->parts.array, &set->parts.used, &set->parts.size);
-          macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->flag, set->socket.id_data);
+          macro_kt_receive_process_handle_error_exit_1(main, f_memory_array_increase_by, set->network, set->status, set->name, set->step, set->socket.id_data);
 
           memset(set->parts.array, 0, sizeof(f_number_unsigned_t));
 
           set->parts.used = set->abstruses.array[4].value.is.a_unsigned;
         }
         else {
-          // @todo error.
+          macro_kt_receive_process_invalid_packet_exit_1(main, set->network, set->name, set->step, set->socket.id_data);
         }
 
         if (set->abstruses.array[3].value.type == f_abstruse_unsigned_e) {
           set->part = set->abstruses.array[3].value.is.a_unsigned;
         }
         else {
-          // @todo error
+          macro_kt_receive_process_invalid_packet_exit_1(main, set->network, set->name, set->step, set->socket.id_data);
         }
       }
 
@@ -439,7 +456,7 @@ extern "C" {
         set->status = F_status_set_error(F_packet_too_large);
       }
 
-      kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, set->network);
+      kt_tacocat_print_error_on_packet_invalid(&main->program.error, kt_tacocat_receive_s, set->network, set->name);
 
       return;
     }
